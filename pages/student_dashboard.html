@@ -1,0 +1,2517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生主页 - 学链通</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+
+        :root {
+            --primary-color: #1A2980;
+            --primary-light: #26D0CE;
+            --secondary-color: #00d2ff;
+            --success-color: #00C853;
+            --warning-color: #FF9800;
+            --danger-color: #FF5252;
+            --dark-color: #333;
+            --light-color: #f5f7fa;
+            --text-color: #555;
+            --border-color: #e4e9f2;
+            --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            width: 100%;
+            min-height: 100vh;
+            background-color: var(--light-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        /* 左侧导航栏 */
+        .sidebar {
+            width: 240px;
+            background: linear-gradient(180deg, var(--primary-color) 0%, #182572 100%);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            overflow-y: auto;
+            z-index: 10;
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+
+        .logo-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--primary-color);
+        }
+
+        .logo-text {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .nav-menu {
+            padding: 15px 0;
+        }
+
+        .nav-item {
+            list-style: none;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: white;
+            border-left: 3px solid var(--secondary-color);
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            opacity: 0.9;
+        }
+
+        /* 主内容区域 */
+        .main-content {
+            flex: 1;
+            margin-left: 240px;
+            padding: 0;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* 顶部状态栏 */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 25px;
+            height: 70px;
+            background-color: white;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .page-title {
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            cursor: pointer;
+            position: relative;
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+
+        .notification-icon:hover {
+            background-color: var(--light-color);
+            color: var(--primary-color);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 18px;
+            height: 18px;
+            background-color: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 10px;
+            background-color: var(--light-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: var(--dark-color);
+            font-size: 0.9rem;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: var(--text-color);
+        }
+
+        /* 内容布局 */
+        .content-wrapper {
+            padding: 25px;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -15px;
+        }
+
+        .col {
+            padding: 0 15px;
+            margin-bottom: 25px;
+        }
+
+        .col-4 {
+            width: 33.333333%;
+        }
+
+        .col-6 {
+            width: 50%;
+        }
+
+        .col-8 {
+            width: 66.666667%;
+        }
+
+        .col-12 {
+            width: 100%;
+        }
+
+        /* 卡片组件 */
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: var(--transition);
+            height: 100%;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-3px);
+        }
+
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin: 0;
+        }
+
+        .card-tools {
+            display: flex;
+            align-items: center;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-footer {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border-color);
+            background-color: rgba(0, 0, 0, 0.01);
+        }
+        
+        /* 徽章和标签 */
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background-color: rgba(0, 200, 83, 0.1);
+            color: var(--success-color);
+        }
+
+        .badge-warning {
+            background-color: rgba(255, 152, 0, 0.1);
+            color: var(--warning-color);
+        }
+
+        .badge-danger {
+            background-color: rgba(255, 82, 82, 0.1);
+            color: var(--danger-color);
+        }
+
+        .badge-primary {
+            background-color: rgba(26, 41, 128, 0.1);
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 左侧导航栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 18,13.79 18,15.47C17.76,16 17.47,16.5 17.13,17Z"/>
+                    </svg>
+                </div>
+                <span class="logo-text">学链通</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#dashboard" class="nav-link active">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M13,3V9H21V3M13,21H21V11H13M3,21H11V15H3M3,13H11V3H3V13Z" />
+                        </svg>
+                        <span>仪表盘</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#education" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,3L1,9L12,15L21,10.09V17H23V9M5,13.18V17.18L12,21L19,17.18V13.18L12,17L5,13.18Z" />
+                        </svg>
+                        <span>学历信息</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#certificate" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M4,3C2.89,3 2,3.89 2,5V15A2,2 0 0,0 4,17H12V22L15,19L18,22V17H20A2,2 0 0,0 22,15V8L22,6V5A2,2 0 0,0 20,3H16V3H4M12,5L15,7L18,5V8.5L21,10L18,11.5V15L15,13L12,15V11.5L9,10L12,8.5V5M4,5H9V7H4V5M4,9H7V11H4V9M4,13H9V15H4V13Z" />
+                        </svg>
+                        <span>证书生成</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#verification" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" />
+                        </svg>
+                        <span>认证申请</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#privacy" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z" />
+                        </svg>
+                        <span>隐私设置</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#messages" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4C22,2.89 21.1,2 20,2Z" />
+                        </svg>
+                        <span>消息通知</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#settings" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" />
+                        </svg>
+                        <span>账号设置</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-footer" style="padding: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1); margin-top: auto;">
+                <a href="#logout" class="nav-link" style="justify-content: flex-start; padding: 10px 0;">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z" />
+                    </svg>
+                    <span>退出登录</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- 主内容区域 -->
+        <main class="main-content">
+            <!-- 顶部状态栏 -->
+            <div class="topbar">
+                <h1 class="page-title">学生主页</h1>
+                <div class="user-menu">
+                    <div class="notification-icon">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M21,19V20H3V19L5,17V11C5,7.9 7.03,5.17 10,4.29C10,4.19 10,4.1 10,4A2,2 0 0,1 12,2A2,2 0 0,1 14,4C14,4.1 14,4.19 14,4.29C16.97,5.17 19,7.9 19,11V17L21,19M14,21A2,2 0 0,1 12,23A2,2 0 0,1 10,21" />
+                        </svg>
+                        <div class="notification-badge">3</div>
+                    </div>
+                    <div class="user-profile">
+                        <div class="user-avatar">ZL</div>
+                        <div class="user-info">
+                            <div class="user-name">张力</div>
+                            <div class="user-role">计算机科学与技术 / 本科生</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 内容区域 -->
+            <div class="content-wrapper">
+                <div class="row">
+                    <!-- 欢迎卡片 -->
+                    <div class="col col-12">
+                        <div class="card" style="background: linear-gradient(120deg, var(--primary-color), var(--primary-light)); color: white;">
+                            <div class="card-body" style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h2 style="font-size: 1.5rem; margin-bottom: 10px;">欢迎回来，张力！</h2>
+                                    <p style="opacity: 0.9; margin-bottom: 15px;">您的学籍信息已完成区块链上链，信息安全可靠。</p>
+                                    <div style="display: flex; gap: 10px;">
+                                        <button style="background-color: white; color: var(--primary-color); border: none; padding: 8px 15px; border-radius: 5px; font-weight: 500; cursor: pointer;">查看学历证书</button>
+                                        <button style="background-color: rgba(255, 255, 255, 0.2); color: white; border: none; padding: 8px 15px; border-radius: 5px; font-weight: 500; cursor: pointer;">隐私设置</button>
+                                    </div>
+                                </div>
+                                <div style="opacity: 0.2;">
+                                    <svg viewBox="0 0 24 24" width="120" height="120" fill="currentColor">
+                                        <path d="M12,3L1,9L12,15L21,10.09V17H23V9M5,13.18V17.18L12,21L19,17.18V13.18L12,17L5,13.18Z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 快捷统计卡片 -->
+                    <div class="col col-4">
+                        <div class="card">
+                            <div class="card-body" style="padding: 20px;">
+                                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                                    <div style="width: 40px; height: 40px; background-color: rgba(26, 41, 128, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                        <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--primary-color)">
+                                            <path d="M4,3C2.89,3 2,3.89 2,5V15A2,2 0 0,0 4,17H12V22L15,19L18,22V17H20A2,2 0 0,0 22,15V8L22,6V5A2,2 0 0,0 20,3H16V3H4M12,5L15,7L18,5V8.5L21,10L18,11.5V15L15,13L12,15V11.5L9,10L12,8.5V5M4,5H9V7H4V5M4,9H7V11H4V9M4,13H9V15H4V13Z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 style="font-size: 1rem; color: var(--dark-color); margin-bottom: 3px;">学历证书</h3>
+                                        <p style="font-size: 0.8rem; color: var(--text-color);">已上链的证书数量</p>
+                                    </div>
+                                </div>
+                                <div style="font-size: 2rem; font-weight: 700; color: var(--primary-color);">2</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col col-4">
+                        <div class="card">
+                            <div class="card-body" style="padding: 20px;">
+                                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                                    <div style="width: 40px; height: 40px; background-color: rgba(255, 152, 0, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                        <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--warning-color)">
+                                            <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 18,13.79 18,15.47C17.76,16 17.47,16.5 17.13,17Z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 style="font-size: 1rem; color: var(--dark-color); margin-bottom: 3px;">认证申请</h3>
+                                        <p style="font-size: 0.8rem; color: var(--text-color);">正在进行的认证</p>
+                                    </div>
+                                </div>
+                                <div style="font-size: 2rem; font-weight: 700; color: var(--warning-color);">1</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col col-4">
+                        <div class="card">
+                            <div class="card-body" style="padding: 20px;">
+                                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                                    <div style="width: 40px; height: 40px; background-color: rgba(0, 200, 83, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                        <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--success-color)">
+                                            <path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 style="font-size: 1rem; color: var(--dark-color); margin-bottom: 3px;">已验证</h3>
+                                        <p style="font-size: 0.8rem; color: var(--text-color);">成功完成的验证</p>
+                                    </div>
+                                </div>
+                                <div style="font-size: 2rem; font-weight: 700; color: var(--success-color);">8</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 学历证书卡片 -->
+                    <div class="col col-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">我的学历证书</h3>
+                                <div class="card-tools">
+                                    <button style="background: none; border: none; cursor: pointer; color: var(--primary-color);">查看全部</button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div style="display: flex; gap: 20px; overflow-x: auto; padding-bottom: 10px;">
+                                    <!-- 本科学历证书 -->
+                                    <div class="certificate-card" style="min-width: 300px; background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%); border-radius: 10px; padding: 20px; position: relative; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); transition: var(--transition);">
+                                        <div style="position: absolute; top: 15px; right: 15px;">
+                                            <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--success-color)">
+                                                <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M11,16.5L6.5,12L7.91,10.59L11,13.67L16.59,8.09L18,9.5L11,16.5Z" />
+                                            </svg>
+                                        </div>
+                                        <div style="text-align: center; margin-bottom: 15px;">
+                                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgMTlMMTkgMTIuNTM0NVY1TDEyIDExLjVMNSA1VjEyLjUzNDVMMTIgMTlaIiBzdHJva2U9IiMxQTI5ODAiIHN0cm9rZS13aWR0aD0iMiIgLz48L3N2Zz4=" alt="北京大学校徽" style="width: 80px; height: 80px;">
+                                        </div>
+                                        <div style="text-align: center; margin-bottom: 15px;">
+                                            <h4 style="font-size: 1.1rem; font-weight: 600; color: var(--dark-color); margin-bottom: 5px;">本科学历证书</h4>
+                                            <p style="font-size: 0.9rem; color: var(--text-color);">北京大学</p>
+                                        </div>
+                                        <div style="background-color: rgba(255, 255, 255, 0.7); border-radius: 5px; padding: 10px; margin-bottom: 15px;">
+                                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                                <span style="font-size: 0.8rem; color: var(--text-color);">学生姓名</span>
+                                                <span style="font-size: 0.8rem; font-weight: 500; color: var(--dark-color);">张力</span>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                                <span style="font-size: 0.8rem; color: var(--text-color);">专业</span>
+                                                <span style="font-size: 0.8rem; font-weight: 500; color: var(--dark-color);">计算机科学与技术</span>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                                <span style="font-size: 0.8rem; color: var(--text-color);">学位</span>
+                                                <span style="font-size: 0.8rem; font-weight: 500; color: var(--dark-color);">工学学士</span>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between;">
+                                                <span style="font-size: 0.8rem; color: var(--text-color);">毕业时间</span>
+                                                <span style="font-size: 0.8rem; font-weight: 500; color: var(--dark-color);">2022-06-30</span>
+                                            </div>
+                                        </div>
+                                        <div style="display: flex; gap: 10px;">
+                                            <button style="flex: 1; background-color: var(--primary-color); color: white; border: none; padding: 8px 0; border-radius: 5px; font-size: 0.8rem; cursor: pointer;">查看详情</button>
+                                            <button style="flex: 1; background-color: white; color: var(--primary-color); border: 1px solid var(--primary-color); padding: 8px 0; border-radius: 5px; font-size: 0.8rem; cursor: pointer;">下载证书</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- 硕士学历证书 -->
+                                    <div class="certificate-card" style="min-width: 300px; background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%); border-radius: 10px; padding: 20px; position: relative; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); transition: var(--transition);">
+                                        <div style="position: absolute; top: 15px; right: 15px;">
+                                            <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--success-color)">
+                                                <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M11,16.5L6.5,12L7.91,10.59L11,13.67L16.59,8.09L18,9.5L11,16.5Z" />
+                                            </svg>
+                                        </div>
+                                        <div style="text-align: center; margin-bottom: 15px;">
+                                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgMTlMMTkgMTIuNTM0NVY1TDEyIDExLjVMNSA1VjEyLjUzNDVMMTIgMTlaIiBzdHJva2U9IiMxQTI5ODAiIHN0cm9rZS13aWR0aD0iMiIgLz48L3N2Zz4=" alt="北京大学校徽" style="width: 80px; height: 80px;">
+                                        </div>
+                                        <div style="text-align: center; margin-bottom: 15px;">
+                                            <h4 style="font-size: 1.1rem; font-weight: 600; color: var(--dark-color); margin-bottom: 5px;">硕士学历证书</h4>
+                                            <p style="font-size: 0.9rem; color: var(--text-color);">北京大学</p>
+                                        </div>
+                                        <div style="background-color: rgba(255, 255, 255, 0.7); border-radius: 5px; padding: 10px; margin-bottom: 15px;">
+                                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                                <span style="font-size: 0.8rem; color: var(--text-color);">学生姓名</span>
+                                                <span style="font-size: 0.8rem; font-weight: 500; color: var(--dark-color);">张力</span>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                                <span style="font-size: 0.8rem; color: var(--text-color);">专业</span>
+                                                <span style="font-size: 0.8rem; font-weight: 500; color: var(--dark-color);">计算机科学与技术</span>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                                <span style="font-size: 0.8rem; color: var(--text-color);">学位</span>
+                                                <span style="font-size: 0.8rem; font-weight: 500; color: var(--dark-color);">工学硕士</span>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between;">
+                                                <span style="font-size: 0.8rem; color: var(--text-color);">毕业时间</span>
+                                                <span style="font-size: 0.8rem; font-weight: 500; color: var(--dark-color);">在读</span>
+                                            </div>
+                                        </div>
+                                        <div style="display: flex; gap: 10px;">
+                                            <button style="flex: 1; background-color: var(--primary-color); color: white; border: none; padding: 8px 0; border-radius: 5px; font-size: 0.8rem; cursor: pointer;">查看详情</button>
+                                            <button style="flex: 1; background-color: white; color: var(--primary-color); border: 1px solid var(--primary-color); padding: 8px 0; border-radius: 5px; font-size: 0.8rem; cursor: pointer;">下载证书</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 认证申请状态 -->
+                    <div class="col col-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">认证申请</h3>
+                                <div class="card-tools">
+                                    <button style="background: none; border: none; cursor: pointer; color: var(--primary-color);">新建</button>
+                                </div>
+                            </div>
+                            <div class="card-body" style="padding-top: 10px;">
+                                <div style="border-left: 2px solid var(--warning-color); padding-left: 15px; margin-bottom: 15px;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                        <span style="font-size: 0.9rem; font-weight: 500; color: var(--dark-color);">腾讯科技认证申请</span>
+                                        <span class="badge badge-warning">进行中</span>
+                                    </div>
+                                    <p style="font-size: 0.8rem; color: var(--text-color); margin-bottom: 10px;">申请本科学历证书验证</p>
+                                    <div style="margin-bottom: 10px;">
+                                        <div style="height: 6px; background-color: var(--light-color); border-radius: 3px; overflow: hidden;">
+                                            <div style="height: 100%; width: 75%; background-color: var(--warning-color);"></div>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-color);">
+                                        <span>发起时间: 2023-09-15</span>
+                                        <span>预计完成: 今日</span>
+                                    </div>
+                                </div>
+
+                                <div style="border-left: 2px solid var(--success-color); padding-left: 15px; margin-bottom: 15px;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                        <span style="font-size: 0.9rem; font-weight: 500; color: var(--dark-color);">阿里巴巴认证申请</span>
+                                        <span class="badge badge-success">已完成</span>
+                                    </div>
+                                    <p style="font-size: 0.8rem; color: var(--text-color); margin-bottom: 10px;">申请本科学历证书验证</p>
+                                    <div style="margin-bottom: 10px;">
+                                        <div style="height: 6px; background-color: var(--light-color); border-radius: 3px; overflow: hidden;">
+                                            <div style="height: 100%; width: 100%; background-color: var(--success-color);"></div>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-color);">
+                                        <span>发起时间: 2023-08-20</span>
+                                        <span>完成时间: 2023-08-22</span>
+                                    </div>
+                                </div>
+
+                                <div style="border-left: 2px solid var(--success-color); padding-left: 15px;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                        <span style="font-size: 0.9rem; font-weight: 500; color: var(--dark-color);">百度认证申请</span>
+                                        <span class="badge badge-success">已完成</span>
+                                    </div>
+                                    <p style="font-size: 0.8rem; color: var(--text-color); margin-bottom: 10px;">申请本科学历证书验证</p>
+                                    <div style="margin-bottom: 10px;">
+                                        <div style="height: 6px; background-color: var(--light-color); border-radius: 3px; overflow: hidden;">
+                                            <div style="height: 100%; width: 100%; background-color: var(--success-color);"></div>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-color);">
+                                        <span>发起时间: 2023-07-10</span>
+                                        <span>完成时间: 2023-07-11</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer" style="text-align: center;">
+                                <a href="#verification" style="color: var(--primary-color); text-decoration: none; font-size: 0.9rem;">查看全部申请记录</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 系统消息 -->
+                    <div class="col col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">系统消息</h3>
+                                <div class="card-tools">
+                                    <button style="background: none; border: none; cursor: pointer; color: var(--primary-color);">标记全部已读</button>
+                                </div>
+                            </div>
+                            <div class="card-body" style="padding: 0;">
+                                <div style="border-bottom: 1px solid var(--border-color); padding: 15px 20px; display: flex; align-items: flex-start; background-color: rgba(26, 41, 128, 0.05);">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--primary-color); color: white; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">
+                                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                            <path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" />
+                                        </svg>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                            <h4 style="font-size: 0.9rem; font-weight: 500; color: var(--dark-color);">认证申请状态更新</h4>
+                                            <span style="font-size: 0.8rem; color: var(--text-color);">今天 10:25</span>
+                                        </div>
+                                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 10px;">您向腾讯科技提交的学历认证申请已进入最终审核阶段，预计今日完成。</p>
+                                        <div style="display: flex; gap: 10px;">
+                                            <span class="badge badge-warning">进行中</span>
+                                            <a href="#" style="font-size: 0.8rem; color: var(--primary-color); text-decoration: none;">查看详情</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style="border-bottom: 1px solid var(--border-color); padding: 15px 20px; display: flex; align-items: flex-start;">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--success-color); color: white; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">
+                                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                            <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
+                                        </svg>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                            <h4 style="font-size: 0.9rem; font-weight: 500; color: var(--dark-color);">学历信息上链成功</h4>
+                                            <span style="font-size: 0.8rem; color: var(--text-color);">昨天 16:42</span>
+                                        </div>
+                                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 10px;">您的硕士学历信息已成功上链，区块高度 #1286390，交易哈希 0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b。您现在可以正常使用区块链证书，并授权第三方进行验证。</p>
+                                        <div style="display: flex; gap: 10px;">
+                                            <span class="badge badge-success">已完成</span>
+                                            <a href="#" style="font-size: 0.8rem; color: var(--primary-color); text-decoration: none;">查看证书</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style="padding: 15px 20px; display: flex; align-items: flex-start;">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--primary-light); color: white; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">
+                                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                            <path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
+                                        </svg>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                            <h4 style="font-size: 0.9rem; font-weight: 500; color: var(--dark-color);">系统公告</h4>
+                                            <span style="font-size: 0.8rem; color: var(--text-color);">3天前</span>
+                                        </div>
+                                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 10px;">学链通系统将于本周六凌晨2:00-4:00进行系统升级维护，期间部分功能可能暂时无法使用。请您提前做好安排，我们将尽量缩短维护时间，给您带来的不便敬请谅解。</p>
+                                        <div style="display: flex; gap: 10px;">
+                                            <span class="badge badge-primary">公告</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer" style="text-align: center;">
+                                <a href="#messages" style="color: var(--primary-color); text-decoration: none; font-size: 0.9rem;">查看全部消息</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 模态框背景 -->
+    <div id="modal-backdrop" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 100;"></div>
+    
+    <!-- 证书详情模态框 -->
+    <div id="certificate-modal" class="modal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; border-radius: 10px; width: 90%; max-width: 800px; z-index: 101; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); overflow: hidden;">
+        <div style="padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; font-size: 1.2rem; color: var(--dark-color);">证书详情</h3>
+            <button class="modal-close-btn" style="background: none; border: none; cursor: pointer; color: var(--text-color); font-size: 1.5rem;">&times;</button>
+        </div>
+        <div id="certificate-content" style="padding: 20px; max-height: 70vh; overflow-y: auto;">
+            <!-- 证书内容将通过JavaScript动态填充 -->
+        </div>
+    </div>
+    
+    <!-- 新建认证申请模态框 -->
+    <div id="new-application-modal" class="modal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; border-radius: 10px; width: 90%; max-width: 500px; z-index: 101; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); overflow: hidden;">
+        <div style="padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; font-size: 1.2rem; color: var(--dark-color);">新建认证申请</h3>
+            <button class="modal-close-btn" style="background: none; border: none; cursor: pointer; color: var(--text-color); font-size: 1.5rem;">&times;</button>
+        </div>
+        <div style="padding: 20px;">
+            <form id="application-form">
+                <div style="margin-bottom: 15px;">
+                    <label for="application-company" style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--dark-color);">申请企业</label>
+                    <select id="application-company" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; font-size: 0.9rem;">
+                        <option value="">请选择企业</option>
+                        <option value="tencent">腾讯科技</option>
+                        <option value="alibaba">阿里巴巴</option>
+                        <option value="baidu">百度</option>
+                        <option value="huawei">华为技术</option>
+                        <option value="bytedance">字节跳动</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="application-certificate" style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--dark-color);">证书类型</label>
+                    <select id="application-certificate" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; font-size: 0.9rem;">
+                        <option value="">请选择证书类型</option>
+                        <option value="bachelor">本科学历证书</option>
+                        <option value="master">硕士学历证书</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label for="application-purpose" style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--dark-color);">申请目的</label>
+                    <input type="text" id="application-purpose" placeholder="例如：求职背景调查、面试资格确认等" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; font-size: 0.9rem;">
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <label style="display: flex; align-items: center; font-size: 0.9rem; color: var(--dark-color);">
+                        <input type="checkbox" id="application-terms" style="margin-right: 10px;">
+                        我同意向所选企业授权指定的学历信息
+                    </label>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                    <button type="button" class="modal-close-btn" style="padding: 8px 15px; background-color: var(--light-color); border: none; border-radius: 5px; color: var(--text-color); cursor: pointer;">取消</button>
+                    <button type="button" id="submit-application" style="padding: 8px 15px; background-color: var(--primary-color); border: none; border-radius: 5px; color: white; cursor: pointer;">提交申请</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- 查看所有申请记录模态框 -->
+    <div id="all-applications-modal" class="modal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; border-radius: 10px; width: 90%; max-width: 800px; z-index: 101; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); overflow: hidden;">
+        <div style="padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; font-size: 1.2rem; color: var(--dark-color);">认证申请记录</h3>
+            <button class="modal-close-btn" style="background: none; border: none; cursor: pointer; color: var(--text-color); font-size: 1.5rem;">&times;</button>
+        </div>
+        <div id="all-applications-content" style="padding: 0; max-height: 70vh; overflow-y: auto;">
+            <!-- 申请记录将通过JavaScript动态填充 -->
+        </div>
+        <div style="padding: 15px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <button id="create-new-application" style="padding: 8px 15px; background-color: var(--primary-color); border: none; border-radius: 5px; color: white; cursor: pointer;">新建申请</button>
+            <button class="modal-close-btn" style="padding: 8px 15px; background-color: var(--light-color); border: none; border-radius: 5px; color: var(--text-color); cursor: pointer;">关闭</button>
+        </div>
+    </div>
+    
+    <!-- 消息详情模态框 -->
+    <div id="message-detail-modal" class="modal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; border-radius: 10px; width: 90%; max-width: 600px; z-index: 101; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); overflow: hidden;">
+        <div style="padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <h3 id="message-detail-title" style="margin: 0; font-size: 1.2rem; color: var(--dark-color);">消息详情</h3>
+            <button class="modal-close-btn" style="background: none; border: none; cursor: pointer; color: var(--text-color); font-size: 1.5rem;">&times;</button>
+        </div>
+        <div id="message-detail-content" style="padding: 20px; max-height: 70vh; overflow-y: auto;">
+            <!-- 消息详情将通过JavaScript动态填充 -->
+        </div>
+    </div>
+    
+    <!-- 查看所有消息模态框 -->
+    <div id="all-messages-modal" class="modal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; border-radius: 10px; width: 90%; max-width: 800px; z-index: 101; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); overflow: hidden;">
+        <div style="padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; font-size: 1.2rem; color: var(--dark-color);">消息中心</h3>
+            <button class="modal-close-btn" style="background: none; border: none; cursor: pointer; color: var(--text-color); font-size: 1.5rem;">&times;</button>
+        </div>
+        <div style="padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <select id="message-filter" style="padding: 8px; border: 1px solid var(--border-color); border-radius: 5px; font-size: 0.9rem;">
+                <option value="all">全部消息</option>
+                <option value="unread">未读消息</option>
+                <option value="system">系统公告</option>
+                <option value="verification">认证消息</option>
+            </select>
+            <button id="mark-all-read" style="padding: 8px 15px; background-color: var(--light-color); border: none; border-radius: 5px; color: var(--text-color); cursor: pointer;">标记全部已读</button>
+        </div>
+        <div id="all-messages-content" style="padding: 0; max-height: 60vh; overflow-y: auto;">
+            <!-- 消息列表将通过JavaScript动态填充 -->
+        </div>
+    </div>
+    
+    <!-- 隐私设置模态框 -->
+    <div id="privacy-modal" class="modal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; border-radius: 10px; width: 90%; max-width: 700px; z-index: 101; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); overflow: hidden;">
+        <div style="padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; font-size: 1.2rem; color: var(--dark-color);">隐私设置</h3>
+            <button class="modal-close-btn" style="background: none; border: none; cursor: pointer; color: var(--text-color); font-size: 1.5rem;">&times;</button>
+        </div>
+        <div style="padding: 20px; max-height: 70vh; overflow-y: auto;">
+            <div style="margin-bottom: 25px;">
+                <h4 style="font-size: 1.1rem; color: var(--dark-color); margin-bottom: 15px;">证书可见性</h4>
+                <div style="padding: 15px; background-color: rgba(0, 0, 0, 0.02); border-radius: 8px; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <div>
+                            <h5 style="margin: 0 0 5px 0; font-size: 1rem; color: var(--dark-color);">本科学历证书</h5>
+                            <p style="margin: 0; font-size: 0.85rem; color: var(--text-color);">北京大学 · 计算机科学与技术</p>
+                        </div>
+                        <select class="privacy-setting" data-certificate="bachelor" style="padding: 8px; border: 1px solid var(--border-color); border-radius: 5px; font-size: 0.9rem;">
+                            <option value="public">公开</option>
+                            <option value="contacts">仅认证企业可见</option>
+                            <option value="private">私密</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h5 style="margin: 0 0 5px 0; font-size: 1rem; color: var(--dark-color);">硕士学历证书</h5>
+                            <p style="margin: 0; font-size: 0.85rem; color: var(--text-color);">北京大学 · 计算机科学与技术</p>
+                        </div>
+                        <select class="privacy-setting" data-certificate="master" style="padding: 8px; border: 1px solid var(--border-color); border-radius: 5px; font-size: 0.9rem;">
+                            <option value="public">公开</option>
+                            <option value="contacts">仅认证企业可见</option>
+                            <option value="private">私密</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 25px;">
+                <h4 style="font-size: 1.1rem; color: var(--dark-color); margin-bottom: 15px;">验证授权设置</h4>
+                <div style="padding: 15px; background-color: rgba(0, 0, 0, 0.02); border-radius: 8px;">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: flex; align-items: center; font-size: 0.9rem; color: var(--dark-color); margin-bottom: 10px;">
+                            <input type="checkbox" id="auto-approve" style="margin-right: 10px;">
+                            自动批准来自已认证企业的新验证请求
+                        </label>
+                        <p style="margin: 0; font-size: 0.85rem; color: var(--text-color); margin-left: 25px;">启用后，已通过一次验证的企业将自动获得后续的验证批准</p>
+                    </div>
+                    <div>
+                        <label style="display: flex; align-items: center; font-size: 0.9rem; color: var(--dark-color); margin-bottom: 10px;">
+                            <input type="checkbox" id="notify-new-verification" style="margin-right: 10px;" checked>
+                            当收到新的验证请求时通知我
+                        </label>
+                        <p style="margin: 0; font-size: 0.85rem; color: var(--text-color); margin-left: 25px;">通过系统消息提醒您有新的验证请求需要处理</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <h4 style="font-size: 1.1rem; color: var(--dark-color); margin-bottom: 15px;">数据分享设置</h4>
+                <div style="padding: 15px; background-color: rgba(0, 0, 0, 0.02); border-radius: 8px;">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: flex; align-items: center; font-size: 0.9rem; color: var(--dark-color); margin-bottom: 10px;">
+                            <input type="checkbox" id="share-education" style="margin-right: 10px;" checked>
+                            分享学历信息
+                        </label>
+                        <p style="margin: 0; font-size: 0.85rem; color: var(--text-color); margin-left: 25px;">包括学校、专业、学位、入学和毕业时间</p>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: flex; align-items: center; font-size: 0.9rem; color: var(--dark-color); margin-bottom: 10px;">
+                            <input type="checkbox" id="share-grades" style="margin-right: 10px;">
+                            分享成绩信息
+                        </label>
+                        <p style="margin: 0; font-size: 0.85rem; color: var(--text-color); margin-left: 25px;">包括GPA、专业课程成绩和综合评价</p>
+                    </div>
+                    <div>
+                        <label style="display: flex; align-items: center; font-size: 0.9rem; color: var(--dark-color); margin-bottom: 10px;">
+                            <input type="checkbox" id="share-awards" style="margin-right: 10px;" checked>
+                            分享荣誉和奖项信息
+                        </label>
+                        <p style="margin: 0; font-size: 0.85rem; color: var(--text-color); margin-left: 25px;">包括获得的奖学金、荣誉称号和比赛获奖记录</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="padding: 15px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px;">
+            <button class="modal-close-btn" style="padding: 8px 15px; background-color: var(--light-color); border: none; border-radius: 5px; color: var(--text-color); cursor: pointer;">取消</button>
+            <button id="save-privacy" style="padding: 8px 15px; background-color: var(--primary-color); border: none; border-radius: 5px; color: white; cursor: pointer;">保存设置</button>
+        </div>
+    </div>
+    
+    <!-- 通知提示 -->
+    <div id="notification-toast" style="display: none; position: fixed; bottom: 20px; right: 20px; background-color: white; border-radius: 8px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); width: 300px; padding: 15px; border-left: 4px solid var(--primary-color); z-index: 200;">
+        <div style="display: flex; align-items: flex-start;">
+            <div id="notification-icon" style="margin-right: 10px; color: var(--primary-color);">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                    <path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
+                </svg>
+            </div>
+            <div style="flex: 1;">
+                <h4 id="notification-title" style="margin: 0 0 5px 0; font-size: 1rem; color: var(--dark-color);"></h4>
+                <p id="notification-message" style="margin: 0; font-size: 0.85rem; color: var(--text-color);"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 导航菜单交互
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // 移除所有active类
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    // 添加active类到当前点击的链接
+                    this.classList.add('active');
+                    
+                    // 更新页面标题
+                    const pageTitle = document.querySelector('.page-title');
+                    if (pageTitle) {
+                        pageTitle.textContent = this.querySelector('span').textContent;
+                    }
+                    
+                    // 特殊页面逻辑处理
+                    const targetHash = this.getAttribute('href').substring(1);
+                    if (targetHash === 'privacy') {
+                        // 显示隐私设置模态框
+                        document.getElementById('modal-backdrop').style.display = 'block';
+                        document.getElementById('privacy-modal').style.display = 'block';
+                        document.body.style.overflow = 'hidden';
+                    }
+                    
+                    // 防止页面跳转（在单页面应用中使用，此处为演示）
+                    e.preventDefault();
+                });
+            });
+            
+            // 欢迎卡片隐私设置按钮点击事件
+            const privacyButton = document.querySelector('.card[style*="linear-gradient"] button:nth-child(2)');
+            if (privacyButton) {
+                privacyButton.addEventListener('click', function() {
+                    // 显示隐私设置模态框
+                    document.getElementById('modal-backdrop').style.display = 'block';
+                    document.getElementById('privacy-modal').style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                });
+            }
+            
+            // 保存隐私设置按钮事件
+            document.getElementById('save-privacy').addEventListener('click', function() {
+                // 获取所有隐私设置
+                const privacySettings = {
+                    certificateVisibility: {
+                        bachelor: document.querySelector('.privacy-setting[data-certificate="bachelor"]').value,
+                        master: document.querySelector('.privacy-setting[data-certificate="master"]').value
+                    },
+                    verificationSettings: {
+                        autoApprove: document.getElementById('auto-approve').checked,
+                        notifyNewVerification: document.getElementById('notify-new-verification').checked
+                    },
+                    dataSharing: {
+                        shareEducation: document.getElementById('share-education').checked,
+                        shareGrades: document.getElementById('share-grades').checked,
+                        shareAwards: document.getElementById('share-awards').checked
+                    }
+                };
+                
+                // 在实际应用中，这里会将设置保存到后端
+                console.log('保存隐私设置：', privacySettings);
+                
+                // 关闭模态框
+                closeAllModals();
+                
+                // 显示通知
+                showNotification('设置已保存', '您的隐私设置已成功更新。', 'success');
+            });
+            
+            // 证书卡片悬停效果
+            const certificateCards = document.querySelectorAll('.certificate-card');
+            certificateCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.boxShadow = 'var(--shadow-md)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'var(--shadow-sm)';
+                });
+            });
+            
+            // 通知图标点击事件
+            const notificationIcon = document.querySelector('.notification-icon');
+            if (notificationIcon) {
+                notificationIcon.addEventListener('click', function() {
+                    document.getElementById('modal-backdrop').style.display = 'block';
+                    document.getElementById('all-messages-modal').style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                    
+                    // 渲染所有消息 (这个函数会在后面定义)
+                    if (typeof renderAllMessages === 'function') {
+                        renderAllMessages('all');
+                    }
+                });
+            }
+        });
+    </script>
+
+    <script>
+    // =============== 模态框控制 ===============
+    // 关闭所有模态框
+    function closeAllModals() {
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.style.display = 'none';
+        });
+        document.getElementById('modal-backdrop').style.display = 'none';
+        document.body.style.overflow = 'auto'; // 恢复背景滚动
+    }
+    
+    // 显示通知
+    function showNotification(title, message, type = 'success') {
+        const toast = document.getElementById('notification-toast');
+        const toastTitle = document.getElementById('notification-title');
+        const toastMessage = document.getElementById('notification-message');
+        const toastIcon = document.getElementById('notification-icon');
+        
+        // 设置通知内容
+        toastTitle.textContent = title;
+        toastMessage.textContent = message;
+        
+        // 设置通知类型样式
+        toast.style.borderLeftColor = type === 'success' ? 'var(--success-color)' : 
+                                      type === 'warning' ? 'var(--warning-color)' : 
+                                      type === 'error' ? 'var(--danger-color)' : 'var(--primary-color)';
+        
+        // 设置图标
+        if (type === 'success') {
+            toastIcon.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" /></svg>';
+            toastIcon.style.color = 'var(--success-color)';
+        } else if (type === 'warning') {
+            toastIcon.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M13,13H11V7H13M13,17H11V15H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg>';
+            toastIcon.style.color = 'var(--warning-color)';
+        } else if (type === 'error') {
+            toastIcon.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M13,13H11V7H13M13,17H11V15H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg>';
+            toastIcon.style.color = 'var(--danger-color)';
+        } else {
+            toastIcon.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg>';
+            toastIcon.style.color = 'var(--primary-color)';
+        }
+        
+        // 显示通知
+        toast.style.display = 'block';
+        
+        // 设置自动关闭
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // 绑定所有关闭按钮事件
+        document.querySelectorAll('.modal-close-btn').forEach(btn => {
+            btn.addEventListener('click', closeAllModals);
+        });
+        
+        // 模态框背景点击事件（点击背景关闭模态框）
+        document.getElementById('modal-backdrop').addEventListener('click', closeAllModals);
+        
+        // 防止点击模态框内容时关闭模态框
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+        
+        // 绑定ESC键关闭模态框
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeAllModals();
+            }
+        });
+    });
+    </script>
+
+    <script>
+    // 证书详情交互功能
+    document.addEventListener('DOMContentLoaded', function() {
+        // 为所有证书卡片的查看详情按钮添加点击事件
+        document.querySelectorAll('.certificate-card button').forEach(button => {
+            if (button.textContent.includes('查看详情')) {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // 获取证书类型
+                    const card = this.closest('.certificate-card');
+                    const certificateType = card.querySelector('h4').textContent;
+                    const isUndergraduate = certificateType.includes('本科');
+                    
+                    // 填充证书详情
+                    const content = document.getElementById('certificate-content');
+                    content.innerHTML = `
+                        <div style="text-align: center; margin-bottom: 25px;">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMiAxOUwxOSAxMi41MzQ1VjVMMTIgMTEuNUw1IDVWMTIuNTM0NUwxMiAxOVoiIHN0cm9rZT0iIzFBMjk4MCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvc3ZnPg==" alt="北京大学校徽" style="width: 120px; height: 120px; margin-bottom: 10px;">
+                            <h2 style="font-size: 1.8rem; color: var(--dark-color); margin-bottom: 5px;">北京大学</h2>
+                            <h3 style="font-size: 1.3rem; font-weight: 500; color: var(--text-color); margin: 0;">${certificateType}</h3>
+                        </div>
+                        
+                        <div style="background-color: rgba(0, 0, 0, 0.02); border-radius: 10px; padding: 20px; margin-bottom: 25px;">
+                            <h4 style="font-size: 1.1rem; color: var(--dark-color); margin-bottom: 15px;">学生信息</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div>
+                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">姓名</p>
+                                    <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">张力</p>
+                                </div>
+                                <div>
+                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">学号</p>
+                                    <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">${isUndergraduate ? '2018110101' : '2022210101'}</p>
+                                </div>
+                                <div>
+                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">专业</p>
+                                    <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">计算机科学与技术</p>
+                                </div>
+                                <div>
+                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">入学时间</p>
+                                    <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">${isUndergraduate ? '2018-09-01' : '2022-09-01'}</p>
+                                </div>
+                                <div>
+                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">学位</p>
+                                    <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">${isUndergraduate ? '工学学士' : '工学硕士'}</p>
+                                </div>
+                                <div>
+                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">毕业时间</p>
+                                    <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">${isUndergraduate ? '2022-06-30' : '在读'}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        ${isUndergraduate ? `
+                        <div style="background-color: rgba(0, 0, 0, 0.02); border-radius: 10px; padding: 20px; margin-bottom: 25px;">
+                            <h4 style="font-size: 1.1rem; color: var(--dark-color); margin-bottom: 15px;">学习成果</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div>
+                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">GPA</p>
+                                    <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">3.8/4.0</p>
+                                </div>
+                                <div>
+                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">荣誉</p>
+                                    <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">优秀毕业生</p>
+                                </div>
+                            </div>
+                        </div>
+                        ` : `
+                        <div style="background-color: rgba(0, 0, 0, 0.02); border-radius: 10px; padding: 20px; margin-bottom: 25px;">
+                            <h4 style="font-size: 1.1rem; color: var(--dark-color); margin-bottom: 15px;">研究方向</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div>
+                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">导师</p>
+                                    <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">李明教授</p>
+                                </div>
+                                <div>
+                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">研究方向</p>
+                                    <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">区块链技术与应用</p>
+                                </div>
+                            </div>
+                        </div>
+                        `}
+                        
+                        <div style="background-color: rgba(0, 0, 0, 0.02); border-radius: 10px; padding: 20px; margin-bottom: 25px;">
+                            <h4 style="font-size: 1.1rem; color: var(--dark-color); margin-bottom: 15px;">区块链信息</h4>
+                            <div style="margin-bottom: 10px;">
+                                <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">区块高度</p>
+                                <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">#${isUndergraduate ? '1286388' : '1286390'}</p>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">交易哈希</p>
+                                <p style="font-size: 0.9rem; font-family: monospace; word-break: break-all; color: var(--dark-color);">${isUndergraduate ? '0x7a8b9c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b' : '0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b'}</p>
+                            </div>
+                            <div>
+                                <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">上链时间</p>
+                                <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">${isUndergraduate ? '2022-07-02 14:30:22' : '2023-09-15 09:15:47'}</p>
+                            </div>
+                        </div>
+                        
+                        <div style="background-color: rgba(0, 200, 83, 0.05); border-radius: 10px; padding: 20px; display: flex; align-items: center; margin-bottom: 25px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--success-color); color: white; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                                    <path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 1rem; color: var(--dark-color); margin-bottom: 5px;">区块链验证</h4>
+                                <p style="font-size: 0.85rem; color: var(--text-color); margin: 0;">该证书已通过区块链验证，信息真实可靠。</p>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 15px; justify-content: center;">
+                            <button id="download-certificate" style="padding: 12px 25px; background-color: var(--primary-color); color: white; border: none; border-radius: 5px; font-weight: 500; cursor: pointer; display: flex; align-items: center;">
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="margin-right: 8px;">
+                                    <path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" />
+                                </svg>
+                                下载证书
+                            </button>
+                            <button id="share-certificate" style="padding: 12px 25px; background-color: white; color: var(--primary-color); border: 1px solid var(--primary-color); border-radius: 5px; font-weight: 500; cursor: pointer; display: flex; align-items: center;">
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="margin-right: 8px;">
+                                    <path d="M18,16.08C17.24,16.08 16.56,16.38 16.04,16.85L8.91,12.7C8.96,12.47 9,12.24 9,12C9,11.76 8.96,11.53 8.91,11.3L15.96,7.19C16.5,7.69 17.21,8 18,8A3,3 0 0,0 21,5A3,3 0 0,0 18,2A3,3 0 0,0 15,5C15,5.24 15.04,5.47 15.09,5.7L8.04,9.81C7.5,9.31 6.79,9 6,9A3,3 0 0,0 3,12A3,3 0 0,0 6,15C6.79,15 7.5,14.69 8.04,14.19L15.16,18.34C15.11,18.55 15.08,18.77 15.08,19C15.08,20.61 16.39,21.91 18,21.91C19.61,21.91 20.92,20.61 20.92,19A2.92,2.92 0 0,0 18,16.08Z" />
+                                </svg>
+                                分享证书
+                            </button>
+                        </div>
+                    `;
+                    
+                    // 显示模态框
+                    document.getElementById('modal-backdrop').style.display = 'block';
+                    document.getElementById('certificate-modal').style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                    
+                    // 绑定下载证书按钮事件
+                    document.getElementById('download-certificate').addEventListener('click', function() {
+                        showNotification('下载开始', `${certificateType}下载已开始，请稍等片刻。`, 'success');
+                        setTimeout(() => {
+                            showNotification('下载完成', `${certificateType}已成功下载到您的设备。`, 'success');
+                        }, 2000);
+                    });
+                    
+                    // 绑定分享证书按钮事件
+                    document.getElementById('share-certificate').addEventListener('click', function() {
+                        showNotification('分享功能', '分享功能即将上线，敬请期待。', 'info');
+                    });
+                });
+            }
+            
+            // 为下载证书按钮添加点击事件
+            else if (button.textContent.includes('下载证书')) {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const certificateType = this.closest('.certificate-card').querySelector('h4').textContent;
+                    showNotification('下载开始', `${certificateType}下载已开始，请稍等片刻。`, 'success');
+                    
+                    setTimeout(() => {
+                        showNotification('下载完成', `${certificateType}已成功下载到您的设备。`, 'success');
+                    }, 2000);
+                });
+            }
+        });
+    });
+    </script>
+
+    <script>
+    // 认证申请功能
+    document.addEventListener('DOMContentLoaded', function() {
+        // 新建申请按钮
+        const newApplicationBtn = document.querySelector('.card-title:contains("认证申请")').parentElement.querySelector('button');
+        if (newApplicationBtn) {
+            newApplicationBtn.addEventListener('click', function() {
+                document.getElementById('modal-backdrop').style.display = 'block';
+                document.getElementById('new-application-modal').style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            });
+        }
+        
+        // 提交申请按钮
+        document.getElementById('submit-application').addEventListener('click', function() {
+            const company = document.getElementById('application-company').value;
+            const certificate = document.getElementById('application-certificate').value;
+            const purpose = document.getElementById('application-purpose').value;
+            const terms = document.getElementById('application-terms').checked;
+            
+            // 验证表单
+            if (!company) {
+                showNotification('表单错误', '请选择申请企业', 'error');
+                return;
+            }
+            
+            if (!certificate) {
+                showNotification('表单错误', '请选择证书类型', 'error');
+                return;
+            }
+            
+            if (!terms) {
+                showNotification('表单错误', '请同意授权条款', 'error');
+                return;
+            }
+            
+            // 获取企业和证书显示名称
+            const companyText = document.getElementById('application-company').options[document.getElementById('application-company').selectedIndex].text;
+            const certificateText = document.getElementById('application-certificate').options[document.getElementById('application-certificate').selectedIndex].text;
+            
+            // 关闭模态框
+            closeAllModals();
+            
+            // 显示申请成功通知
+            showNotification('申请已提交', `您的${certificateText}验证申请已提交至${companyText}，请等待审核`, 'success');
+            
+            // 重置表单
+            document.getElementById('application-form').reset();
+            
+            // 刷新申请卡片，模拟添加了新申请
+            setTimeout(() => {
+                const firstApplication = document.querySelector('.card-title:contains("认证申请")').parentElement.nextElementSibling.querySelector('div[style*="border-left"]');
+                
+                if (firstApplication) {
+                    // 将第一个申请的企业名称改为当前提交的
+                    const applicationTitle = firstApplication.querySelector('span[style*="font-weight: 500"]');
+                    if (applicationTitle) {
+                        applicationTitle.textContent = `${companyText}认证申请`;
+                    }
+                    
+                    // 将申请证书类型改为当前提交的
+                    const applicationDesc = firstApplication.querySelector('p[style*="font-size: 0.8rem"]');
+                    if (applicationDesc) {
+                        applicationDesc.textContent = `申请${certificateText}验证`;
+                    }
+                    
+                    // 更新发起时间为今天
+                    const applicationDate = firstApplication.querySelector('span:contains("发起时间:")');
+                    if (applicationDate) {
+                        const today = new Date();
+                        const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                        applicationDate.textContent = `发起时间: ${formattedDate}`;
+                    }
+                }
+            }, 500);
+        });
+        
+        // 查看全部申请记录
+        const viewAllApplicationsBtn = document.querySelector('.card-footer a[href="#verification"]');
+        if (viewAllApplicationsBtn) {
+            viewAllApplicationsBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // 准备申请记录数据 (实际应用中这些数据应该从服务器获取)
+                const applications = [
+                    {
+                        company: '腾讯科技',
+                        type: '本科学历证书',
+                        date: '2023-09-15',
+                        status: '进行中',
+                        statusClass: 'badge-warning'
+                    },
+                    {
+                        company: '阿里巴巴',
+                        type: '本科学历证书',
+                        date: '2023-08-20',
+                        status: '已完成',
+                        statusClass: 'badge-success'
+                    },
+                    {
+                        company: '百度',
+                        type: '本科学历证书',
+                        date: '2023-07-10',
+                        status: '已完成',
+                        statusClass: 'badge-success'
+                    },
+                    {
+                        company: '华为技术',
+                        type: '本科学历证书',
+                        date: '2023-06-05',
+                        status: '已拒绝',
+                        statusClass: 'badge-danger',
+                        reason: '证书验证不匹配，请联系学校确认信息'
+                    },
+                    {
+                        company: '字节跳动',
+                        type: '本科学历证书',
+                        date: '2023-05-20',
+                        status: '已完成',
+                        statusClass: 'badge-success'
+                    }
+                ];
+                
+                // 渲染申请记录列表
+                const applicationsList = document.getElementById('all-applications-content');
+                
+                // 添加表头
+                let html = `
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; padding: 15px 20px; background-color: rgba(0, 0, 0, 0.02); border-bottom: 1px solid var(--border-color); font-weight: 500; color: var(--dark-color);">
+                        <div>企业</div>
+                        <div>证书类型</div>
+                        <div>申请时间</div>
+                        <div>状态</div>
+                    </div>
+                `;
+                
+                // 添加申请记录
+                applications.forEach((app, index) => {
+                    html += `
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; padding: 15px 20px; border-bottom: 1px solid var(--border-color);" data-index="${index}">
+                            <div>${app.company}</div>
+                            <div>${app.type}</div>
+                            <div>${app.date}</div>
+                            <div>
+                                <span class="badge ${app.statusClass}">${app.status}</span>
+                                ${app.reason ? `<span class="application-reason" style="margin-left: 5px; cursor: pointer; color: var(--primary-color); font-size: 0.8rem;">查看原因</span>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                applicationsList.innerHTML = html;
+                
+                // 绑定查看原因事件
+                document.querySelectorAll('.application-reason').forEach(span => {
+                    span.addEventListener('click', function() {
+                        const index = parseInt(this.closest('[data-index]').getAttribute('data-index'));
+                        const app = applications[index];
+                        
+                        if (app && app.reason) {
+                            showNotification('申请被拒绝', app.reason, 'error');
+                        }
+                    });
+                });
+                
+                // 显示模态框
+                document.getElementById('modal-backdrop').style.display = 'block';
+                document.getElementById('all-applications-modal').style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            });
+        }
+    });
+    </script>
+
+    <script>
+    // =============== Mock 数据 ===============
+    // 证书数据
+    const mockCertificates = [
+        {
+            id: 1,
+            type: "本科学历证书",
+            school: "北京大学",
+            name: "张力",
+            major: "计算机科学与技术",
+            degree: "工学学士",
+            graduationDate: "2022-06-30",
+            status: "已验证",
+            blockchainInfo: {
+                blockHeight: 1286388,
+                txHash: "0x7a8b9c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b",
+                timestamp: "2022-07-02 14:30:22"
+            },
+            additionalInfo: {
+                studentId: "2018110101",
+                enrollmentDate: "2018-09-01",
+                gpa: "3.8",
+                honors: "优秀毕业生"
+            }
+        },
+        {
+            id: 2,
+            type: "硕士学历证书",
+            school: "北京大学",
+            name: "张力",
+            major: "计算机科学与技术",
+            degree: "工学硕士",
+            graduationDate: "在读",
+            status: "已验证",
+            blockchainInfo: {
+                blockHeight: 1286390,
+                txHash: "0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b",
+                timestamp: "2023-09-15 09:15:47"
+            },
+            additionalInfo: {
+                studentId: "2022210101",
+                enrollmentDate: "2022-09-01",
+                advisor: "李明教授",
+                researchArea: "区块链技术与应用"
+            }
+        }
+    ];
+
+    // 认证申请数据
+    const mockApplications = [
+        {
+            id: 1,
+            company: "腾讯科技",
+            certificateType: "本科学历证书",
+            status: "进行中",
+            progress: 75,
+            startDate: "2023-09-15",
+            endDate: "今日",
+            purpose: "招聘背景调查"
+        },
+        {
+            id: 2,
+            company: "阿里巴巴",
+            certificateType: "本科学历证书",
+            status: "已完成",
+            progress: 100,
+            startDate: "2023-08-20",
+            endDate: "2023-08-22",
+            purpose: "实习生录用"
+        },
+        {
+            id: 3,
+            company: "百度",
+            certificateType: "本科学历证书",
+            status: "已完成",
+            progress: 100,
+            startDate: "2023-07-10",
+            endDate: "2023-07-11",
+            purpose: "校园招聘"
+        },
+        {
+            id: 4,
+            company: "华为技术",
+            certificateType: "本科学历证书",
+            status: "已拒绝",
+            progress: 100,
+            startDate: "2023-06-05",
+            endDate: "2023-06-08", 
+            purpose: "天才少年计划",
+            reason: "缺少必要的资格证明"
+        },
+        {
+            id: 5,
+            company: "字节跳动",
+            certificateType: "本科学历证书",
+            status: "已完成",
+            progress: 100,
+            startDate: "2023-05-20",
+            endDate: "2023-05-21",
+            purpose: "实习生招聘"
+        }
+    ];
+
+    // 消息数据
+    const mockMessages = [
+        {
+            id: 1,
+            type: "verification",
+            title: "认证申请状态更新",
+            content: "您向腾讯科技提交的学历认证申请已进入最终审核阶段，预计今日完成。请您耐心等待，有任何问题可联系企业人力资源部门。",
+            date: "今天 10:25",
+            status: "unread",
+            badge: "进行中",
+            badgeType: "warning",
+            detailLink: "#verification"
+        },
+        {
+            id: 2,
+            type: "blockchain",
+            title: "学历信息上链成功",
+            content: "您的硕士学历信息已成功上链，区块高度 #1286390，交易哈希 0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b。您现在可以正常使用区块链证书，并授权第三方进行验证。",
+            date: "昨天 16:42",
+            status: "read",
+            badge: "已完成",
+            badgeType: "success",
+            detailLink: "#education"
+        },
+        {
+            id: 3,
+            type: "system",
+            title: "系统公告",
+            content: "学链通系统将于本周六凌晨2:00-4:00进行系统升级维护，期间部分功能可能暂时无法使用。请您提前做好安排，我们将尽量缩短维护时间，给您带来的不便敬请谅解。",
+            date: "3天前",
+            status: "read",
+            badge: "公告",
+            badgeType: "primary"
+        },
+        {
+            id: 4,
+            type: "verification",
+            title: "新企业验证请求",
+            content: "阿里巴巴想要验证您的学历信息，验证内容包括: 姓名、学校、专业、学位、毕业时间。请在24小时内确认是否授权。",
+            date: "1周前",
+            status: "read",
+            badge: "请求",
+            badgeType: "warning",
+            detailLink: "#verification"
+        },
+        {
+            id: 5,
+            type: "system",
+            title: "账号安全提醒",
+            content: "系统检测到您的账号于2023年8月15日从非常用设备登录，登录IP为192.168.1.1，位于北京市。如非本人操作，请立即修改密码。",
+            date: "3周前",
+            status: "read",
+            badge: "安全",
+            badgeType: "danger",
+            detailLink: "#settings"
+        }
+    ];
+
+    // =============== 辅助函数 ===============
+    // 显示通知
+    function showNotification(title, message, type = 'success') {
+        const toast = document.getElementById('notification-toast');
+        const toastTitle = document.getElementById('notification-title');
+        const toastMessage = document.getElementById('notification-message');
+        const toastIcon = document.getElementById('notification-icon');
+        
+        // 设置通知内容
+        toastTitle.textContent = title;
+        toastMessage.textContent = message;
+        
+        // 设置通知类型样式
+        toast.style.borderLeftColor = type === 'success' ? 'var(--success-color)' : 
+                                      type === 'warning' ? 'var(--warning-color)' : 
+                                      type === 'error' ? 'var(--danger-color)' : 'var(--primary-color)';
+        
+        // 设置图标
+        if (type === 'success') {
+            toastIcon.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" /></svg>';
+            toastIcon.style.color = 'var(--success-color)';
+        } else if (type === 'warning') {
+            toastIcon.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M13,13H11V7H13M13,17H11V15H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg>';
+            toastIcon.style.color = 'var(--warning-color)';
+        } else if (type === 'error') {
+            toastIcon.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M13,13H11V7H13M13,17H11V15H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg>';
+            toastIcon.style.color = 'var(--danger-color)';
+        } else {
+            toastIcon.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg>';
+            toastIcon.style.color = 'var(--primary-color)';
+        }
+        
+        // 显示通知
+        toast.style.display = 'block';
+        
+        // 设置自动关闭
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+
+    // 格式化日期
+    function formatDate(date) {
+        if (!date) return '';
+        const d = new Date(date);
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    // 生成新ID
+    function generateId(arr) {
+        return arr.length > 0 ? Math.max(...arr.map(item => item.id)) + 1 : 1;
+    }
+
+    // 启动证书相关功能
+    initCertificateFeatures();
+
+    // =============== 认证申请相关功能 ===============
+    // 渲染申请记录列表项
+    function renderApplicationItem(application) {
+        const statusClass = application.status === '进行中' ? 'badge-warning' : 
+                            application.status === '已完成' ? 'badge-success' : 
+                            application.status === '已拒绝' ? 'badge-danger' : 'badge-primary';
+        
+        return `
+            <div style="border-left: 2px solid ${application.status === '进行中' ? 'var(--warning-color)' : application.status === '已完成' ? 'var(--success-color)' : 'var(--danger-color)'}; padding-left: 15px; margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span style="font-size: 0.9rem; font-weight: 500; color: var(--dark-color);">${application.company}认证申请</span>
+                    <span class="badge ${statusClass}">${application.status}</span>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-color); margin-bottom: 10px;">申请${application.certificateType}验证</p>
+                <div style="margin-bottom: 10px;">
+                    <div style="height: 6px; background-color: var(--light-color); border-radius: 3px; overflow: hidden;">
+                        <div style="height: 100%; width: ${application.progress}%; background-color: ${application.status === '进行中' ? 'var(--warning-color)' : application.status === '已完成' ? 'var(--success-color)' : 'var(--danger-color)'}"></div>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-color);">
+                    <span>发起时间: ${application.startDate}</span>
+                    <span>${application.status === '进行中' ? '预计完成: ' + application.endDate : '完成时间: ' + application.endDate}</span>
+                </div>
+                ${application.reason ? `<div style="margin-top: 10px; padding: 8px; background-color: rgba(255, 82, 82, 0.1); border-radius: 5px; font-size: 0.8rem; color: var(--danger-color);">原因: ${application.reason}</div>` : ''}
+            </div>
+        `;
+    }
+    
+    // 渲染仪表盘上的申请记录
+    function renderDashboardApplications() {
+        const applicationContainer = document.querySelector('.card-title:contains("认证申请")').parentElement.nextElementSibling;
+        applicationContainer.innerHTML = '';
+        
+        // 显示前三个申请
+        mockApplications.slice(0, 3).forEach(application => {
+            applicationContainer.innerHTML += renderApplicationItem(application);
+        });
+    }
+    
+    // 渲染所有申请记录
+    function renderAllApplications() {
+        const allApplicationsContent = document.getElementById('all-applications-content');
+        allApplicationsContent.innerHTML = '';
+        
+        if (mockApplications.length === 0) {
+            allApplicationsContent.innerHTML = `<div style="text-align: center; padding: 30px;"><p>暂无申请记录</p></div>`;
+            return;
+        }
+        
+        // 首先创建表头
+        allApplicationsContent.innerHTML = `
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; padding: 15px 20px; background-color: rgba(0, 0, 0, 0.02); border-bottom: 1px solid var(--border-color); font-weight: 500; color: var(--dark-color);">
+                <div>企业</div>
+                <div>证书类型</div>
+                <div>申请时间</div>
+                <div>状态</div>
+            </div>
+            <div id="applications-list"></div>
+        `;
+        
+        const applicationsList = document.getElementById('applications-list');
+        
+        // 按照时间倒序排序
+        const sortedApplications = [...mockApplications].sort((a, b) => {
+            return new Date(b.startDate) - new Date(a.startDate);
+        });
+        
+        // 添加申请记录
+        sortedApplications.forEach(application => {
+            const statusClass = application.status === '进行中' ? 'badge-warning' : 
+                              application.status === '已完成' ? 'badge-success' : 
+                              application.status === '已拒绝' ? 'badge-danger' : 'badge-primary';
+                              
+            applicationsList.innerHTML += `
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; padding: 15px 20px; border-bottom: 1px solid var(--border-color);" data-id="${application.id}">
+                    <div>${application.company}</div>
+                    <div>${application.certificateType}</div>
+                    <div>${application.startDate}</div>
+                    <div>
+                        <span class="badge ${statusClass}">${application.status}</span>
+                        ${application.status === '已拒绝' ? `<span class="application-reason" style="margin-left: 5px; cursor: pointer; color: var(--primary-color); font-size: 0.8rem;">查看原因</span>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+        
+        // 绑定查看原因事件
+        document.querySelectorAll('.application-reason').forEach(span => {
+            span.addEventListener('click', function() {
+                const applicationId = parseInt(this.closest('[data-id]').getAttribute('data-id'));
+                const application = mockApplications.find(app => app.id === applicationId);
+                
+                if (application && application.reason) {
+                    showNotification('申请被拒绝', application.reason, 'error');
+                }
+            });
+        });
+    }
+    
+    // 初始化申请功能
+    function initApplicationFeatures() {
+        // 渲染仪表盘上的申请记录
+        renderDashboardApplications();
+        
+        // 新建申请按钮
+        const newApplicationBtn = document.querySelector('.card-title:contains("认证申请")').parentElement.querySelector('button');
+        newApplicationBtn.addEventListener('click', function() {
+            // 重置表单
+            document.getElementById('application-form').reset();
+            
+            // 显示模态框
+            document.getElementById('modal-backdrop').style.display = 'block';
+            document.getElementById('new-application-modal').style.display = 'block';
+            document.body.style.overflow = 'hidden'; // 防止背景滚动
+        });
+        
+        // 提交申请按钮
+        document.getElementById('submit-application').addEventListener('click', function() {
+            const company = document.getElementById('application-company').value;
+            const certificate = document.getElementById('application-certificate').value;
+            const purpose = document.getElementById('application-purpose').value;
+            
+            // 简单表单验证
+            if (!company || !certificate) {
+                showNotification('提交失败', '请选择企业和证书类型', 'error');
+                return;
+            }
+            
+            // 获取企业和证书显示名称
+            const companyText = document.getElementById('application-company').options[document.getElementById('application-company').selectedIndex].text;
+            const certificateText = document.getElementById('application-certificate').options[document.getElementById('application-certificate').selectedIndex].text;
+            
+            // 创建新申请
+            const now = new Date();
+            const newApplication = {
+                id: generateId(mockApplications),
+                company: companyText,
+                certificateType: certificateText,
+                status: '进行中',
+                progress: 10,
+                startDate: formatDate(now),
+                endDate: '今日',
+                purpose: purpose || '学历验证'
+            };
+            
+            // 添加到申请列表
+            mockApplications.unshift(newApplication);
+            
+            // 关闭模态框
+            closeAllModals();
+            
+            // 更新申请记录显示
+            renderDashboardApplications();
+            
+            // 显示通知
+            showNotification('申请提交成功', `您的${certificateText}验证申请已提交至${companyText}，请等待审核`, 'success');
+        });
+        
+        // 查看全部申请记录
+        const viewAllApplicationsBtn = document.querySelector('.card-footer a[href="#verification"]');
+        viewAllApplicationsBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // 渲染申请记录
+            renderAllApplications();
+            
+            // 显示模态框
+            document.getElementById('modal-backdrop').style.display = 'block';
+            document.getElementById('all-applications-modal').style.display = 'block';
+            document.body.style.overflow = 'hidden'; // 防止背景滚动
+        });
+    }
+    
+    // 启动申请相关功能
+    initApplicationFeatures();
+    
+    // =============== 系统消息相关功能 ===============
+    // 渲染消息列表项
+    function renderMessageItem(message, inModal = false) {
+        const badgeClass = message.badgeType ? `badge-${message.badgeType}` : '';
+        const isUnread = message.status === 'unread';
+        const backgroundColor = isUnread ? 'rgba(26, 41, 128, 0.05)' : 'transparent';
+        
+        // 决定图标和背景颜色
+        let iconBackground, iconSvg;
+        if (message.type === 'verification') {
+            iconBackground = 'var(--primary-color)';
+            iconSvg = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" /></svg>';
+        } else if (message.type === 'blockchain') {
+            iconBackground = 'var(--success-color)';
+            iconSvg = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" /></svg>';
+        } else if (message.type === 'system') {
+            iconBackground = 'var(--primary-light)';
+            iconSvg = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg>';
+        }
+        
+        return `
+            <div style="border-bottom: 1px solid var(--border-color); padding: 15px 20px; display: flex; align-items: flex-start; background-color: ${backgroundColor};" data-id="${message.id}">
+                <div style="width: 40px; height: 40px; border-radius: 50%; background-color: ${iconBackground}; color: white; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">
+                    ${iconSvg}
+                </div>
+                <div style="flex: 1;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <h4 style="font-size: 0.9rem; font-weight: 500; color: var(--dark-color);">${message.title}</h4>
+                        <span style="font-size: 0.8rem; color: var(--text-color);">${message.date}</span>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 10px;">${message.content.length > 80 && !inModal ? message.content.substring(0, 80) + '...' : message.content}</p>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        ${message.badge ? `<span class="badge badge-${message.badgeType}">${message.badge}</span>` : ''}
+                        ${message.detailLink ? `<a href="#" class="view-message-detail" data-id="${message.id}" style="font-size: 0.8rem; color: var(--primary-color); text-decoration: none;">查看详情</a>` : ''}
+                        ${inModal ? `<button class="mark-read-btn" data-id="${message.id}" style="margin-left: auto; background: none; border: none; font-size: 0.8rem; color: var(--primary-color); cursor: pointer;">${isUnread ? '标记已读' : '标记未读'}</button>` : ''}
+                    </div>
+                </div>
+                ${isUnread && inModal ? `<div style="width: 8px; height: 8px; background-color: var(--primary-color); border-radius: 50%; margin-left: 10px; flex-shrink: 0;"></div>` : ''}
+            </div>
+        `;
+    }
+    
+    // 渲染仪表盘上的消息
+    function renderDashboardMessages() {
+        const messageContainer = document.querySelector('.card-title:contains("系统消息")').parentElement.nextElementSibling;
+        if (messageContainer) {
+            messageContainer.innerHTML = '';
+            
+            // 显示最新的3条消息
+            mockMessages.slice(0, 3).forEach(message => {
+                messageContainer.innerHTML += renderMessageItem(message);
+            });
+            
+            // 绑定查看详情事件
+            bindMessageDetailEvents();
+        }
+    }
+    
+    // 渲染所有消息
+    function renderAllMessages(filter = 'all') {
+        const allMessagesContent = document.getElementById('all-messages-content');
+        allMessagesContent.innerHTML = '';
+        
+        // 根据筛选条件过滤消息
+        let filteredMessages = [...mockMessages];
+        if (filter === 'unread') {
+            filteredMessages = filteredMessages.filter(msg => msg.status === 'unread');
+        } else if (filter === 'system') {
+            filteredMessages = filteredMessages.filter(msg => msg.type === 'system');
+        } else if (filter === 'verification') {
+            filteredMessages = filteredMessages.filter(msg => msg.type === 'verification');
+        }
+        
+        if (filteredMessages.length === 0) {
+            allMessagesContent.innerHTML = `<div style="text-align: center; padding: 30px;"><p>暂无消息</p></div>`;
+            return;
+        }
+        
+        // 添加消息列表
+        filteredMessages.forEach(message => {
+            allMessagesContent.innerHTML += renderMessageItem(message, true);
+        });
+        
+        // 绑定查看详情和标记已读事件
+        bindMessageDetailEvents();
+        bindMarkReadEvents();
+    }
+    
+    // 更新未读消息数量
+    function updateUnreadCount() {
+        const unreadCount = mockMessages.filter(msg => msg.status === 'unread').length;
+        const badge = document.querySelector('.notification-badge');
+        
+        if (badge) {
+            badge.textContent = unreadCount;
+            badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+        }
+    }
+    
+    // 标记消息已读/未读
+    function toggleMessageReadStatus(id, newStatus) {
+        const message = mockMessages.find(msg => msg.id === id);
+        if (message) {
+            message.status = newStatus || (message.status === 'unread' ? 'read' : 'unread');
+            updateUnreadCount();
+        }
+    }
+    
+    // 标记所有消息已读
+    function markAllMessagesAsRead() {
+        mockMessages.forEach(message => {
+            message.status = 'read';
+        });
+        updateUnreadCount();
+    }
+    
+    // 绑定查看消息详情事件
+    function bindMessageDetailEvents() {
+        document.querySelectorAll('.view-message-detail').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const messageId = parseInt(this.getAttribute('data-id'));
+                const message = mockMessages.find(msg => msg.id === messageId);
+                
+                if (message) {
+                    // 标记为已读
+                    if (message.status === 'unread') {
+                        toggleMessageReadStatus(messageId, 'read');
+                    }
+                    
+                    // 设置详情内容
+                    const detailTitle = document.getElementById('message-detail-title');
+                    const detailContent = document.getElementById('message-detail-content');
+                    
+                    detailTitle.textContent = message.title;
+                    
+                    // 根据消息类型设置不同的详情内容
+                    if (message.type === 'verification') {
+                        detailContent.innerHTML = `
+                            <div style="margin-bottom: 20px;">
+                                <p style="margin-bottom: 15px; line-height: 1.6;">${message.content}</p>
+                                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                    <span class="badge badge-${message.badgeType}">${message.badge}</span>
+                                    <span style="font-size: 0.9rem; color: var(--text-color);">${message.date}</span>
+                                </div>
+                            </div>
+                            <div style="padding: 15px; background-color: rgba(0, 0, 0, 0.02); border-radius: 8px; margin-bottom: 20px;">
+                                <h4 style="font-size: 1rem; margin-bottom: 10px; color: var(--dark-color);">申请详情</h4>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                    <div>
+                                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">申请企业</p>
+                                        <p style="font-size: 0.95rem; font-weight: 500; color: var(--dark-color);">腾讯科技</p>
+                                    </div>
+                                    <div>
+                                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">申请类型</p>
+                                        <p style="font-size: 0.95rem; font-weight: 500; color: var(--dark-color);">学历验证</p>
+                                    </div>
+                                    <div>
+                                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">发起时间</p>
+                                        <p style="font-size: 0.95rem; font-weight: 500; color: var(--dark-color);">2023-09-15</p>
+                                    </div>
+                                    <div>
+                                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">预计完成</p>
+                                        <p style="font-size: 0.95rem; font-weight: 500; color: var(--dark-color);">今日</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="text-align: center;">
+                                <a href="#verification" class="modal-close-btn" style="display: inline-block; padding: 8px 20px; background-color: var(--primary-color); color: white; text-decoration: none; border-radius: 5px;">查看申请管理</a>
+                            </div>
+                        `;
+                    } else if (message.type === 'blockchain') {
+                        detailContent.innerHTML = `
+                            <div style="margin-bottom: 20px;">
+                                <p style="margin-bottom: 15px; line-height: 1.6;">${message.content}</p>
+                                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                    <span class="badge badge-${message.badgeType}">${message.badge}</span>
+                                    <span style="font-size: 0.9rem; color: var(--text-color);">${message.date}</span>
+                                </div>
+                            </div>
+                            <div style="padding: 15px; background-color: rgba(0, 0, 0, 0.02); border-radius: 8px; margin-bottom: 20px;">
+                                <h4 style="font-size: 1rem; margin-bottom: 10px; color: var(--dark-color);">区块链信息</h4>
+                                <div style="margin-bottom: 10px;">
+                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">区块高度</p>
+                                    <p style="font-size: 0.95rem; font-weight: 500; color: var(--dark-color);">#1286390</p>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">交易哈希</p>
+                                    <p style="font-size: 0.9rem; font-family: monospace; color: var(--dark-color); overflow-wrap: break-word;">0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b</p>
+                                </div>
+                                <div>
+                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">上链时间</p>
+                                    <p style="font-size: 0.95rem; font-weight: 500; color: var(--dark-color);">2023-09-15 09:15:47</p>
+                                </div>
+                            </div>
+                            <div style="text-align: center;">
+                                <a href="#education" class="modal-close-btn" style="display: inline-block; padding: 8px 20px; background-color: var(--primary-color); color: white; text-decoration: none; border-radius: 5px; margin-right: 10px;">查看证书</a>
+                                <a href="#blockchain-explorer" style="display: inline-block; padding: 8px 20px; background-color: white; color: var(--primary-color); text-decoration: none; border-radius: 5px; border: 1px solid var(--primary-color);">区块链浏览器</a>
+                            </div>
+                        `;
+                    } else {
+                        // 系统消息
+                        detailContent.innerHTML = `
+                            <div>
+                                <p style="margin-bottom: 20px; line-height: 1.6;">${message.content}</p>
+                                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                                    <span class="badge badge-${message.badgeType}">${message.badge}</span>
+                                    <span style="font-size: 0.9rem; color: var(--text-color);">${message.date}</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    // 显示模态框
+                    document.getElementById('modal-backdrop').style.display = 'block';
+                    document.getElementById('message-detail-modal').style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                    
+                    // 更新消息列表显示
+                    renderDashboardMessages();
+                    if (document.getElementById('all-messages-modal').style.display === 'block') {
+                        renderAllMessages(document.getElementById('message-filter').value);
+                    }
+                }
+            });
+        });
+    }
+    
+    // 绑定标记已读/未读事件
+    function bindMarkReadEvents() {
+        document.querySelectorAll('.mark-read-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const messageId = parseInt(this.getAttribute('data-id'));
+                toggleMessageReadStatus(messageId);
+                
+                // 更新消息列表显示
+                renderAllMessages(document.getElementById('message-filter').value);
+                renderDashboardMessages();
+            });
+        });
+    }
+
+    // 定时生成随机消息 (模拟实时通知)
+    function setupRandomMessages() {
+        setInterval(() => {
+            // 10%的概率生成新消息
+            if (Math.random() < 0.1) {
+                const messageTypes = ['verification', 'blockchain', 'system'];
+                const randomType = messageTypes[Math.floor(Math.random() * messageTypes.length)];
+                
+                let newMessage = {
+                    id: mockMessages.length + 1,
+                    type: randomType,
+                    status: 'unread',
+                    date: '刚刚'
+                };
+                
+                // 根据消息类型设置内容
+                if (randomType === 'verification') {
+                    newMessage.title = '新验证请求';
+                    newMessage.content = '您收到来自企业的新验证请求，请尽快查看并处理。';
+                    newMessage.badge = '待处理';
+                    newMessage.badgeType = 'warning';
+                    newMessage.detailLink = '#verification';
+                } else if (randomType === 'blockchain') {
+                    newMessage.title = '区块链证书更新';
+                    newMessage.content = '您的证书信息已更新，已同步至区块链。';
+                    newMessage.badge = '已更新';
+                    newMessage.badgeType = 'success';
+                    newMessage.detailLink = '#education';
+                } else {
+                    newMessage.title = '系统更新提醒';
+                    newMessage.content = '系统功能已更新，新增了证书共享和验证功能。';
+                    newMessage.badge = '更新';
+                    newMessage.badgeType = 'primary';
+                }
+                
+                // 添加到消息列表开头
+                mockMessages.unshift(newMessage);
+                
+                // 更新界面
+                updateUnreadCount();
+                renderDashboardMessages();
+                
+                // 如果消息中心已打开，更新消息列表
+                if (document.getElementById('all-messages-modal').style.display === 'block') {
+                    renderAllMessages(document.getElementById('message-filter').value);
+                }
+                
+                // 显示通知
+                showNotification(newMessage.title, newMessage.content, newMessage.badgeType === 'warning' ? 'warning' : (newMessage.badgeType === 'success' ? 'success' : 'info'));
+            }
+        }, 60000); // 每分钟检查一次
+    }
+    
+    // 启动随机消息生成
+    setupRandomMessages();
+
+    // 消息中心功能
+    document.addEventListener('DOMContentLoaded', function() {
+        // 渲染仪表盘上的消息
+        renderDashboardMessages();
+        
+        // 更新未读消息数量
+        updateUnreadCount();
+        
+        // 标记全部已读按钮
+        const markAllReadBtn = document.querySelector('.card-title:contains("系统消息")').parentElement.querySelector('button');
+        if (markAllReadBtn) {
+            markAllReadBtn.addEventListener('click', function() {
+                markAllMessagesAsRead();
+                renderDashboardMessages();
+                showNotification('操作成功', '所有消息已标记为已读', 'success');
+            });
+        }
+        
+        // 消息中心模态框中的标记全部已读按钮
+        document.getElementById('mark-all-read').addEventListener('click', function() {
+            markAllMessagesAsRead();
+            renderAllMessages(document.getElementById('message-filter').value);
+            showNotification('操作成功', '所有消息已标记为已读', 'success');
+        });
+        
+        // 消息筛选下拉框
+        document.getElementById('message-filter').addEventListener('change', function() {
+            renderAllMessages(this.value);
+        });
+        
+        // 查看全部消息
+        const viewAllMessagesBtn = document.querySelector('.card-footer a[href="#messages"]');
+        if (viewAllMessagesBtn) {
+            viewAllMessagesBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // 重置筛选
+                document.getElementById('message-filter').value = 'all';
+                
+                // 渲染所有消息
+                renderAllMessages();
+                
+                // 显示模态框
+                document.getElementById('modal-backdrop').style.display = 'block';
+                document.getElementById('all-messages-modal').style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            });
+        }
+    });
+    
+    // 渲染消息列表项
+    function renderMessageItem(message, inModal = false) {
+        const badgeClass = message.badgeType ? `badge-${message.badgeType}` : '';
+        const isUnread = message.status === 'unread';
+        const backgroundColor = isUnread ? 'rgba(26, 41, 128, 0.05)' : 'transparent';
+        
+        // 决定图标和背景颜色
+        let iconBackground, iconSvg;
+        if (message.type === 'verification') {
+            iconBackground = 'var(--primary-color)';
+            iconSvg = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" /></svg>';
+        } else if (message.type === 'blockchain') {
+            iconBackground = 'var(--success-color)';
+            iconSvg = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" /></svg>';
+        } else if (message.type === 'system') {
+            iconBackground = 'var(--primary-light)';
+            iconSvg = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg>';
+        }
+        
+        return `
+            <div style="border-bottom: 1px solid var(--border-color); padding: 15px 20px; display: flex; align-items: flex-start; background-color: ${backgroundColor};" data-id="${message.id}">
+                <div style="width: 40px; height: 40px; border-radius: 50%; background-color: ${iconBackground}; color: white; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">
+                    ${iconSvg}
+                </div>
+                <div style="flex: 1;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <h4 style="font-size: 0.9rem; font-weight: 500; color: var(--dark-color);">${message.title}</h4>
+                        <span style="font-size: 0.8rem; color: var(--text-color);">${message.date}</span>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 10px;">${message.content.length > 80 && !inModal ? message.content.substring(0, 80) + '...' : message.content}</p>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        ${message.badge ? `<span class="badge badge-${message.badgeType}">${message.badge}</span>` : ''}
+                        ${message.detailLink ? `<a href="#" class="view-message-detail" data-id="${message.id}" style="font-size: 0.8rem; color: var(--primary-color); text-decoration: none;">查看详情</a>` : ''}
+                        ${inModal ? `<button class="mark-read-btn" data-id="${message.id}" style="margin-left: auto; background: none; border: none; font-size: 0.8rem; color: var(--primary-color); cursor: pointer;">${isUnread ? '标记已读' : '标记未读'}</button>` : ''}
+                    </div>
+                </div>
+                ${isUnread && inModal ? `<div style="width: 8px; height: 8px; background-color: var(--primary-color); border-radius: 50%; margin-left: 10px; flex-shrink: 0;"></div>` : ''}
+            </div>
+        `;
+    }
+    
+    // 渲染仪表盘上的消息
+    function renderDashboardMessages() {
+        const messageContainer = document.querySelector('.card-title:contains("系统消息")').parentElement.nextElementSibling;
+        if (messageContainer) {
+            messageContainer.innerHTML = '';
+            
+            // 显示最新的3条消息
+            mockMessages.slice(0, 3).forEach(message => {
+                messageContainer.innerHTML += renderMessageItem(message);
+            });
+            
+            // 绑定查看详情事件
+            bindMessageDetailEvents();
+        }
+    }
+    
+    // 渲染所有消息
+    function renderAllMessages(filter = 'all') {
+        const allMessagesContent = document.getElementById('all-messages-content');
+        allMessagesContent.innerHTML = '';
+        
+        // 根据筛选条件过滤消息
+        let filteredMessages = [...mockMessages];
+        if (filter === 'unread') {
+            filteredMessages = filteredMessages.filter(msg => msg.status === 'unread');
+        } else if (filter === 'system') {
+            filteredMessages = filteredMessages.filter(msg => msg.type === 'system');
+        } else if (filter === 'verification') {
+            filteredMessages = filteredMessages.filter(msg => msg.type === 'verification');
+        }
+        
+        if (filteredMessages.length === 0) {
+            allMessagesContent.innerHTML = `<div style="text-align: center; padding: 30px;"><p>暂无消息</p></div>`;
+            return;
+        }
+        
+        // 添加消息列表
+        filteredMessages.forEach(message => {
+            allMessagesContent.innerHTML += renderMessageItem(message, true);
+        });
+        
+        // 绑定查看详情和标记已读事件
+        bindMessageDetailEvents();
+        bindMarkReadEvents();
+    }
+    
+    // 更新未读消息数量
+    function updateUnreadCount() {
+        const unreadCount = mockMessages.filter(msg => msg.status === 'unread').length;
+        const badge = document.querySelector('.notification-badge');
+        
+        if (badge) {
+            badge.textContent = unreadCount;
+            badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+        }
+    }
+    
+    // 标记消息已读/未读
+    function toggleMessageReadStatus(id, newStatus) {
+        const message = mockMessages.find(msg => msg.id === id);
+        if (message) {
+            message.status = newStatus || (message.status === 'unread' ? 'read' : 'unread');
+            updateUnreadCount();
+        }
+    }
+    
+    // 标记所有消息已读
+    function markAllMessagesAsRead() {
+        mockMessages.forEach(message => {
+            message.status = 'read';
+        });
+        updateUnreadCount();
+    }
+    
+    // 绑定查看消息详情事件
+    function bindMessageDetailEvents() {
+        document.querySelectorAll('.view-message-detail').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const messageId = parseInt(this.getAttribute('data-id'));
+                const message = mockMessages.find(msg => msg.id === messageId);
+                
+                if (message) {
+                    // 标记为已读
+                    if (message.status === 'unread') {
+                        toggleMessageReadStatus(messageId, 'read');
+                    }
+                    
+                    // 设置详情内容
+                    const detailTitle = document.getElementById('message-detail-title');
+                    const detailContent = document.getElementById('message-detail-content');
+                    
+                    detailTitle.textContent = message.title;
+                    
+                    // 根据消息类型设置不同的详情内容
+                    if (message.type === 'verification') {
+                        detailContent.innerHTML = `
+                            <div style="margin-bottom: 20px;">
+                                <p style="margin-bottom: 15px; line-height: 1.6;">${message.content}</p>
+                                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                    <span class="badge badge-${message.badgeType}">${message.badge}</span>
+                                    <span style="font-size: 0.9rem; color: var(--text-color);">${message.date}</span>
+                                </div>
+                            </div>
+                            <div style="padding: 15px; background-color: rgba(0, 0, 0, 0.02); border-radius: 8px; margin-bottom: 20px;">
+                                <h4 style="font-size: 1rem; margin-bottom: 10px; color: var(--dark-color);">申请详情</h4>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                    <div>
+                                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">申请企业</p>
+                                        <p style="font-size: 0.95rem; font-weight: 500; color: var(--dark-color);">腾讯科技</p>
+                                    </div>
+                                    <div>
+                                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">申请类型</p>
+                                        <p style="font-size: 0.95rem; font-weight: 500; color: var(--dark-color);">学历验证</p>
+                                    </div>
+                                    <div>
+                                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">发起时间</p>
+                                        <p style="font-size: 0.95rem; font-weight: 500; color: var(--dark-color);">2023-09-15</p>
+                                    </div>
+                                    <div>
+                                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">预计完成</p>
+                                        <p style="font-size: 0.95rem; font-weight: 500; color: var(--dark-color);">今日</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="text-align: center;">
+                                <a href="#verification" class="modal-close-btn" style="display: inline-block; padding: 8px 20px; background-color: var(--primary-color); color: white; text-decoration: none; border-radius: 5px;">查看申请管理</a>
+                            </div>
+                        `;
+                    } else if (message.type === 'blockchain') {
+                        detailContent.innerHTML = `
+                            <div style="margin-bottom: 20px;">
+                                <p style="margin-bottom: 15px; line-height: 1.6;">${message.content}</p>
+                                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                    <span class="badge badge-${message.badgeType}">${message.badge}</span>
+                                    <span style="font-size: 0.9rem; color: var(--text-color);">${message.date}</span>
+                                </div>
+                            </div>
+                            <div style="padding: 15px; background-color: rgba(0, 0, 0, 0.02); border-radius: 8px; margin-bottom: 20px;">
+                                <h4 style="font-size: 1rem; margin-bottom: 10px; color: var(--dark-color);">区块链信息</h4>
+                                <div style="margin-bottom: 10px;">
+                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">区块高度</p>
+                                    <p style="font-size: 0.95rem; font-weight: 500; color: var(--dark-color);">#1286390</p>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">交易哈希</p>
+                                    <p style="font-size: 0.9rem; font-family: monospace; color: var(--dark-color); overflow-wrap: break-word;">0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b</p>
+                                </div>
+                                <div>
+                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">上链时间</p>
+                                    <p style="font-size: 0.95rem; font-weight: 500; color: var(--dark-color);">2023-09-15 09:15:47</p>
+                                </div>
+                            </div>
+                            <div style="text-align: center;">
+                                <a href="#education" class="modal-close-btn" style="display: inline-block; padding: 8px 20px; background-color: var(--primary-color); color: white; text-decoration: none; border-radius: 5px; margin-right: 10px;">查看证书</a>
+                                <a href="#blockchain-explorer" style="display: inline-block; padding: 8px 20px; background-color: white; color: var(--primary-color); text-decoration: none; border-radius: 5px; border: 1px solid var(--primary-color);">区块链浏览器</a>
+                            </div>
+                        `;
+                    } else {
+                        // 系统消息
+                        detailContent.innerHTML = `
+                            <div>
+                                <p style="margin-bottom: 20px; line-height: 1.6;">${message.content}</p>
+                                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                                    <span class="badge badge-${message.badgeType}">${message.badge}</span>
+                                    <span style="font-size: 0.9rem; color: var(--text-color);">${message.date}</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    // 显示模态框
+                    document.getElementById('modal-backdrop').style.display = 'block';
+                    document.getElementById('message-detail-modal').style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                    
+                    // 更新消息列表显示
+                    renderDashboardMessages();
+                    if (document.getElementById('all-messages-modal').style.display === 'block') {
+                        renderAllMessages(document.getElementById('message-filter').value);
+                    }
+                }
+            });
+        });
+    }
+    
+    // 绑定标记已读/未读事件
+    function bindMarkReadEvents() {
+        document.querySelectorAll('.mark-read-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const messageId = parseInt(this.getAttribute('data-id'));
+                toggleMessageReadStatus(messageId);
+                
+                // 更新消息列表显示
+                renderAllMessages(document.getElementById('message-filter').value);
+                renderDashboardMessages();
+            });
+        });
+    }
+
+    // 定时生成随机消息 (模拟实时通知)
+    function setupRandomMessages() {
+        setInterval(() => {
+            // 10%的概率生成新消息
+            if (Math.random() < 0.1) {
+                const messageTypes = ['verification', 'blockchain', 'system'];
+                const randomType = messageTypes[Math.floor(Math.random() * messageTypes.length)];
+                
+                let newMessage = {
+                    id: mockMessages.length + 1,
+                    type: randomType,
+                    status: 'unread',
+                    date: '刚刚'
+                };
+                
+                // 根据消息类型设置内容
+                if (randomType === 'verification') {
+                    newMessage.title = '新验证请求';
+                    newMessage.content = '您收到来自企业的新验证请求，请尽快查看并处理。';
+                    newMessage.badge = '待处理';
+                    newMessage.badgeType = 'warning';
+                    newMessage.detailLink = '#verification';
+                } else if (randomType === 'blockchain') {
+                    newMessage.title = '区块链证书更新';
+                    newMessage.content = '您的证书信息已更新，已同步至区块链。';
+                    newMessage.badge = '已更新';
+                    newMessage.badgeType = 'success';
+                    newMessage.detailLink = '#education';
+                } else {
+                    newMessage.title = '系统更新提醒';
+                    newMessage.content = '系统功能已更新，新增了证书共享和验证功能。';
+                    newMessage.badge = '更新';
+                    newMessage.badgeType = 'primary';
+                }
+                
+                // 添加到消息列表开头
+                mockMessages.unshift(newMessage);
+                
+                // 更新界面
+                updateUnreadCount();
+                renderDashboardMessages();
+                
+                // 如果消息中心已打开，更新消息列表
+                if (document.getElementById('all-messages-modal').style.display === 'block') {
+                    renderAllMessages(document.getElementById('message-filter').value);
+                }
+                
+                // 显示通知
+                showNotification(newMessage.title, newMessage.content, newMessage.badgeType === 'warning' ? 'warning' : (newMessage.badgeType === 'success' ? 'success' : 'info'));
+            }
+        }, 60000); // 每分钟检查一次
+    }
+    
+    // 启动随机消息生成
+    setupRandomMessages();
+</script>
+
+</html> 
