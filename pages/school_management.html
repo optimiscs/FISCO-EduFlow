@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高校管理平台 - 学链通</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/school_management.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 左侧导航栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 18,13.79 18,15.47C17.76,16 17.47,16.5 17.13,17Z"/>
+                    </svg>
+                </div>
+                <span class="logo-text">学链通</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#dashboard" class="nav-link active">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M13,3V9H21V3M13,21H21V11H13M3,21H11V15H3M3,13H11V3H3V13Z" />
+                        </svg>
+                        <span>仪表盘</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#students" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" />
+                        </svg>
+                        <span>学生管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#certificates" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M4,3C2.89,3 2,3.89 2,5V15A2,2 0 0,0 4,17H12V22L15,19L18,22V17H20A2,2 0 0,0 22,15V8L22,6V5A2,2 0 0,0 20,3H16V3H4M12,5L15,7L18,5V8.5L21,10L18,11.5V15L15,13L12,15V11.5L9,10L12,8.5V5M4,5H9V7H4V5M4,9H7V11H4V9M4,13H9V15H4V13Z" />
+                        </svg>
+                        <span>证书管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#uploads" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,13V17H10V13H7L12,8L17,13M19.35,10.03C18.67,6.59 15.64,4 12,4C9.11,4 6.6,5.64 5.35,8.03C2.34,8.36 0,10.9 0,14A6,6 0 0,0 6,20H19A5,5 0 0,0 24,15C24,12.36 21.95,10.22 19.35,10.03Z" />
+                        </svg>
+                        <span>批量上传</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#audit" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" />
+                        </svg>
+                        <span>审核管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#data" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3,4H7V8H3V4M9,5V7H21V5H9M3,10H7V14H3V10M9,11V13H21V11H9M3,16H7V20H3V16M9,17V19H21V17H9" />
+                        </svg>
+                        <span>数据报表</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#settings" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" />
+                        </svg>
+                        <span>系统设置</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-footer" style="padding: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1); margin-top: auto;">
+                <a href="#logout" class="nav-link" style="justify-content: flex-start; padding: 10px 0;">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z" />
+                    </svg>
+                    <span>退出登录</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <!-- 顶部状态栏 -->
+            <div class="topbar">
+                <h1 class="page-title">高校管理平台</h1>
+                <div class="user-menu">
+                    <div class="notification-icon">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                            <path d="M21,19V20H3V19L5,17V11C5,7.9 7.03,5.17 10,4.29C10,4.19 10,4.1 10,4A2,2 0 0,1 12,2A2,2 0 0,1 14,4C14,4.1 14,4.19 14,4.29C16.97,5.17 19,7.9 19,11V17L21,19M14,21A2,2 0 0,1 12,23A2,2 0 0,1 10,21M19.75,3.19L18.33,4.61C20.04,6.3 21,8.6 21,11H23C23,8.07 21.84,5.25 19.75,3.19M1,11H3C3,8.6 3.96,6.3 5.67,4.61L4.25,3.19C2.16,5.25 1,8.07 1,11Z"/>
+                        </svg>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            <span>北</span>
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">北京大学</div>
+                            <div class="user-role">高校管理员</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 内容区域 -->
+            <div class="content-wrapper">
+                <!-- 统计概览区域 -->
+                <div class="row">
+                    <div class="col col-3">
+                        <div class="stat-card" style="background: linear-gradient(45deg, #3A7BD5, #00d2ff);">
+                            <div class="stat-title">总学生数量</div>
+                            <div class="stat-value">24,856</div>
+                            <div class="stat-description">较上月增长 2.4%</div>
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24" width="80" height="80" fill="currentColor">
+                                    <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col col-3">
+                        <div class="stat-card" style="background: linear-gradient(45deg, #11998e, #38ef7d);">
+                            <div class="stat-title">已上链学历数</div>
+                            <div class="stat-value">18,634</div>
+                            <div class="stat-description">覆盖率 74.9%</div>
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24" width="80" height="80" fill="currentColor">
+                                    <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col col-3">
+                        <div class="stat-card" style="background: linear-gradient(45deg, #FF512F, #F09819);">
+                            <div class="stat-title">待审核申请</div>
+                            <div class="stat-value">126</div>
+                            <div class="stat-description">较上周增加 15 个</div>
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24" width="80" height="80" fill="currentColor">
+                                    <path d="M13,2.03V2.05L13,4.05C17.39,4.59 20.5,8.58 19.96,12.97C19.5,16.61 16.64,19.5 13,19.93V21.93C18.5,21.38 22.5,16.5 21.95,11C21.5,6.25 17.73,2.5 13,2.03M11,2.06C9.05,2.25 7.19,3 5.67,4.26L7.1,5.74C8.22,4.84 9.57,4.26 11,4.06V2.06M4.26,5.67C3,7.19 2.25,9.04 2.05,11H4.05C4.24,9.58 4.8,8.23 5.69,7.1L4.26,5.67M2.06,13C2.26,14.96 3.03,16.81 4.27,18.33L5.69,16.9C4.81,15.77 4.24,14.42 4.06,13H2.06M7.1,18.37L5.67,19.74C7.18,21 9.04,21.79 11,22V20C9.58,19.82 8.23,19.25 7.1,18.37M16.82,15.19L12.71,11.08C13.12,10.04 12.89,8.82 12.03,7.97C11.13,7.06 9.78,6.88 8.69,7.38L10.63,9.32L9.38,10.57L7.38,8.57C6.88,9.67 7.05,11.02 7.97,11.94C8.83,12.79 10.05,13.02 11.08,12.6L15.19,16.7C15.29,16.8 15.45,16.86 15.61,16.86C15.77,16.86 15.93,16.8 16.03,16.7L16.82,15.9C17.02,15.71 17.02,15.4 16.82,15.19Z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col col-3">
+                        <div class="stat-card" style="background: linear-gradient(45deg, #ED213A, #93291E);">
+                            <div class="stat-title">异常记录</div>
+                            <div class="stat-value">8</div>
+                            <div class="stat-description">需要处理</div>
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24" width="80" height="80" fill="currentColor">
+                                    <path d="M11,15H13V17H11V15M11,7H13V13H11V7M12,2C6.47,2 2,6.5 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20Z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 功能区域 -->
+                <div class="row">
+                    <div class="col col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">学历信息管理</h2>
+                                <div class="card-tools">
+                                    <button class="btn btn-primary">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 5px; vertical-align: text-top;">
+                                            <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                                        </svg>
+                                        添加学生
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <!-- 选项卡导航 -->
+                                <div class="tabs">
+                                    <div class="tab active" data-tab="all">全部学生</div>
+                                    <div class="tab" data-tab="pending">待审核</div>
+                                    <div class="tab" data-tab="verified">已上链</div>
+                                    <div class="tab" data-tab="rejected">拒绝记录</div>
+                                    <div class="tab" data-tab="exception">异常情况</div>
+                                </div>
+                                
+                                <!-- 批量上传区域 -->
+                                <div class="row">
+                                    <div class="col col-6">
+                                        <div class="upload-zone" id="dropZone">
+                                            <svg class="upload-icon" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M14,13V17H10V13H7L12,8L17,13M19.35,10.03C18.67,6.59 15.64,4 12,4C9.11,4 6.6,5.64 5.35,8.03C2.34,8.36 0,10.9 0,14A6,6 0 0,0 6,20H19A5,5 0 0,0 24,15C24,12.36 21.95,10.22 19.35,10.03Z" />
+                                            </svg>
+                                            <p class="upload-text">拖拽Excel文件到此处或点击上传</p>
+                                            <p class="upload-hint">支持 .xlsx, .xls 格式，单次最多导入1000条记录</p>
+                                            <button class="btn btn-primary">选择文件</button>
+                                        </div>
+                                    </div>
+                                    <div class="col col-6">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h3 class="card-title">批量操作</h3>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="form-group">
+                                                    <label class="form-label">选择操作类型</label>
+                                                    <select class="form-select">
+                                                        <option value="">请选择操作类型</option>
+                                                        <option value="upload">批量上链</option>
+                                                        <option value="verify">批量审核</option>
+                                                        <option value="export">导出数据</option>
+                                                        <option value="notify">批量通知</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="form-label">操作说明</label>
+                                                    <textarea class="form-control" rows="3" placeholder="请输入本次操作的说明信息（选填）"></textarea>
+                                                </div>
+                                                <div style="display: flex; justify-content: flex-end;">
+                                                    <button class="btn btn-primary">执行操作</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 筛选和搜索区域 -->
+                                <div class="filter-section">
+                                    <div class="search-box">
+                                        <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                            <path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" />
+                                        </svg>
+                                        <input type="text" class="search-input" placeholder="搜索学生姓名、学号或专业">
+                                    </div>
+                                    <select class="filter-dropdown">
+                                        <option value="">所有学院</option>
+                                        <option value="computer">计算机学院</option>
+                                        <option value="management">管理学院</option>
+                                        <option value="science">理学院</option>
+                                        <option value="humanities">人文学院</option>
+                                    </select>
+                                    <select class="filter-dropdown">
+                                        <option value="">所有年级</option>
+                                        <option value="2023">2023级</option>
+                                        <option value="2022">2022级</option>
+                                        <option value="2021">2021级</option>
+                                        <option value="2020">2020级</option>
+                                    </select>
+                                    <select class="filter-dropdown">
+                                        <option value="">所有状态</option>
+                                        <option value="verified">已上链</option>
+                                        <option value="pending">待审核</option>
+                                        <option value="rejected">已拒绝</option>
+                                        <option value="exception">异常</option>
+                                    </select>
+                                    <button class="btn btn-outline">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 5px; vertical-align: text-top;">
+                                            <path d="M14,12V19.88C14.04,20.18 13.94,20.5 13.71,20.71C13.32,21.1 12.69,21.1 12.3,20.71L10.29,18.7C10.06,18.47 9.96,18.16 10,17.87V12H9.97L4.21,4.62C3.87,4.19 3.95,3.56 4.38,3.22C4.57,3.08 4.78,3 5,3H19C19.22,3 19.43,3.08 19.62,3.22C20.05,3.56 20.13,4.19 19.79,4.62L14.03,12H14Z" />
+                                        </svg>
+                                        筛选
+                                    </button>
+                                </div>
+                                
+                                <!-- 数据表格区域 -->
+                                <div class="table-container">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th width="40">
+                                                    <div class="checkbox-container">
+                                                        <input type="checkbox" id="select-all" class="checkbox-input">
+                                                        <label for="select-all" class="checkbox-label"></label>
+                                                    </div>
+                                                </th>
+                                                <th>学号</th>
+                                                <th>姓名</th>
+                                                <th>学院</th>
+                                                <th>专业</th>
+                                                <th>学历</th>
+                                                <th>入学年份</th>
+                                                <th>毕业年份</th>
+                                                <th>状态</th>
+                                                <th>上链时间</th>
+                                                <th>操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <div class="checkbox-container">
+                                                        <input type="checkbox" id="select-1" class="checkbox-input">
+                                                        <label for="select-1" class="checkbox-label"></label>
+                                                    </div>
+                                                </td>
+                                                <td>2020010001</td>
+                                                <td>张三</td>
+                                                <td>计算机学院</td>
+                                                <td>计算机科学与技术</td>
+                                                <td>本科</td>
+                                                <td>2020</td>
+                                                <td>2024</td>
+                                                <td><span class="badge badge-success">已上链</span></td>
+                                                <td>2024-05-20 14:30</td>
+                                                <td>
+                                                    <button class="action-btn view" title="查看详情">
+                                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                                            <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z" />
+                                                        </svg>
+                                                    </button>
+                                                    <button class="action-btn edit" title="编辑信息">
+                                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                                            <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
+                                                        </svg>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="checkbox-container">
+                                                        <input type="checkbox" id="select-2" class="checkbox-input">
+                                                        <label for="select-2" class="checkbox-label"></label>
+                                                    </div>
+                                                </td>
+                                                <td>2020010002</td>
+                                                <td>李四</td>
+                                                <td>计算机学院</td>
+                                                <td>软件工程</td>
+                                                <td>本科</td>
+                                                <td>2020</td>
+                                                <td>2024</td>
+                                                <td><span class="badge badge-warning">待审核</span></td>
+                                                <td>-</td>
+                                                <td>
+                                                    <button class="action-btn view" title="查看详情">
+                                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                                            <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z" />
+                                                        </svg>
+                                                    </button>
+                                                    <button class="action-btn edit" title="编辑信息">
+                                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                                            <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
+                                                        </svg>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="checkbox-container">
+                                                        <input type="checkbox" id="select-3" class="checkbox-input">
+                                                        <label for="select-3" class="checkbox-label"></label>
+                                                    </div>
+                                                </td>
+                                                <td>2021010003</td>
+                                                <td>王五</td>
+                                                <td>管理学院</td>
+                                                <td>工商管理</td>
+                                                <td>本科</td>
+                                                <td>2021</td>
+                                                <td>2025</td>
+                                                <td><span class="badge badge-success">已上链</span></td>
+                                                <td>2024-05-15 09:45</td>
+                                                <td>
+                                                    <button class="action-btn view" title="查看详情">
+                                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                                            <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z" />
+                                                        </svg>
+                                                    </button>
+                                                    <button class="action-btn edit" title="编辑信息">
+                                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                                            <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
+                                                        </svg>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="checkbox-container">
+                                                        <input type="checkbox" id="select-4" class="checkbox-input">
+                                                        <label for="select-4" class="checkbox-label"></label>
+                                                    </div>
+                                                </td>
+                                                <td>2020010004</td>
+                                                <td>赵六</td>
+                                                <td>理学院</td>
+                                                <td>数学与应用数学</td>
+                                                <td>本科</td>
+                                                <td>2020</td>
+                                                <td>2024</td>
+                                                <td><span class="badge badge-danger">异常</span></td>
+                                                <td>-</td>
+                                                <td>
+                                                    <button class="action-btn view" title="查看详情">
+                                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                                            <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z" />
+                                                        </svg>
+                                                    </button>
+                                                    <button class="action-btn edit" title="编辑信息">
+                                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                                            <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
+                                                        </svg>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="checkbox-container">
+                                                        <input type="checkbox" id="select-5" class="checkbox-input">
+                                                        <label for="select-5" class="checkbox-label"></label>
+                                                    </div>
+                                                </td>
+                                                <td>2022010005</td>
+                                                <td>孙七</td>
+                                                <td>人文学院</td>
+                                                <td>汉语言文学</td>
+                                                <td>本科</td>
+                                                <td>2022</td>
+                                                <td>2026</td>
+                                                <td><span class="badge badge-primary">待上链</span></td>
+                                                <td>-</td>
+                                                <td>
+                                                    <button class="action-btn view" title="查看详情">
+                                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                                            <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z" />
+                                                        </svg>
+                                                    </button>
+                                                    <button class="action-btn edit" title="编辑信息">
+                                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                                            <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
+                                                        </svg>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <!-- 分页区域 -->
+                                <div class="pagination">
+                                    <div class="pagination-item disabled">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                            <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
+                                        </svg>
+                                    </div>
+                                    <div class="pagination-item active">1</div>
+                                    <div class="pagination-item">2</div>
+                                    <div class="pagination-item">3</div>
+                                    <div class="pagination-item">4</div>
+                                    <div class="pagination-item">5</div>
+                                    <div class="pagination-item">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                            <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 详情查看弹窗 -->
+    <div class="modal" id="studentDetailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">学生详情</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">学号</label>
+                            <p>2020010001</p>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">姓名</label>
+                            <p>张三</p>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">性别</label>
+                            <p>男</p>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">身份证号</label>
+                            <p>1**************1</p>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">学院</label>
+                            <p>计算机学院</p>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">专业</label>
+                            <p>计算机科学与技术</p>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">学历</label>
+                            <p>本科</p>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">学制</label>
+                            <p>4年</p>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">入学年份</label>
+                            <p>2020年</p>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">毕业年份</label>
+                            <p>2024年</p>
+                        </div>
+                    </div>
+                    <div class="col col-12">
+                        <div class="form-group">
+                            <label class="form-label">区块链信息</label>
+                            <div style="background: rgba(0,0,0,0.03); padding: 10px; border-radius: 5px; font-family: monospace; overflow-x: auto;">
+                                <p>交易哈希: 0x7d6a5743a5ef92d8e44f5a8d17d31cb94c7ede087c10e2f498dfccfe8de4babd</p>
+                                <p>区块高度: 1,246,783</p>
+                                <p>确认时间: 2024-05-20 14:30:22</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 15px;">操作历史</h3>
+                    <div class="table-container" style="max-height: 200px; overflow-y: auto;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>操作类型</th>
+                                    <th>操作人</th>
+                                    <th>时间</th>
+                                    <th>说明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>信息录入</td>
+                                    <td>admin</td>
+                                    <td>2023-09-01 10:15</td>
+                                    <td>初始信息录入</td>
+                                </tr>
+                                <tr>
+                                    <td>信息修改</td>
+                                    <td>王老师</td>
+                                    <td>2024-04-15 09:30</td>
+                                    <td>更新专业信息</td>
+                                </tr>
+                                <tr>
+                                    <td>上链操作</td>
+                                    <td>李主任</td>
+                                    <td>2024-05-20 14:30</td>
+                                    <td>学历信息上链</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">关闭</button>
+                <button class="btn btn-primary">下载证书</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 编辑信息弹窗 -->
+    <div class="modal" id="editStudentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">编辑学生信息</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">学号</label>
+                            <input type="text" class="form-control" value="2020010001" readonly>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">姓名</label>
+                            <input type="text" class="form-control" value="张三">
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">性别</label>
+                            <select class="form-select">
+                                <option value="male" selected>男</option>
+                                <option value="female">女</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">身份证号</label>
+                            <input type="text" class="form-control" value="1**************1">
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">学院</label>
+                            <select class="form-select">
+                                <option value="computer" selected>计算机学院</option>
+                                <option value="management">管理学院</option>
+                                <option value="science">理学院</option>
+                                <option value="humanities">人文学院</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">专业</label>
+                            <select class="form-select">
+                                <option value="cs" selected>计算机科学与技术</option>
+                                <option value="se">软件工程</option>
+                                <option value="ai">人工智能</option>
+                                <option value="is">信息安全</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">学历</label>
+                            <select class="form-select">
+                                <option value="bachelor" selected>本科</option>
+                                <option value="master">硕士</option>
+                                <option value="doctor">博士</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">学制</label>
+                            <select class="form-select">
+                                <option value="4" selected>4年</option>
+                                <option value="3">3年</option>
+                                <option value="2">2年</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">入学年份</label>
+                            <input type="number" class="form-control" value="2020">
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">毕业年份</label>
+                            <input type="number" class="form-control" value="2024">
+                        </div>
+                    </div>
+                    <div class="col col-12">
+                        <div class="form-group">
+                            <label class="form-label">备注</label>
+                            <textarea class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">取消</button>
+                <button class="btn btn-primary">保存更改</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 批量上链确认弹窗 -->
+    <div class="modal" id="bulkActionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">批量上链确认</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <p>您选择了 <strong>32</strong> 名学生的信息进行批量上链操作。请确认以下信息：</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">操作类型</label>
+                    <p>批量上链操作 - 将所选学生信息上传至区块链</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">审核人</label>
+                    <p>当前登录账号: 北京大学 - 高校管理员</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">操作说明</label>
+                    <textarea class="form-control" rows="3" placeholder="请输入本次操作的说明信息（选填）"></textarea>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="confirm-check" class="checkbox-input">
+                        <label for="confirm-check" class="checkbox-label">我确认已检查所选学生信息，数据准确无误</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">取消</button>
+                <button class="btn btn-primary">确认上链</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript 增强功能 -->
+    <script src="../scripts/school_management.js"></script>
+</body>
+</html> 

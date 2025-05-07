@@ -963,8 +963,14 @@
         document.addEventListener('DOMContentLoaded', function() {
             // 导航菜单交互
             const navLinks = document.querySelectorAll('.nav-link');
+            
+            // 初始化显示当前活动页面
+            showActivePage();
+            
             navLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
                     // 移除所有active类
                     navLinks.forEach(l => l.classList.remove('active'));
                     // 添加active类到当前点击的链接
@@ -976,24 +982,88 @@
                         pageTitle.textContent = this.querySelector('span').textContent;
                     }
                     
-                    // 特殊页面逻辑处理
+                    // 获取目标页面ID
                     const targetHash = this.getAttribute('href').substring(1);
-                    if (targetHash === 'privacy') {
-                        // 显示隐私设置模态框
-                        document.getElementById('modal-backdrop').style.display = 'block';
-                        document.getElementById('privacy-modal').style.display = 'block';
-                        document.body.style.overflow = 'hidden';
-                    }
                     
-                    // 防止页面跳转（在单页面应用中使用，此处为演示）
-                    e.preventDefault();
+                    // 显示对应页面内容
+                    showActivePage(targetHash);
                 });
             });
             
-            // 欢迎卡片隐私设置按钮点击事件
-            const privacyButton = document.querySelector('.card[style*="linear-gradient"] button:nth-child(2)');
-            if (privacyButton) {
-                privacyButton.addEventListener('click', function() {
+            // 显示当前活动页面内容
+            function showActivePage(pageId = 'dashboard') {
+                // 隐藏所有页面内容
+                document.querySelectorAll('.page-content').forEach(content => {
+                    content.style.display = 'none';
+                });
+                
+                // 显示当前页面内容
+                const currentPage = document.getElementById(`${pageId}-content`);
+                if (currentPage) {
+                    currentPage.style.display = 'block';
+                } else if (pageId === 'dashboard') {
+                    // 如果是仪表盘，默认显示当前内容
+                    document.querySelector('.content-wrapper').style.display = 'block';
+                } else if (pageId === 'privacy') {
+                    // 显示隐私设置模态框
+                    document.getElementById('modal-backdrop').style.display = 'block';
+                    document.getElementById('privacy-modal').style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                } else if (pageId === 'messages') {
+                    // 显示消息中心
+                    document.getElementById('modal-backdrop').style.display = 'block';
+                    document.getElementById('all-messages-modal').style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                    
+                    // 渲染消息
+                    if (typeof renderAllMessages === 'function') {
+                        renderAllMessages('all');
+                    }
+                } else if (pageId === 'verification') {
+                    // 显示认证申请页面
+                    document.getElementById('modal-backdrop').style.display = 'block';
+                    document.getElementById('all-applications-modal').style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                    
+                    // 渲染申请记录
+                    if (typeof renderAllApplications === 'function') {
+                        renderAllApplications();
+                    }
+                } else if (pageId === 'logout') {
+                    // 退出登录确认
+                    if (confirm('确定要退出登录吗？')) {
+                        showNotification('退出成功', '您已成功退出登录，即将返回登录页面', 'info');
+                        
+                        // 模拟跳转到登录页面
+                        setTimeout(() => {
+                            window.location.href = '#login';
+                        }, 2000);
+                    } else {
+                        // 恢复之前的活动菜单
+                        const activeLink = document.querySelector('.nav-link.active');
+                        if (activeLink && activeLink.getAttribute('href') !== '#logout') {
+                            // 保持当前选中
+                        } else {
+                            // 恢复到仪表盘
+                            document.querySelector('.nav-link[href="#dashboard"]').classList.add('active');
+                            document.querySelector('.page-title').textContent = '学生主页';
+                        }
+                    }
+                }
+            }
+            
+            // 欢迎卡片按钮点击事件
+            const viewCertificateBtn = document.querySelector('.card[style*="linear-gradient"] button:first-child');
+            if (viewCertificateBtn) {
+                viewCertificateBtn.addEventListener('click', function() {
+                    // 切换到学历证书页面
+                    document.querySelector('.nav-link[href="#education"]').click();
+                });
+            }
+            
+            const privacySettingBtn = document.querySelector('.card[style*="linear-gradient"] button:nth-child(2)');
+            if (privacySettingBtn) {
+                privacySettingBtn.addEventListener('click', function() {
                     // 显示隐私设置模态框
                     document.getElementById('modal-backdrop').style.display = 'block';
                     document.getElementById('privacy-modal').style.display = 'block';
@@ -1001,50 +1071,15 @@
                 });
             }
             
-            // 保存隐私设置按钮事件
-            document.getElementById('save-privacy').addEventListener('click', function() {
-                // 获取所有隐私设置
-                const privacySettings = {
-                    certificateVisibility: {
-                        bachelor: document.querySelector('.privacy-setting[data-certificate="bachelor"]').value,
-                        master: document.querySelector('.privacy-setting[data-certificate="master"]').value
-                    },
-                    verificationSettings: {
-                        autoApprove: document.getElementById('auto-approve').checked,
-                        notifyNewVerification: document.getElementById('notify-new-verification').checked
-                    },
-                    dataSharing: {
-                        shareEducation: document.getElementById('share-education').checked,
-                        shareGrades: document.getElementById('share-grades').checked,
-                        shareAwards: document.getElementById('share-awards').checked
-                    }
-                };
-                
-                // 在实际应用中，这里会将设置保存到后端
-                console.log('保存隐私设置：', privacySettings);
-                
-                // 关闭模态框
-                closeAllModals();
-                
-                // 显示通知
-                showNotification('设置已保存', '您的隐私设置已成功更新。', 'success');
-            });
-            
-            // 证书卡片悬停效果
-            const certificateCards = document.querySelectorAll('.certificate-card');
-            certificateCards.forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-5px)';
-                    this.style.boxShadow = 'var(--shadow-md)';
+            // 用户菜单交互
+            const userProfile = document.querySelector('.user-profile');
+            if (userProfile) {
+                userProfile.addEventListener('click', function() {
+                    document.querySelector('.nav-link[href="#settings"]').click();
                 });
-                
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0)';
-                    this.style.boxShadow = 'var(--shadow-sm)';
-                });
-            });
+            }
             
-            // 通知图标点击事件
+            // 通知图标交互
             const notificationIcon = document.querySelector('.notification-icon');
             if (notificationIcon) {
                 notificationIcon.addEventListener('click', function() {
@@ -1134,1093 +1169,104 @@
                 closeAllModals();
             }
         });
-    });
-    </script>
-
-    <script>
-    // 证书详情交互功能
-    document.addEventListener('DOMContentLoaded', function() {
-        // 为所有证书卡片的查看详情按钮添加点击事件
-        document.querySelectorAll('.certificate-card button').forEach(button => {
-            if (button.textContent.includes('查看详情')) {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    // 获取证书类型
-                    const card = this.closest('.certificate-card');
-                    const certificateType = card.querySelector('h4').textContent;
-                    const isUndergraduate = certificateType.includes('本科');
-                    
-                    // 填充证书详情
-                    const content = document.getElementById('certificate-content');
-                    content.innerHTML = `
-                        <div style="text-align: center; margin-bottom: 25px;">
-                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMiAxOUwxOSAxMi41MzQ1VjVMMTIgMTEuNUw1IDVWMTIuNTM0NUwxMiAxOVoiIHN0cm9rZT0iIzFBMjk4MCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvc3ZnPg==" alt="北京大学校徽" style="width: 120px; height: 120px; margin-bottom: 10px;">
-                            <h2 style="font-size: 1.8rem; color: var(--dark-color); margin-bottom: 5px;">北京大学</h2>
-                            <h3 style="font-size: 1.3rem; font-weight: 500; color: var(--text-color); margin: 0;">${certificateType}</h3>
-                        </div>
-                        
-                        <div style="background-color: rgba(0, 0, 0, 0.02); border-radius: 10px; padding: 20px; margin-bottom: 25px;">
-                            <h4 style="font-size: 1.1rem; color: var(--dark-color); margin-bottom: 15px;">学生信息</h4>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                                <div>
-                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">姓名</p>
-                                    <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">张力</p>
-                                </div>
-                                <div>
-                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">学号</p>
-                                    <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">${isUndergraduate ? '2018110101' : '2022210101'}</p>
-                                </div>
-                                <div>
-                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">专业</p>
-                                    <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">计算机科学与技术</p>
-                                </div>
-                                <div>
-                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">入学时间</p>
-                                    <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">${isUndergraduate ? '2018-09-01' : '2022-09-01'}</p>
-                                </div>
-                                <div>
-                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">学位</p>
-                                    <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">${isUndergraduate ? '工学学士' : '工学硕士'}</p>
-                                </div>
-                                <div>
-                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">毕业时间</p>
-                                    <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">${isUndergraduate ? '2022-06-30' : '在读'}</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        ${isUndergraduate ? `
-                        <div style="background-color: rgba(0, 0, 0, 0.02); border-radius: 10px; padding: 20px; margin-bottom: 25px;">
-                            <h4 style="font-size: 1.1rem; color: var(--dark-color); margin-bottom: 15px;">学习成果</h4>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                                <div>
-                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">GPA</p>
-                                    <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">3.8/4.0</p>
-                                </div>
-                                <div>
-                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">荣誉</p>
-                                    <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">优秀毕业生</p>
-                                </div>
-                            </div>
-                        </div>
-                        ` : `
-                        <div style="background-color: rgba(0, 0, 0, 0.02); border-radius: 10px; padding: 20px; margin-bottom: 25px;">
-                            <h4 style="font-size: 1.1rem; color: var(--dark-color); margin-bottom: 15px;">研究方向</h4>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                                <div>
-                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">导师</p>
-                                    <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">李明教授</p>
-                                </div>
-                                <div>
-                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">研究方向</p>
-                                    <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">区块链技术与应用</p>
-                                </div>
-                            </div>
-                        </div>
-                        `}
-                        
-                        <div style="background-color: rgba(0, 0, 0, 0.02); border-radius: 10px; padding: 20px; margin-bottom: 25px;">
-                            <h4 style="font-size: 1.1rem; color: var(--dark-color); margin-bottom: 15px;">区块链信息</h4>
-                            <div style="margin-bottom: 10px;">
-                                <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">区块高度</p>
-                                <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">#${isUndergraduate ? '1286388' : '1286390'}</p>
-                            </div>
-                            <div style="margin-bottom: 10px;">
-                                <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">交易哈希</p>
-                                <p style="font-size: 0.9rem; font-family: monospace; word-break: break-all; color: var(--dark-color);">${isUndergraduate ? '0x7a8b9c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b' : '0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b'}</p>
-                            </div>
-                            <div>
-                                <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">上链时间</p>
-                                <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">${isUndergraduate ? '2022-07-02 14:30:22' : '2023-09-15 09:15:47'}</p>
-                            </div>
-                        </div>
-                        
-                        <div style="background-color: rgba(0, 200, 83, 0.05); border-radius: 10px; padding: 20px; display: flex; align-items: center; margin-bottom: 25px;">
-                            <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--success-color); color: white; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
-                                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-                                    <path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h4 style="font-size: 1rem; color: var(--dark-color); margin-bottom: 5px;">区块链验证</h4>
-                                <p style="font-size: 0.85rem; color: var(--text-color); margin: 0;">该证书已通过区块链验证，信息真实可靠。</p>
-                            </div>
-                        </div>
-                        
-                        <div style="display: flex; gap: 15px; justify-content: center;">
-                            <button id="download-certificate" style="padding: 12px 25px; background-color: var(--primary-color); color: white; border: none; border-radius: 5px; font-weight: 500; cursor: pointer; display: flex; align-items: center;">
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="margin-right: 8px;">
-                                    <path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" />
-                                </svg>
-                                下载证书
-                            </button>
-                            <button id="share-certificate" style="padding: 12px 25px; background-color: white; color: var(--primary-color); border: 1px solid var(--primary-color); border-radius: 5px; font-weight: 500; cursor: pointer; display: flex; align-items: center;">
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="margin-right: 8px;">
-                                    <path d="M18,16.08C17.24,16.08 16.56,16.38 16.04,16.85L8.91,12.7C8.96,12.47 9,12.24 9,12C9,11.76 8.96,11.53 8.91,11.3L15.96,7.19C16.5,7.69 17.21,8 18,8A3,3 0 0,0 21,5A3,3 0 0,0 18,2A3,3 0 0,0 15,5C15,5.24 15.04,5.47 15.09,5.7L8.04,9.81C7.5,9.31 6.79,9 6,9A3,3 0 0,0 3,12A3,3 0 0,0 6,15C6.79,15 7.5,14.69 8.04,14.19L15.16,18.34C15.11,18.55 15.08,18.77 15.08,19C15.08,20.61 16.39,21.91 18,21.91C19.61,21.91 20.92,20.61 20.92,19A2.92,2.92 0 0,0 18,16.08Z" />
-                                </svg>
-                                分享证书
-                            </button>
-                        </div>
-                    `;
-                    
-                    // 显示模态框
-                    document.getElementById('modal-backdrop').style.display = 'block';
-                    document.getElementById('certificate-modal').style.display = 'block';
-                    document.body.style.overflow = 'hidden';
-                    
-                    // 绑定下载证书按钮事件
-                    document.getElementById('download-certificate').addEventListener('click', function() {
-                        showNotification('下载开始', `${certificateType}下载已开始，请稍等片刻。`, 'success');
-                        setTimeout(() => {
-                            showNotification('下载完成', `${certificateType}已成功下载到您的设备。`, 'success');
-                        }, 2000);
-                    });
-                    
-                    // 绑定分享证书按钮事件
-                    document.getElementById('share-certificate').addEventListener('click', function() {
-                        showNotification('分享功能', '分享功能即将上线，敬请期待。', 'info');
-                    });
-                });
-            }
-            
-            // 为下载证书按钮添加点击事件
-            else if (button.textContent.includes('下载证书')) {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    const certificateType = this.closest('.certificate-card').querySelector('h4').textContent;
-                    showNotification('下载开始', `${certificateType}下载已开始，请稍等片刻。`, 'success');
-                    
-                    setTimeout(() => {
-                        showNotification('下载完成', `${certificateType}已成功下载到您的设备。`, 'success');
-                    }, 2000);
-                });
-            }
-        });
-    });
-    </script>
-
-    <script>
-    // 认证申请功能
-    document.addEventListener('DOMContentLoaded', function() {
-        // 新建申请按钮
-        const newApplicationBtn = document.querySelector('.card-title:contains("认证申请")').parentElement.querySelector('button');
-        if (newApplicationBtn) {
-            newApplicationBtn.addEventListener('click', function() {
-                document.getElementById('modal-backdrop').style.display = 'block';
-                document.getElementById('new-application-modal').style.display = 'block';
-                document.body.style.overflow = 'hidden';
-            });
-        }
         
-        // 提交申请按钮
-        document.getElementById('submit-application').addEventListener('click', function() {
-            const company = document.getElementById('application-company').value;
-            const certificate = document.getElementById('application-certificate').value;
-            const purpose = document.getElementById('application-purpose').value;
-            const terms = document.getElementById('application-terms').checked;
-            
-            // 验证表单
-            if (!company) {
-                showNotification('表单错误', '请选择申请企业', 'error');
-                return;
-            }
-            
-            if (!certificate) {
-                showNotification('表单错误', '请选择证书类型', 'error');
-                return;
-            }
-            
-            if (!terms) {
-                showNotification('表单错误', '请同意授权条款', 'error');
-                return;
-            }
-            
-            // 获取企业和证书显示名称
-            const companyText = document.getElementById('application-company').options[document.getElementById('application-company').selectedIndex].text;
-            const certificateText = document.getElementById('application-certificate').options[document.getElementById('application-certificate').selectedIndex].text;
-            
-            // 关闭模态框
-            closeAllModals();
-            
-            // 显示申请成功通知
-            showNotification('申请已提交', `您的${certificateText}验证申请已提交至${companyText}，请等待审核`, 'success');
-            
-            // 重置表单
-            document.getElementById('application-form').reset();
-            
-            // 刷新申请卡片，模拟添加了新申请
-            setTimeout(() => {
-                const firstApplication = document.querySelector('.card-title:contains("认证申请")').parentElement.nextElementSibling.querySelector('div[style*="border-left"]');
-                
-                if (firstApplication) {
-                    // 将第一个申请的企业名称改为当前提交的
-                    const applicationTitle = firstApplication.querySelector('span[style*="font-weight: 500"]');
-                    if (applicationTitle) {
-                        applicationTitle.textContent = `${companyText}认证申请`;
-                    }
-                    
-                    // 将申请证书类型改为当前提交的
-                    const applicationDesc = firstApplication.querySelector('p[style*="font-size: 0.8rem"]');
-                    if (applicationDesc) {
-                        applicationDesc.textContent = `申请${certificateText}验证`;
-                    }
-                    
-                    // 更新发起时间为今天
-                    const applicationDate = firstApplication.querySelector('span:contains("发起时间:")');
-                    if (applicationDate) {
-                        const today = new Date();
-                        const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-                        applicationDate.textContent = `发起时间: ${formattedDate}`;
-                    }
-                }
-            }, 500);
-        });
-        
-        // 查看全部申请记录
-        const viewAllApplicationsBtn = document.querySelector('.card-footer a[href="#verification"]');
-        if (viewAllApplicationsBtn) {
-            viewAllApplicationsBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                // 准备申请记录数据 (实际应用中这些数据应该从服务器获取)
-                const applications = [
-                    {
-                        company: '腾讯科技',
-                        type: '本科学历证书',
-                        date: '2023-09-15',
-                        status: '进行中',
-                        statusClass: 'badge-warning'
-                    },
-                    {
-                        company: '阿里巴巴',
-                        type: '本科学历证书',
-                        date: '2023-08-20',
-                        status: '已完成',
-                        statusClass: 'badge-success'
-                    },
-                    {
-                        company: '百度',
-                        type: '本科学历证书',
-                        date: '2023-07-10',
-                        status: '已完成',
-                        statusClass: 'badge-success'
-                    },
-                    {
-                        company: '华为技术',
-                        type: '本科学历证书',
-                        date: '2023-06-05',
-                        status: '已拒绝',
-                        statusClass: 'badge-danger',
-                        reason: '证书验证不匹配，请联系学校确认信息'
-                    },
-                    {
-                        company: '字节跳动',
-                        type: '本科学历证书',
-                        date: '2023-05-20',
-                        status: '已完成',
-                        statusClass: 'badge-success'
-                    }
-                ];
-                
-                // 渲染申请记录列表
-                const applicationsList = document.getElementById('all-applications-content');
-                
-                // 添加表头
-                let html = `
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; padding: 15px 20px; background-color: rgba(0, 0, 0, 0.02); border-bottom: 1px solid var(--border-color); font-weight: 500; color: var(--dark-color);">
-                        <div>企业</div>
-                        <div>证书类型</div>
-                        <div>申请时间</div>
-                        <div>状态</div>
-                    </div>
-                `;
-                
-                // 添加申请记录
-                applications.forEach((app, index) => {
-                    html += `
-                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; padding: 15px 20px; border-bottom: 1px solid var(--border-color);" data-index="${index}">
-                            <div>${app.company}</div>
-                            <div>${app.type}</div>
-                            <div>${app.date}</div>
-                            <div>
-                                <span class="badge ${app.statusClass}">${app.status}</span>
-                                ${app.reason ? `<span class="application-reason" style="margin-left: 5px; cursor: pointer; color: var(--primary-color); font-size: 0.8rem;">查看原因</span>` : ''}
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                applicationsList.innerHTML = html;
-                
-                // 绑定查看原因事件
-                document.querySelectorAll('.application-reason').forEach(span => {
-                    span.addEventListener('click', function() {
-                        const index = parseInt(this.closest('[data-index]').getAttribute('data-index'));
-                        const app = applications[index];
-                        
-                        if (app && app.reason) {
-                            showNotification('申请被拒绝', app.reason, 'error');
-                        }
-                    });
-                });
-                
-                // 显示模态框
-                document.getElementById('modal-backdrop').style.display = 'block';
-                document.getElementById('all-applications-modal').style.display = 'block';
-                document.body.style.overflow = 'hidden';
-            });
-        }
+        // 初始化消息中心
+        initMessageCenter();
     });
-    </script>
-
-    <script>
-    // =============== Mock 数据 ===============
-    // 证书数据
-    const mockCertificates = [
+    
+    // =============== 消息中心 ===============
+    // 初始化消息中心功能
+    function initMessageCenter() {
+        // 模拟消息数据 (实际应用中应该从API获取)
+        const messages = [
         {
             id: 1,
-            type: "本科学历证书",
-            school: "北京大学",
-            name: "张力",
-            major: "计算机科学与技术",
-            degree: "工学学士",
-            graduationDate: "2022-06-30",
-            status: "已验证",
-            blockchainInfo: {
-                blockHeight: 1286388,
-                txHash: "0x7a8b9c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b",
-                timestamp: "2022-07-02 14:30:22"
-            },
-            additionalInfo: {
-                studentId: "2018110101",
-                enrollmentDate: "2018-09-01",
-                gpa: "3.8",
-                honors: "优秀毕业生"
-            }
+                type: 'verification',
+                title: '认证申请状态更新',
+                content: '您向腾讯科技提交的学历认证申请已进入最终审核阶段，预计今日完成。',
+                date: '今天 10:25',
+                status: 'unread',
+                badge: '进行中',
+                badgeType: 'warning',
+                link: '#verification'
         },
         {
             id: 2,
-            type: "硕士学历证书",
-            school: "北京大学",
-            name: "张力",
-            major: "计算机科学与技术",
-            degree: "工学硕士",
-            graduationDate: "在读",
-            status: "已验证",
-            blockchainInfo: {
-                blockHeight: 1286390,
-                txHash: "0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b",
-                timestamp: "2023-09-15 09:15:47"
-            },
-            additionalInfo: {
-                studentId: "2022210101",
-                enrollmentDate: "2022-09-01",
-                advisor: "李明教授",
-                researchArea: "区块链技术与应用"
-            }
-        }
-    ];
-
-    // 认证申请数据
-    const mockApplications = [
-        {
-            id: 1,
-            company: "腾讯科技",
-            certificateType: "本科学历证书",
-            status: "进行中",
-            progress: 75,
-            startDate: "2023-09-15",
-            endDate: "今日",
-            purpose: "招聘背景调查"
-        },
-        {
-            id: 2,
-            company: "阿里巴巴",
-            certificateType: "本科学历证书",
-            status: "已完成",
-            progress: 100,
-            startDate: "2023-08-20",
-            endDate: "2023-08-22",
-            purpose: "实习生录用"
+                type: 'blockchain',
+                title: '学历信息上链成功',
+                content: '您的硕士学历信息已成功上链，区块高度 #1286390，交易哈希 0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b。您现在可以正常使用区块链证书，并授权第三方进行验证。',
+                date: '昨天 16:42',
+                status: 'read',
+                badge: '已完成',
+                badgeType: 'success',
+                link: '#education'
         },
         {
             id: 3,
-            company: "百度",
-            certificateType: "本科学历证书",
-            status: "已完成",
-            progress: 100,
-            startDate: "2023-07-10",
-            endDate: "2023-07-11",
-            purpose: "校园招聘"
-        },
-        {
-            id: 4,
-            company: "华为技术",
-            certificateType: "本科学历证书",
-            status: "已拒绝",
-            progress: 100,
-            startDate: "2023-06-05",
-            endDate: "2023-06-08", 
-            purpose: "天才少年计划",
-            reason: "缺少必要的资格证明"
-        },
-        {
-            id: 5,
-            company: "字节跳动",
-            certificateType: "本科学历证书",
-            status: "已完成",
-            progress: 100,
-            startDate: "2023-05-20",
-            endDate: "2023-05-21",
-            purpose: "实习生招聘"
-        }
-    ];
-
-    // 消息数据
-    const mockMessages = [
-        {
-            id: 1,
-            type: "verification",
-            title: "认证申请状态更新",
-            content: "您向腾讯科技提交的学历认证申请已进入最终审核阶段，预计今日完成。请您耐心等待，有任何问题可联系企业人力资源部门。",
-            date: "今天 10:25",
-            status: "unread",
-            badge: "进行中",
-            badgeType: "warning",
-            detailLink: "#verification"
-        },
-        {
-            id: 2,
-            type: "blockchain",
-            title: "学历信息上链成功",
-            content: "您的硕士学历信息已成功上链，区块高度 #1286390，交易哈希 0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b。您现在可以正常使用区块链证书，并授权第三方进行验证。",
-            date: "昨天 16:42",
-            status: "read",
-            badge: "已完成",
-            badgeType: "success",
-            detailLink: "#education"
-        },
-        {
-            id: 3,
-            type: "system",
-            title: "系统公告",
-            content: "学链通系统将于本周六凌晨2:00-4:00进行系统升级维护，期间部分功能可能暂时无法使用。请您提前做好安排，我们将尽量缩短维护时间，给您带来的不便敬请谅解。",
-            date: "3天前",
-            status: "read",
-            badge: "公告",
-            badgeType: "primary"
-        },
-        {
-            id: 4,
-            type: "verification",
-            title: "新企业验证请求",
-            content: "阿里巴巴想要验证您的学历信息，验证内容包括: 姓名、学校、专业、学位、毕业时间。请在24小时内确认是否授权。",
-            date: "1周前",
-            status: "read",
-            badge: "请求",
-            badgeType: "warning",
-            detailLink: "#verification"
-        },
-        {
-            id: 5,
-            type: "system",
-            title: "账号安全提醒",
-            content: "系统检测到您的账号于2023年8月15日从非常用设备登录，登录IP为192.168.1.1，位于北京市。如非本人操作，请立即修改密码。",
-            date: "3周前",
-            status: "read",
-            badge: "安全",
-            badgeType: "danger",
-            detailLink: "#settings"
-        }
-    ];
-
-    // =============== 辅助函数 ===============
-    // 显示通知
-    function showNotification(title, message, type = 'success') {
-        const toast = document.getElementById('notification-toast');
-        const toastTitle = document.getElementById('notification-title');
-        const toastMessage = document.getElementById('notification-message');
-        const toastIcon = document.getElementById('notification-icon');
-        
-        // 设置通知内容
-        toastTitle.textContent = title;
-        toastMessage.textContent = message;
-        
-        // 设置通知类型样式
-        toast.style.borderLeftColor = type === 'success' ? 'var(--success-color)' : 
-                                      type === 'warning' ? 'var(--warning-color)' : 
-                                      type === 'error' ? 'var(--danger-color)' : 'var(--primary-color)';
-        
-        // 设置图标
-        if (type === 'success') {
-            toastIcon.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" /></svg>';
-            toastIcon.style.color = 'var(--success-color)';
-        } else if (type === 'warning') {
-            toastIcon.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M13,13H11V7H13M13,17H11V15H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg>';
-            toastIcon.style.color = 'var(--warning-color)';
-        } else if (type === 'error') {
-            toastIcon.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M13,13H11V7H13M13,17H11V15H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg>';
-            toastIcon.style.color = 'var(--danger-color)';
-        } else {
-            toastIcon.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg>';
-            toastIcon.style.color = 'var(--primary-color)';
-        }
-        
-        // 显示通知
-        toast.style.display = 'block';
-        
-        // 设置自动关闭
-        setTimeout(() => {
-            toast.style.display = 'none';
-        }, 3000);
-    }
-
-    // 格式化日期
-    function formatDate(date) {
-        if (!date) return '';
-        const d = new Date(date);
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    }
-
-    // 生成新ID
-    function generateId(arr) {
-        return arr.length > 0 ? Math.max(...arr.map(item => item.id)) + 1 : 1;
-    }
-
-    // 启动证书相关功能
-    initCertificateFeatures();
-
-    // =============== 认证申请相关功能 ===============
-    // 渲染申请记录列表项
-    function renderApplicationItem(application) {
-        const statusClass = application.status === '进行中' ? 'badge-warning' : 
-                            application.status === '已完成' ? 'badge-success' : 
-                            application.status === '已拒绝' ? 'badge-danger' : 'badge-primary';
-        
-        return `
-            <div style="border-left: 2px solid ${application.status === '进行中' ? 'var(--warning-color)' : application.status === '已完成' ? 'var(--success-color)' : 'var(--danger-color)'}; padding-left: 15px; margin-bottom: 15px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                    <span style="font-size: 0.9rem; font-weight: 500; color: var(--dark-color);">${application.company}认证申请</span>
-                    <span class="badge ${statusClass}">${application.status}</span>
-                </div>
-                <p style="font-size: 0.8rem; color: var(--text-color); margin-bottom: 10px;">申请${application.certificateType}验证</p>
-                <div style="margin-bottom: 10px;">
-                    <div style="height: 6px; background-color: var(--light-color); border-radius: 3px; overflow: hidden;">
-                        <div style="height: 100%; width: ${application.progress}%; background-color: ${application.status === '进行中' ? 'var(--warning-color)' : application.status === '已完成' ? 'var(--success-color)' : 'var(--danger-color)'}"></div>
-                    </div>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-color);">
-                    <span>发起时间: ${application.startDate}</span>
-                    <span>${application.status === '进行中' ? '预计完成: ' + application.endDate : '完成时间: ' + application.endDate}</span>
-                </div>
-                ${application.reason ? `<div style="margin-top: 10px; padding: 8px; background-color: rgba(255, 82, 82, 0.1); border-radius: 5px; font-size: 0.8rem; color: var(--danger-color);">原因: ${application.reason}</div>` : ''}
-            </div>
-        `;
-    }
-    
-    // 渲染仪表盘上的申请记录
-    function renderDashboardApplications() {
-        const applicationContainer = document.querySelector('.card-title:contains("认证申请")').parentElement.nextElementSibling;
-        applicationContainer.innerHTML = '';
-        
-        // 显示前三个申请
-        mockApplications.slice(0, 3).forEach(application => {
-            applicationContainer.innerHTML += renderApplicationItem(application);
-        });
-    }
-    
-    // 渲染所有申请记录
-    function renderAllApplications() {
-        const allApplicationsContent = document.getElementById('all-applications-content');
-        allApplicationsContent.innerHTML = '';
-        
-        if (mockApplications.length === 0) {
-            allApplicationsContent.innerHTML = `<div style="text-align: center; padding: 30px;"><p>暂无申请记录</p></div>`;
-            return;
-        }
-        
-        // 首先创建表头
-        allApplicationsContent.innerHTML = `
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; padding: 15px 20px; background-color: rgba(0, 0, 0, 0.02); border-bottom: 1px solid var(--border-color); font-weight: 500; color: var(--dark-color);">
-                <div>企业</div>
-                <div>证书类型</div>
-                <div>申请时间</div>
-                <div>状态</div>
-            </div>
-            <div id="applications-list"></div>
-        `;
-        
-        const applicationsList = document.getElementById('applications-list');
-        
-        // 按照时间倒序排序
-        const sortedApplications = [...mockApplications].sort((a, b) => {
-            return new Date(b.startDate) - new Date(a.startDate);
-        });
-        
-        // 添加申请记录
-        sortedApplications.forEach(application => {
-            const statusClass = application.status === '进行中' ? 'badge-warning' : 
-                              application.status === '已完成' ? 'badge-success' : 
-                              application.status === '已拒绝' ? 'badge-danger' : 'badge-primary';
-                              
-            applicationsList.innerHTML += `
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; padding: 15px 20px; border-bottom: 1px solid var(--border-color);" data-id="${application.id}">
-                    <div>${application.company}</div>
-                    <div>${application.certificateType}</div>
-                    <div>${application.startDate}</div>
-                    <div>
-                        <span class="badge ${statusClass}">${application.status}</span>
-                        ${application.status === '已拒绝' ? `<span class="application-reason" style="margin-left: 5px; cursor: pointer; color: var(--primary-color); font-size: 0.8rem;">查看原因</span>` : ''}
-                    </div>
-                </div>
-            `;
-        });
-        
-        // 绑定查看原因事件
-        document.querySelectorAll('.application-reason').forEach(span => {
-            span.addEventListener('click', function() {
-                const applicationId = parseInt(this.closest('[data-id]').getAttribute('data-id'));
-                const application = mockApplications.find(app => app.id === applicationId);
-                
-                if (application && application.reason) {
-                    showNotification('申请被拒绝', application.reason, 'error');
-                }
-            });
-        });
-    }
-    
-    // 初始化申请功能
-    function initApplicationFeatures() {
-        // 渲染仪表盘上的申请记录
-        renderDashboardApplications();
-        
-        // 新建申请按钮
-        const newApplicationBtn = document.querySelector('.card-title:contains("认证申请")').parentElement.querySelector('button');
-        newApplicationBtn.addEventListener('click', function() {
-            // 重置表单
-            document.getElementById('application-form').reset();
-            
-            // 显示模态框
-            document.getElementById('modal-backdrop').style.display = 'block';
-            document.getElementById('new-application-modal').style.display = 'block';
-            document.body.style.overflow = 'hidden'; // 防止背景滚动
-        });
-        
-        // 提交申请按钮
-        document.getElementById('submit-application').addEventListener('click', function() {
-            const company = document.getElementById('application-company').value;
-            const certificate = document.getElementById('application-certificate').value;
-            const purpose = document.getElementById('application-purpose').value;
-            
-            // 简单表单验证
-            if (!company || !certificate) {
-                showNotification('提交失败', '请选择企业和证书类型', 'error');
-                return;
+                type: 'system',
+                title: '系统公告',
+                content: '学链通系统将于本周六凌晨2:00-4:00进行系统升级维护，期间部分功能可能暂时无法使用。请您提前做好安排，我们将尽量缩短维护时间，给您带来的不便敬请谅解。',
+                date: '3天前',
+                status: 'read',
+                badge: '公告',
+                badgeType: 'primary'
             }
-            
-            // 获取企业和证书显示名称
-            const companyText = document.getElementById('application-company').options[document.getElementById('application-company').selectedIndex].text;
-            const certificateText = document.getElementById('application-certificate').options[document.getElementById('application-certificate').selectedIndex].text;
-            
-            // 创建新申请
-            const now = new Date();
-            const newApplication = {
-                id: generateId(mockApplications),
-                company: companyText,
-                certificateType: certificateText,
-                status: '进行中',
-                progress: 10,
-                startDate: formatDate(now),
-                endDate: '今日',
-                purpose: purpose || '学历验证'
-            };
-            
-            // 添加到申请列表
-            mockApplications.unshift(newApplication);
-            
-            // 关闭模态框
-            closeAllModals();
-            
-            // 更新申请记录显示
-            renderDashboardApplications();
-            
-            // 显示通知
-            showNotification('申请提交成功', `您的${certificateText}验证申请已提交至${companyText}，请等待审核`, 'success');
-        });
+        ];
         
-        // 查看全部申请记录
-        const viewAllApplicationsBtn = document.querySelector('.card-footer a[href="#verification"]');
-        viewAllApplicationsBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // 渲染申请记录
-            renderAllApplications();
-            
-            // 显示模态框
-            document.getElementById('modal-backdrop').style.display = 'block';
-            document.getElementById('all-applications-modal').style.display = 'block';
-            document.body.style.overflow = 'hidden'; // 防止背景滚动
-        });
-    }
-    
-    // 启动申请相关功能
-    initApplicationFeatures();
-    
-    // =============== 系统消息相关功能 ===============
-    // 渲染消息列表项
-    function renderMessageItem(message, inModal = false) {
-        const badgeClass = message.badgeType ? `badge-${message.badgeType}` : '';
-        const isUnread = message.status === 'unread';
-        const backgroundColor = isUnread ? 'rgba(26, 41, 128, 0.05)' : 'transparent';
-        
-        // 决定图标和背景颜色
-        let iconBackground, iconSvg;
-        if (message.type === 'verification') {
-            iconBackground = 'var(--primary-color)';
-            iconSvg = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" /></svg>';
-        } else if (message.type === 'blockchain') {
-            iconBackground = 'var(--success-color)';
-            iconSvg = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" /></svg>';
-        } else if (message.type === 'system') {
-            iconBackground = 'var(--primary-light)';
-            iconSvg = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg>';
-        }
-        
-        return `
-            <div style="border-bottom: 1px solid var(--border-color); padding: 15px 20px; display: flex; align-items: flex-start; background-color: ${backgroundColor};" data-id="${message.id}">
-                <div style="width: 40px; height: 40px; border-radius: 50%; background-color: ${iconBackground}; color: white; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">
-                    ${iconSvg}
-                </div>
-                <div style="flex: 1;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <h4 style="font-size: 0.9rem; font-weight: 500; color: var(--dark-color);">${message.title}</h4>
-                        <span style="font-size: 0.8rem; color: var(--text-color);">${message.date}</span>
-                    </div>
-                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 10px;">${message.content.length > 80 && !inModal ? message.content.substring(0, 80) + '...' : message.content}</p>
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        ${message.badge ? `<span class="badge badge-${message.badgeType}">${message.badge}</span>` : ''}
-                        ${message.detailLink ? `<a href="#" class="view-message-detail" data-id="${message.id}" style="font-size: 0.8rem; color: var(--primary-color); text-decoration: none;">查看详情</a>` : ''}
-                        ${inModal ? `<button class="mark-read-btn" data-id="${message.id}" style="margin-left: auto; background: none; border: none; font-size: 0.8rem; color: var(--primary-color); cursor: pointer;">${isUnread ? '标记已读' : '标记未读'}</button>` : ''}
-                    </div>
-                </div>
-                ${isUnread && inModal ? `<div style="width: 8px; height: 8px; background-color: var(--primary-color); border-radius: 50%; margin-left: 10px; flex-shrink: 0;"></div>` : ''}
-            </div>
-        `;
-    }
-    
-    // 渲染仪表盘上的消息
-    function renderDashboardMessages() {
-        const messageContainer = document.querySelector('.card-title:contains("系统消息")').parentElement.nextElementSibling;
-        if (messageContainer) {
-            messageContainer.innerHTML = '';
-            
-            // 显示最新的3条消息
-            mockMessages.slice(0, 3).forEach(message => {
-                messageContainer.innerHTML += renderMessageItem(message);
-            });
-            
-            // 绑定查看详情事件
-            bindMessageDetailEvents();
-        }
-    }
-    
-    // 渲染所有消息
-    function renderAllMessages(filter = 'all') {
-        const allMessagesContent = document.getElementById('all-messages-content');
-        allMessagesContent.innerHTML = '';
-        
-        // 根据筛选条件过滤消息
-        let filteredMessages = [...mockMessages];
-        if (filter === 'unread') {
-            filteredMessages = filteredMessages.filter(msg => msg.status === 'unread');
-        } else if (filter === 'system') {
-            filteredMessages = filteredMessages.filter(msg => msg.type === 'system');
-        } else if (filter === 'verification') {
-            filteredMessages = filteredMessages.filter(msg => msg.type === 'verification');
-        }
-        
-        if (filteredMessages.length === 0) {
-            allMessagesContent.innerHTML = `<div style="text-align: center; padding: 30px;"><p>暂无消息</p></div>`;
-            return;
-        }
-        
-        // 添加消息列表
-        filteredMessages.forEach(message => {
-            allMessagesContent.innerHTML += renderMessageItem(message, true);
-        });
-        
-        // 绑定查看详情和标记已读事件
-        bindMessageDetailEvents();
-        bindMarkReadEvents();
-    }
-    
-    // 更新未读消息数量
-    function updateUnreadCount() {
-        const unreadCount = mockMessages.filter(msg => msg.status === 'unread').length;
-        const badge = document.querySelector('.notification-badge');
-        
-        if (badge) {
-            badge.textContent = unreadCount;
-            badge.style.display = unreadCount > 0 ? 'flex' : 'none';
-        }
-    }
-    
-    // 标记消息已读/未读
-    function toggleMessageReadStatus(id, newStatus) {
-        const message = mockMessages.find(msg => msg.id === id);
-        if (message) {
-            message.status = newStatus || (message.status === 'unread' ? 'read' : 'unread');
-            updateUnreadCount();
-        }
-    }
-    
-    // 标记所有消息已读
-    function markAllMessagesAsRead() {
-        mockMessages.forEach(message => {
-            message.status = 'read';
-        });
-        updateUnreadCount();
-    }
-    
-    // 绑定查看消息详情事件
-    function bindMessageDetailEvents() {
-        document.querySelectorAll('.view-message-detail').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const messageId = parseInt(this.getAttribute('data-id'));
-                const message = mockMessages.find(msg => msg.id === messageId);
-                
-                if (message) {
-                    // 标记为已读
-                    if (message.status === 'unread') {
-                        toggleMessageReadStatus(messageId, 'read');
-                    }
-                    
-                    // 设置详情内容
-                    const detailTitle = document.getElementById('message-detail-title');
-                    const detailContent = document.getElementById('message-detail-content');
-                    
-                    detailTitle.textContent = message.title;
-                    
-                    // 根据消息类型设置不同的详情内容
-                    if (message.type === 'verification') {
-                        detailContent.innerHTML = `
-                            <div style="margin-bottom: 20px;">
-                                <p style="margin-bottom: 15px; line-height: 1.6;">${message.content}</p>
-                                <div style="display: flex; gap: 10px; margin-top: 10px;">
-                                    <span class="badge badge-${message.badgeType}">${message.badge}</span>
-                                    <span style="font-size: 0.9rem; color: var(--text-color);">${message.date}</span>
-                                </div>
-                            </div>
-                            <div style="padding: 15px; background-color: rgba(0, 0, 0, 0.02); border-radius: 8px; margin-bottom: 20px;">
-                                <h4 style="font-size: 1rem; margin-bottom: 10px; color: var(--dark-color);">申请详情</h4>
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                                    <div>
-                                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">申请企业</p>
-                                        <p style="font-size: 0.95rem; font-weight: 500; color: var(--dark-color);">腾讯科技</p>
-                                    </div>
-                                    <div>
-                                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">申请类型</p>
-                                        <p style="font-size: 0.95rem; font-weight: 500; color: var(--dark-color);">学历验证</p>
-                                    </div>
-                                    <div>
-                                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">发起时间</p>
-                                        <p style="font-size: 0.95rem; font-weight: 500; color: var(--dark-color);">2023-09-15</p>
-                                    </div>
-                                    <div>
-                                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">预计完成</p>
-                                        <p style="font-size: 0.95rem; font-weight: 500; color: var(--dark-color);">今日</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div style="text-align: center;">
-                                <a href="#verification" class="modal-close-btn" style="display: inline-block; padding: 8px 20px; background-color: var(--primary-color); color: white; text-decoration: none; border-radius: 5px;">查看申请管理</a>
-                            </div>
-                        `;
-                    } else if (message.type === 'blockchain') {
-                        detailContent.innerHTML = `
-                            <div style="margin-bottom: 20px;">
-                                <p style="margin-bottom: 15px; line-height: 1.6;">${message.content}</p>
-                                <div style="display: flex; gap: 10px; margin-top: 10px;">
-                                    <span class="badge badge-${message.badgeType}">${message.badge}</span>
-                                    <span style="font-size: 0.9rem; color: var(--text-color);">${message.date}</span>
-                                </div>
-                            </div>
-                            <div style="padding: 15px; background-color: rgba(0, 0, 0, 0.02); border-radius: 8px; margin-bottom: 20px;">
-                                <h4 style="font-size: 1rem; margin-bottom: 10px; color: var(--dark-color);">区块链信息</h4>
-                                <div style="margin-bottom: 10px;">
-                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">区块高度</p>
-                                    <p style="font-size: 0.95rem; font-weight: 500; color: var(--dark-color);">#1286390</p>
-                                </div>
-                                <div style="margin-bottom: 10px;">
-                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">交易哈希</p>
-                                    <p style="font-size: 0.9rem; font-family: monospace; color: var(--dark-color); overflow-wrap: break-word;">0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b</p>
-                                </div>
-                                <div>
-                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">上链时间</p>
-                                    <p style="font-size: 0.95rem; font-weight: 500; color: var(--dark-color);">2023-09-15 09:15:47</p>
-                                </div>
-                            </div>
-                            <div style="text-align: center;">
-                                <a href="#education" class="modal-close-btn" style="display: inline-block; padding: 8px 20px; background-color: var(--primary-color); color: white; text-decoration: none; border-radius: 5px; margin-right: 10px;">查看证书</a>
-                                <a href="#blockchain-explorer" style="display: inline-block; padding: 8px 20px; background-color: white; color: var(--primary-color); text-decoration: none; border-radius: 5px; border: 1px solid var(--primary-color);">区块链浏览器</a>
-                            </div>
-                        `;
-                    } else {
-                        // 系统消息
-                        detailContent.innerHTML = `
-                            <div>
-                                <p style="margin-bottom: 20px; line-height: 1.6;">${message.content}</p>
-                                <div style="display: flex; gap: 10px; margin-top: 15px;">
-                                    <span class="badge badge-${message.badgeType}">${message.badge}</span>
-                                    <span style="font-size: 0.9rem; color: var(--text-color);">${message.date}</span>
-                                </div>
-                            </div>
-                        `;
-                    }
-                    
-                    // 显示模态框
-                    document.getElementById('modal-backdrop').style.display = 'block';
-                    document.getElementById('message-detail-modal').style.display = 'block';
-                    document.body.style.overflow = 'hidden';
-                    
-                    // 更新消息列表显示
-                    renderDashboardMessages();
-                    if (document.getElementById('all-messages-modal').style.display === 'block') {
-                        renderAllMessages(document.getElementById('message-filter').value);
-                    }
-                }
-            });
-        });
-    }
-    
-    // 绑定标记已读/未读事件
-    function bindMarkReadEvents() {
-        document.querySelectorAll('.mark-read-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const messageId = parseInt(this.getAttribute('data-id'));
-                toggleMessageReadStatus(messageId);
-                
-                // 更新消息列表显示
-                renderAllMessages(document.getElementById('message-filter').value);
-                renderDashboardMessages();
-            });
-        });
-    }
-
-    // 定时生成随机消息 (模拟实时通知)
-    function setupRandomMessages() {
-        setInterval(() => {
-            // 10%的概率生成新消息
-            if (Math.random() < 0.1) {
-                const messageTypes = ['verification', 'blockchain', 'system'];
-                const randomType = messageTypes[Math.floor(Math.random() * messageTypes.length)];
-                
-                let newMessage = {
-                    id: mockMessages.length + 1,
-                    type: randomType,
-                    status: 'unread',
-                    date: '刚刚'
-                };
-                
-                // 根据消息类型设置内容
-                if (randomType === 'verification') {
-                    newMessage.title = '新验证请求';
-                    newMessage.content = '您收到来自企业的新验证请求，请尽快查看并处理。';
-                    newMessage.badge = '待处理';
-                    newMessage.badgeType = 'warning';
-                    newMessage.detailLink = '#verification';
-                } else if (randomType === 'blockchain') {
-                    newMessage.title = '区块链证书更新';
-                    newMessage.content = '您的证书信息已更新，已同步至区块链。';
-                    newMessage.badge = '已更新';
-                    newMessage.badgeType = 'success';
-                    newMessage.detailLink = '#education';
-                } else {
-                    newMessage.title = '系统更新提醒';
-                    newMessage.content = '系统功能已更新，新增了证书共享和验证功能。';
-                    newMessage.badge = '更新';
-                    newMessage.badgeType = 'primary';
-                }
-                
-                // 添加到消息列表开头
-                mockMessages.unshift(newMessage);
-                
-                // 更新界面
-                updateUnreadCount();
-                renderDashboardMessages();
-                
-                // 如果消息中心已打开，更新消息列表
-                if (document.getElementById('all-messages-modal').style.display === 'block') {
-                    renderAllMessages(document.getElementById('message-filter').value);
-                }
-                
-                // 显示通知
-                showNotification(newMessage.title, newMessage.content, newMessage.badgeType === 'warning' ? 'warning' : (newMessage.badgeType === 'success' ? 'success' : 'info'));
-            }
-        }, 60000); // 每分钟检查一次
-    }
-    
-    // 启动随机消息生成
-    setupRandomMessages();
-
-    // 消息中心功能
-    document.addEventListener('DOMContentLoaded', function() {
-        // 渲染仪表盘上的消息
-        renderDashboardMessages();
+        // 渲染消息到首页
+        renderDashboardMessages(messages.slice(0, 3));
         
         // 更新未读消息数量
-        updateUnreadCount();
+        updateUnreadCount(messages);
         
         // 标记全部已读按钮
         const markAllReadBtn = document.querySelector('.card-title:contains("系统消息")').parentElement.querySelector('button');
         if (markAllReadBtn) {
             markAllReadBtn.addEventListener('click', function() {
-                markAllMessagesAsRead();
-                renderDashboardMessages();
+                markAllAsRead(messages);
+                renderDashboardMessages(messages.slice(0, 3));
                 showNotification('操作成功', '所有消息已标记为已读', 'success');
             });
         }
-        
-        // 消息中心模态框中的标记全部已读按钮
-        document.getElementById('mark-all-read').addEventListener('click', function() {
-            markAllMessagesAsRead();
-            renderAllMessages(document.getElementById('message-filter').value);
-            showNotification('操作成功', '所有消息已标记为已读', 'success');
-        });
-        
-        // 消息筛选下拉框
-        document.getElementById('message-filter').addEventListener('change', function() {
-            renderAllMessages(this.value);
-        });
         
         // 查看全部消息
         const viewAllMessagesBtn = document.querySelector('.card-footer a[href="#messages"]');
         if (viewAllMessagesBtn) {
             viewAllMessagesBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                
-                // 重置筛选
-                document.getElementById('message-filter').value = 'all';
-                
-                // 渲染所有消息
-                renderAllMessages();
-                
-                // 显示模态框
-                document.getElementById('modal-backdrop').style.display = 'block';
-                document.getElementById('all-messages-modal').style.display = 'block';
-                document.body.style.overflow = 'hidden';
+                showAllMessages(messages);
             });
         }
-    });
+        
+        // 消息中心内的标记全部已读
+        document.getElementById('mark-all-read').addEventListener('click', function() {
+            markAllAsRead(messages);
+            renderAllMessages(messages, document.getElementById('message-filter').value || 'all');
+            updateUnreadCount(messages);
+            showNotification('操作成功', '所有消息已标记为已读', 'success');
+        });
+        
+        // 消息筛选
+        document.getElementById('message-filter').addEventListener('change', function() {
+            renderAllMessages(messages, this.value);
+        });
+        
+        // 通知图标点击事件
+        const notificationIcon = document.querySelector('.notification-icon');
+        if (notificationIcon) {
+            notificationIcon.addEventListener('click', function() {
+                showAllMessages(messages);
+            });
+        }
+    }
     
-    // 渲染消息列表项
-    function renderMessageItem(message, inModal = false) {
-        const badgeClass = message.badgeType ? `badge-${message.badgeType}` : '';
-        const isUnread = message.status === 'unread';
-        const backgroundColor = isUnread ? 'rgba(26, 41, 128, 0.05)' : 'transparent';
+    // 渲染首页消息
+    function renderDashboardMessages(messages) {
+        const messageContainer = document.querySelector('.card-title:contains("系统消息")').parentElement.nextElementSibling;
+        messageContainer.innerHTML = '';
+        
+        messages.forEach(message => {
+            const backgroundColor = message.status === 'unread' ? 'rgba(26, 41, 128, 0.05)' : 'transparent';
         
         // 决定图标和背景颜色
         let iconBackground, iconSvg;
@@ -2235,8 +1281,8 @@
             iconSvg = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg>';
         }
         
-        return `
-            <div style="border-bottom: 1px solid var(--border-color); padding: 15px 20px; display: flex; align-items: flex-start; background-color: ${backgroundColor};" data-id="${message.id}">
+            messageContainer.innerHTML += `
+                <div class="message-item" style="border-bottom: 1px solid var(--border-color); padding: 15px 20px; display: flex; align-items: flex-start; background-color: ${backgroundColor}; cursor: pointer;" data-id="${message.id}">
                 <div style="width: 40px; height: 40px; border-radius: 50%; background-color: ${iconBackground}; color: white; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">
                     ${iconSvg}
                 </div>
@@ -2245,41 +1291,27 @@
                         <h4 style="font-size: 0.9rem; font-weight: 500; color: var(--dark-color);">${message.title}</h4>
                         <span style="font-size: 0.8rem; color: var(--text-color);">${message.date}</span>
                     </div>
-                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 10px;">${message.content.length > 80 && !inModal ? message.content.substring(0, 80) + '...' : message.content}</p>
+                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 10px;">${message.content.length > 80 ? message.content.substring(0, 80) + '...' : message.content}</p>
                     <div style="display: flex; gap: 10px; align-items: center;">
                         ${message.badge ? `<span class="badge badge-${message.badgeType}">${message.badge}</span>` : ''}
-                        ${message.detailLink ? `<a href="#" class="view-message-detail" data-id="${message.id}" style="font-size: 0.8rem; color: var(--primary-color); text-decoration: none;">查看详情</a>` : ''}
-                        ${inModal ? `<button class="mark-read-btn" data-id="${message.id}" style="margin-left: auto; background: none; border: none; font-size: 0.8rem; color: var(--primary-color); cursor: pointer;">${isUnread ? '标记已读' : '标记未读'}</button>` : ''}
+                            ${message.link ? `<a href="#" class="view-message-detail" data-id="${message.id}" style="font-size: 0.8rem; color: var(--primary-color); text-decoration: none;">查看详情</a>` : ''}
                     </div>
                 </div>
-                ${isUnread && inModal ? `<div style="width: 8px; height: 8px; background-color: var(--primary-color); border-radius: 50%; margin-left: 10px; flex-shrink: 0;"></div>` : ''}
             </div>
         `;
-    }
-    
-    // 渲染仪表盘上的消息
-    function renderDashboardMessages() {
-        const messageContainer = document.querySelector('.card-title:contains("系统消息")').parentElement.nextElementSibling;
-        if (messageContainer) {
-            messageContainer.innerHTML = '';
-            
-            // 显示最新的3条消息
-            mockMessages.slice(0, 3).forEach(message => {
-                messageContainer.innerHTML += renderMessageItem(message);
-            });
-            
-            // 绑定查看详情事件
-            bindMessageDetailEvents();
-        }
+        });
+        
+        // 绑定消息点击事件
+        bindMessageEvents(messages);
     }
     
     // 渲染所有消息
-    function renderAllMessages(filter = 'all') {
+    function renderAllMessages(messages, filter = 'all') {
         const allMessagesContent = document.getElementById('all-messages-content');
         allMessagesContent.innerHTML = '';
         
-        // 根据筛选条件过滤消息
-        let filteredMessages = [...mockMessages];
+        // 筛选消息
+        let filteredMessages = [...messages];
         if (filter === 'unread') {
             filteredMessages = filteredMessages.filter(msg => msg.status === 'unread');
         } else if (filter === 'system') {
@@ -2293,56 +1325,115 @@
             return;
         }
         
-        // 添加消息列表
         filteredMessages.forEach(message => {
-            allMessagesContent.innerHTML += renderMessageItem(message, true);
+            const backgroundColor = message.status === 'unread' ? 'rgba(26, 41, 128, 0.05)' : 'transparent';
+            
+            // 决定图标和背景颜色
+            let iconBackground, iconSvg;
+            if (message.type === 'verification') {
+                iconBackground = 'var(--primary-color)';
+                iconSvg = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" /></svg>';
+            } else if (message.type === 'blockchain') {
+                iconBackground = 'var(--success-color)';
+                iconSvg = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" /></svg>';
+            } else if (message.type === 'system') {
+                iconBackground = 'var(--primary-light)';
+                iconSvg = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg>';
+            }
+            
+            allMessagesContent.innerHTML += `
+                <div class="message-item" style="border-bottom: 1px solid var(--border-color); padding: 15px 20px; display: flex; align-items: flex-start; background-color: ${backgroundColor}; cursor: pointer;" data-id="${message.id}">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background-color: ${iconBackground}; color: white; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">
+                        ${iconSvg}
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <h4 style="font-size: 0.9rem; font-weight: 500; color: var(--dark-color);">${message.title}</h4>
+                            <span style="font-size: 0.8rem; color: var(--text-color);">${message.date}</span>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 10px;">${message.content}</p>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            ${message.badge ? `<span class="badge badge-${message.badgeType}">${message.badge}</span>` : ''}
+                            <button class="mark-message-btn" data-id="${message.id}" style="margin-left: auto; background: none; border: none; font-size: 0.8rem; color: var(--primary-color); cursor: pointer;">${message.status === 'unread' ? '标记已读' : '标记未读'}</button>
+                        </div>
+                    </div>
+                    ${message.status === 'unread' ? `<div style="width: 8px; height: 8px; background-color: var(--primary-color); border-radius: 50%; margin-left: 10px; flex-shrink: 0;"></div>` : ''}
+                </div>
+            `;
         });
         
-        // 绑定查看详情和标记已读事件
-        bindMessageDetailEvents();
-        bindMarkReadEvents();
+        // 绑定消息点击和标记已读/未读事件
+        bindMessageEvents(messages);
+        bindMarkReadEvents(messages);
     }
     
-    // 更新未读消息数量
-    function updateUnreadCount() {
-        const unreadCount = mockMessages.filter(msg => msg.status === 'unread').length;
-        const badge = document.querySelector('.notification-badge');
+    // 显示所有消息
+    function showAllMessages(messages) {
+        // 重置筛选条件
+        document.getElementById('message-filter').value = 'all';
         
-        if (badge) {
-            badge.textContent = unreadCount;
-            badge.style.display = unreadCount > 0 ? 'flex' : 'none';
-        }
+        // 渲染所有消息
+        renderAllMessages(messages, 'all');
+        
+        // 显示模态框
+        document.getElementById('modal-backdrop').style.display = 'block';
+        document.getElementById('all-messages-modal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
     }
     
-    // 标记消息已读/未读
-    function toggleMessageReadStatus(id, newStatus) {
-        const message = mockMessages.find(msg => msg.id === id);
-        if (message) {
-            message.status = newStatus || (message.status === 'unread' ? 'read' : 'unread');
-            updateUnreadCount();
-        }
-    }
-    
-    // 标记所有消息已读
-    function markAllMessagesAsRead() {
-        mockMessages.forEach(message => {
-            message.status = 'read';
-        });
-        updateUnreadCount();
-    }
-    
-    // 绑定查看消息详情事件
-    function bindMessageDetailEvents() {
-        document.querySelectorAll('.view-message-detail').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
+    // 绑定消息点击事件
+    function bindMessageEvents(messages) {
+        document.querySelectorAll('.message-item').forEach(item => {
+            item.addEventListener('click', function() {
                 const messageId = parseInt(this.getAttribute('data-id'));
-                const message = mockMessages.find(msg => msg.id === messageId);
+                showMessageDetail(messages, messageId);
+            });
+        });
+        
+        document.querySelectorAll('.view-message-detail').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation(); // 阻止冒泡，避免触发消息项点击
+                const messageId = parseInt(this.getAttribute('data-id'));
+                showMessageDetail(messages, messageId);
+            });
+        });
+    }
+    
+    // 绑定标记已读/未读事件
+    function bindMarkReadEvents(messages) {
+        document.querySelectorAll('.mark-message-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation(); // 阻止冒泡，避免触发消息项点击
+                
+                const messageId = parseInt(this.getAttribute('data-id'));
+                const message = messages.find(msg => msg.id === messageId);
+                
+        if (message) {
+                    // 切换状态
+                    message.status = message.status === 'unread' ? 'read' : 'unread';
+                    
+                    // 更新消息列表显示
+                    renderAllMessages(messages, document.getElementById('message-filter').value || 'all');
+                    
+                    // 更新未读消息数量
+                    updateUnreadCount(messages);
+                    
+                    // 通知
+                    showNotification('状态已更新', message.status === 'read' ? '消息已标记为已读' : '消息已标记为未读', 'success');
+                }
+            });
+        });
+    }
+    
+    // 显示消息详情
+    function showMessageDetail(messages, messageId) {
+        const message = messages.find(msg => msg.id === messageId);
                 
                 if (message) {
                     // 标记为已读
                     if (message.status === 'unread') {
-                        toggleMessageReadStatus(messageId, 'read');
+                message.status = 'read';
+                updateUnreadCount(messages);
                     }
                     
                     // 设置详情内容
@@ -2383,9 +1474,28 @@
                                 </div>
                             </div>
                             <div style="text-align: center;">
-                                <a href="#verification" class="modal-close-btn" style="display: inline-block; padding: 8px 20px; background-color: var(--primary-color); color: white; text-decoration: none; border-radius: 5px;">查看申请管理</a>
+                        <button class="view-application-btn" style="display: inline-block; padding: 8px 20px; background-color: var(--primary-color); color: white; border: none; border-radius: 5px; cursor: pointer;">查看申请详情</button>
                             </div>
                         `;
+                
+                // 绑定查看申请按钮
+                setTimeout(() => {
+                    document.querySelector('.view-application-btn').addEventListener('click', function() {
+                        // 关闭消息详情
+                        closeAllModals();
+                        
+                        // 显示申请详情 (使用前面定义的函数)
+                        setTimeout(() => {
+                            const title = '腾讯科技认证申请';
+                            const status = '进行中';
+                            const description = '申请本科学历证书验证';
+                            const startDate = '发起时间: 2023-09-15';
+                            const endDate = '预计完成: 今日';
+                            
+                            showApplicationDetails(title, status, description, startDate, endDate);
+                        }, 100);
+                    });
+                }, 0);
                     } else if (message.type === 'blockchain') {
                         detailContent.innerHTML = `
                             <div style="margin-bottom: 20px;">
@@ -2411,10 +1521,33 @@
                                 </div>
                             </div>
                             <div style="text-align: center;">
-                                <a href="#education" class="modal-close-btn" style="display: inline-block; padding: 8px 20px; background-color: var(--primary-color); color: white; text-decoration: none; border-radius: 5px; margin-right: 10px;">查看证书</a>
-                                <a href="#blockchain-explorer" style="display: inline-block; padding: 8px 20px; background-color: white; color: var(--primary-color); text-decoration: none; border-radius: 5px; border: 1px solid var(--primary-color);">区块链浏览器</a>
+                        <button class="view-certificate-btn" style="display: inline-block; padding: 8px 20px; background-color: var(--primary-color); color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">查看证书</button>
+                        <button class="view-explorer-btn" style="display: inline-block; padding: 8px 20px; background-color: white; color: var(--primary-color); border: 1px solid var(--primary-color); border-radius: 5px; cursor: pointer;">区块链浏览器</button>
                             </div>
                         `;
+                
+                // 绑定按钮事件
+                setTimeout(() => {
+                    document.querySelector('.view-certificate-btn').addEventListener('click', function() {
+                        // 关闭消息详情
+                        closeAllModals();
+                        
+                        // 切换到证书页面
+                        document.querySelector('.nav-link[href="#education"]').click();
+                        
+                        // 展示对应证书详情
+                        setTimeout(() => {
+                            const certificateCard = document.querySelectorAll('.certificate-card')[1]; // 硕士证书
+                            if (certificateCard) {
+                                showCertificateDetails(certificateCard);
+                            }
+                        }, 500);
+                    });
+                    
+                    document.querySelector('.view-explorer-btn').addEventListener('click', function() {
+                        window.open('https://www.fishcoim.com/block/1286390', '_blank');
+                    });
+                }, 0);
                     } else {
                         // 系统消息
                         detailContent.innerHTML = `
@@ -2434,61 +1567,69 @@
                     document.body.style.overflow = 'hidden';
                     
                     // 更新消息列表显示
-                    renderDashboardMessages();
+            renderDashboardMessages(messages.slice(0, 3));
+            
+            // 更新消息中心
                     if (document.getElementById('all-messages-modal').style.display === 'block') {
-                        renderAllMessages(document.getElementById('message-filter').value);
-                    }
-                }
-            });
-        });
+                renderAllMessages(messages, document.getElementById('message-filter').value || 'all');
+            }
+        }
     }
     
-    // 绑定标记已读/未读事件
-    function bindMarkReadEvents() {
-        document.querySelectorAll('.mark-read-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const messageId = parseInt(this.getAttribute('data-id'));
-                toggleMessageReadStatus(messageId);
-                
-                // 更新消息列表显示
-                renderAllMessages(document.getElementById('message-filter').value);
-                renderDashboardMessages();
-            });
-        });
+    // 更新未读消息数量
+    function updateUnreadCount(messages) {
+        const unreadCount = messages.filter(msg => msg.status === 'unread').length;
+        const badge = document.querySelector('.notification-badge');
+        
+        if (badge) {
+            badge.textContent = unreadCount;
+            badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+        }
     }
-
-    // 定时生成随机消息 (模拟实时通知)
-    function setupRandomMessages() {
+    
+    // 标记所有消息为已读
+    function markAllAsRead(messages) {
+        messages.forEach(message => {
+            message.status = 'read';
+        });
+        
+        updateUnreadCount(messages);
+    }
+    
+    // 模拟接收新消息
+    function simulateNewMessage() {
+        // 定时发送新消息，模拟实时通知
         setInterval(() => {
-            // 10%的概率生成新消息
+            // 模拟10%概率收到新消息
             if (Math.random() < 0.1) {
                 const messageTypes = ['verification', 'blockchain', 'system'];
                 const randomType = messageTypes[Math.floor(Math.random() * messageTypes.length)];
                 
+                // 创建新消息
                 let newMessage = {
-                    id: mockMessages.length + 1,
+                    id: Date.now(),
                     type: randomType,
                     status: 'unread',
                     date: '刚刚'
                 };
                 
-                // 根据消息类型设置内容
+                // 根据类型设置消息内容
                 if (randomType === 'verification') {
-                    newMessage.title = '新验证请求';
-                    newMessage.content = '您收到来自企业的新验证请求，请尽快查看并处理。';
-                    newMessage.badge = '待处理';
+                    newMessage.title = '新的认证申请';
+                    newMessage.content = '您收到了一个新的认证申请请求，来自某企业。';
+                    newMessage.badge = '新请求';
                     newMessage.badgeType = 'warning';
-                    newMessage.detailLink = '#verification';
+                    newMessage.link = '#verification';
                 } else if (randomType === 'blockchain') {
-                    newMessage.title = '区块链证书更新';
-                    newMessage.content = '您的证书信息已更新，已同步至区块链。';
-                    newMessage.badge = '已更新';
-                    newMessage.badgeType = 'success';
-                    newMessage.detailLink = '#education';
-                } else {
-                    newMessage.title = '系统更新提醒';
-                    newMessage.content = '系统功能已更新，新增了证书共享和验证功能。';
+                    newMessage.title = '证书状态更新';
+                    newMessage.content = '您的证书状态有更新，请查看详情。';
                     newMessage.badge = '更新';
+                    newMessage.badgeType = 'success';
+                    newMessage.link = '#education';
+                } else {
+                    newMessage.title = '系统公告';
+                    newMessage.content = '系统将于近期进行升级，敬请关注。';
+                    newMessage.badge = '公告';
                     newMessage.badgeType = 'primary';
                 }
                 
@@ -2514,4 +1655,1232 @@
     setupRandomMessages();
 </script>
 
+    <script>
+    // 隐私设置面板功能
+    document.addEventListener('DOMContentLoaded', function() {
+        // 初始化隐私设置
+        initPrivacySettings();
+    });
+    
+    // 初始化隐私设置功能
+    function initPrivacySettings() {
+        // 保存设置按钮
+        document.getElementById('save-privacy').addEventListener('click', function() {
+            savePrivacySettings();
+        });
+        
+        // 查看隐私设置
+        const privacyBtn = document.querySelector('.nav-link[href="#privacy"]');
+        if (privacyBtn) {
+            privacyBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showPrivacySettings();
+            });
+        }
+        
+        // 欢迎卡片上的隐私设置按钮
+        const welcomePrivacyBtn = document.querySelector('.card[style*="linear-gradient"] button:nth-child(2)');
+        if (welcomePrivacyBtn) {
+            welcomePrivacyBtn.addEventListener('click', function() {
+                showPrivacySettings();
+            });
+        }
+        
+        // 为证书隐私下拉框添加事件监听
+        document.querySelectorAll('.privacy-setting').forEach(select => {
+            select.addEventListener('change', function() {
+                const certificateType = this.getAttribute('data-certificate');
+                const privacyLevel = this.value;
+                
+                // 实际应用中这里会调用API保存设置
+                console.log(`更新${certificateType}证书隐私级别为: ${privacyLevel}`);
+                
+                // 显示预览效果
+                showPrivacyPreview(certificateType, privacyLevel);
+            });
+        });
+        
+        // 为自动批准复选框添加事件监听
+        document.getElementById('auto-approve').addEventListener('change', function() {
+            const isChecked = this.checked;
+            
+            // 如果启用自动批准，则禁用新验证请求通知
+            if (isChecked) {
+                const notifyCheckbox = document.getElementById('notify-new-verification');
+                notifyCheckbox.checked = false;
+                notifyCheckbox.disabled = true;
+                notifyCheckbox.parentElement.style.opacity = '0.5';
+            } else {
+                const notifyCheckbox = document.getElementById('notify-new-verification');
+                notifyCheckbox.disabled = false;
+                notifyCheckbox.parentElement.style.opacity = '1';
+            }
+        });
+    }
+    
+    // 显示隐私设置模态框
+    function showPrivacySettings() {
+                document.getElementById('modal-backdrop').style.display = 'block';
+        document.getElementById('privacy-modal').style.display = 'block';
+                document.body.style.overflow = 'hidden';
+    }
+    
+    // 保存隐私设置
+    function savePrivacySettings() {
+        // 收集所有设置
+        const settings = {
+            certificates: {
+                bachelor: document.querySelector('.privacy-setting[data-certificate="bachelor"]').value,
+                master: document.querySelector('.privacy-setting[data-certificate="master"]').value
+            },
+            verification: {
+                autoApprove: document.getElementById('auto-approve').checked,
+                notifyNewVerification: document.getElementById('notify-new-verification').checked
+            },
+            dataSharing: {
+                shareEducation: document.getElementById('share-education').checked,
+                shareGrades: document.getElementById('share-grades').checked,
+                shareAwards: document.getElementById('share-awards').checked
+            }
+        };
+        
+        // 在实际应用中，这里会调用API保存设置
+        console.log('保存隐私设置:', settings);
+        
+        // 关闭模态框
+        closeAllModals();
+        
+        // 显示成功通知
+        showNotification('设置已保存', '您的隐私设置已成功更新', 'success');
+        
+        // 根据设置更新UI显示
+        updateUIBasedOnPrivacySettings(settings);
+    }
+    
+    // 显示隐私预览效果
+    function showPrivacyPreview(certificateType, privacyLevel) {
+        // 获取对应证书卡片
+        const certificateIndex = certificateType === 'bachelor' ? 0 : 1;
+        const certificateCard = document.querySelectorAll('.certificate-card')[certificateIndex];
+        
+        if (certificateCard) {
+            // 移除之前的标记
+            certificateCard.querySelectorAll('.privacy-indicator').forEach(indicator => {
+                indicator.remove();
+            });
+            
+            // 添加隐私级别指示器
+            const indicator = document.createElement('div');
+            indicator.className = 'privacy-indicator';
+            
+            if (privacyLevel === 'public') {
+                indicator.innerHTML = `
+                    <div style="position: absolute; top: 15px; left: 15px; background-color: rgba(0, 200, 83, 0.1); color: var(--success-color); font-size: 0.7rem; padding: 3px 8px; border-radius: 10px; display: flex; align-items: center;">
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="margin-right: 4px;">
+                            <path d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M12,10A5,5 0 0,1 17,15A5,5 0 0,1 12,20A5,5 0 0,1 7,15A5,5 0 0,1 12,10M12,4.5C14.76,4.5 17,6.3 17,8.5V9H7V8.5C7,6.3 9.24,4.5 12,4.5M12,2A6.5,6.5 0 0,0 5.5,8.5V9H4A2,2 0 0,0 2,11V22H22V11A2,2 0 0,0 20,9H18.5V8.5A6.5,6.5 0 0,0 12,2Z" />
+                        </svg>
+                        公开
+                </div>
+                `;
+                certificateCard.style.opacity = '1';
+            } else if (privacyLevel === 'contacts') {
+                indicator.innerHTML = `
+                    <div style="position: absolute; top: 15px; left: 15px; background-color: rgba(255, 152, 0, 0.1); color: var(--warning-color); font-size: 0.7rem; padding: 3px 8px; border-radius: 10px; display: flex; align-items: center;">
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="margin-right: 4px;">
+                            <path d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M12,10A5,5 0 0,1 17,15A5,5 0 0,1 12,20A5,5 0 0,1 7,15A5,5 0 0,1 12,10M12,4.5C14.76,4.5 17,6.3 17,8.5V9H7V8.5C7,6.3 9.24,4.5 12,4.5M12,2A6.5,6.5 0 0,0 5.5,8.5V9H4A2,2 0 0,0 2,11V22H22V11A2,2 0 0,0 20,9H18.5V8.5A6.5,6.5 0 0,0 12,2Z" />
+                        </svg>
+                        受限
+                    </div>
+                `;
+                certificateCard.style.opacity = '0.8';
+            } else {
+                indicator.innerHTML = `
+                    <div style="position: absolute; top: 15px; left: 15px; background-color: rgba(255, 82, 82, 0.1); color: var(--danger-color); font-size: 0.7rem; padding: 3px 8px; border-radius: 10px; display: flex; align-items: center;">
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="margin-right: 4px;">
+                            <path d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M12,10A5,5 0 0,1 17,15A5,5 0 0,1 12,20A5,5 0 0,1 7,15A5,5 0 0,1 12,10M12,4.5C14.76,4.5 17,6.3 17,8.5V9H7V8.5C7,6.3 9.24,4.5 12,4.5M12,2A6.5,6.5 0 0,0 5.5,8.5V9H4A2,2 0 0,0 2,11V22H22V11A2,2 0 0,0 20,9H18.5V8.5A6.5,6.5 0 0,0 12,2Z" />
+                        </svg>
+                        私密
+            </div>
+        `;
+                certificateCard.style.opacity = '0.6';
+            }
+            
+            certificateCard.appendChild(indicator.firstElementChild);
+            
+            // 应用过渡效果
+            certificateCard.style.transition = 'opacity 0.3s ease';
+        }
+    }
+    
+    // 根据隐私设置更新UI
+    function updateUIBasedOnPrivacySettings(settings) {
+        // 更新证书卡片显示
+        settings.certificates.bachelor && showPrivacyPreview('bachelor', settings.certificates.bachelor);
+        settings.certificates.master && showPrivacyPreview('master', settings.certificates.master);
+        
+        // 在实际应用中，这里还会更新其他UI元素
+        // 比如根据数据共享设置隐藏或显示某些信息
+        if (!settings.dataSharing.shareGrades) {
+            // 隐藏成绩相关信息
+            document.querySelectorAll('.certificate-card .gpa-info').forEach(el => {
+                el.style.display = 'none';
+            });
+        }
+        
+        if (!settings.dataSharing.shareAwards) {
+            // 隐藏奖项信息
+            document.querySelectorAll('.certificate-card .awards-info').forEach(el => {
+                el.style.display = 'none';
+            });
+        }
+    }
+    </script>
+
+    <script>
+    // 学历证书交互功能
+    document.addEventListener('DOMContentLoaded', function() {
+        initCertificateInteractions();
+    });
+
+    // 初始化证书交互功能
+    function initCertificateInteractions() {
+        // 证书卡片悬停效果
+        const certificateCards = document.querySelectorAll('.certificate-card');
+        certificateCards.forEach(card => {
+            // 悬停效果
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+                this.style.boxShadow = 'var(--shadow-md)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = 'var(--shadow-sm)';
+            });
+            
+            // 点击效果 - 轻微放大后恢复
+            card.addEventListener('mousedown', function() {
+                this.style.transform = 'scale(0.98)';
+            });
+            
+            card.addEventListener('mouseup', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+        });
+
+        // 为所有证书卡片中的查看详情按钮添加点击事件
+        document.querySelectorAll('.certificate-card button:first-child').forEach(button => {
+            button.addEventListener('click', function() {
+                const card = this.closest('.certificate-card');
+                const certificateTitle = card.querySelector('h4').textContent;
+                
+                showCertificateDetail(certificateTitle, card);
+            });
+        });
+
+        // 为所有证书卡片中的下载证书按钮添加点击事件
+        document.querySelectorAll('.certificate-card button:last-child').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const card = this.closest('.certificate-card');
+                const certificateTitle = card.querySelector('h4').textContent;
+                
+                // 模拟下载过程
+                downloadCertificate(certificateTitle);
+            });
+        });
+
+        // "查看全部"按钮事件
+        const viewAllBtn = document.querySelector('.card-title:contains("我的学历证书")').parentElement.querySelector('button');
+        if (viewAllBtn) {
+            viewAllBtn.addEventListener('click', function() {
+                showAllCertificates();
+            });
+        }
+
+        // 添加证书右上角验证标记的动画效果
+        certificateCards.forEach(card => {
+            const verifyIcon = card.querySelector('svg[fill="var(--success-color)"]');
+            if (verifyIcon) {
+                // 添加悬停提示
+                const tooltip = document.createElement('div');
+                tooltip.className = 'verify-tooltip';
+                tooltip.innerHTML = `
+                    <div style="position: absolute; top: -40px; right: 0; background-color: rgba(0, 0, 0, 0.8); 
+                                color: white; padding: 5px 10px; border-radius: 5px; font-size: 0.8rem;
+                                opacity: 0; transition: opacity 0.3s; pointer-events: none;">
+                        已通过区块链验证
+                    </div>
+                `;
+                verifyIcon.parentNode.appendChild(tooltip);
+                
+                // 鼠标悬停时显示提示
+                verifyIcon.parentNode.addEventListener('mouseenter', function() {
+                    tooltip.querySelector('div').style.opacity = '1';
+                });
+                
+                verifyIcon.parentNode.addEventListener('mouseleave', function() {
+                    tooltip.querySelector('div').style.opacity = '0';
+                });
+                
+                // 添加轻微动画
+                verifyIcon.style.transition = 'transform 0.3s';
+                verifyIcon.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.2)';
+                });
+                
+                verifyIcon.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            }
+        });
+    }
+
+    // 下载证书函数
+    function downloadCertificate(certificateTitle) {
+        showNotification('下载开始', `${certificateTitle}下载已开始，请稍等片刻。`, 'info');
+        
+        // 模拟下载延迟
+        setTimeout(() => {
+            showNotification('下载完成', `${certificateTitle}已成功下载到您的设备。`, 'success');
+        }, 2000);
+    }
+    </script>
+
+    <script>
+    // 显示证书详情
+    function showCertificateDetail(certificateTitle, card) {
+        const isUndergraduate = certificateTitle.includes('本科');
+        
+        // 填充证书详情内容
+        const content = document.getElementById('certificate-content');
+        content.innerHTML = `
+            <div style="text-align: center; margin-bottom: 25px;">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMiAxOUwxOSAxMi41MzQ1VjVMMTIgMTEuNUw1IDVWMTIuNTM0NUwxMiAxOVoiIHN0cm9rZT0iIzFBMjk4MCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvc3ZnPg==" alt="北京大学校徽" style="width: 120px; height: 120px; margin-bottom: 10px;">
+                <h2 style="font-size: 1.8rem; color: var(--dark-color); margin-bottom: 5px;">北京大学</h2>
+                <h3 style="font-size: 1.3rem; font-weight: 500; color: var(--text-color); margin: 0;">${certificateTitle}</h3>
+            </div>
+            
+            <div style="background-color: rgba(0, 0, 0, 0.02); border-radius: 10px; padding: 20px; margin-bottom: 25px;">
+                <h4 style="font-size: 1.1rem; color: var(--dark-color); margin-bottom: 15px;">学生信息</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">姓名</p>
+                        <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">张力</p>
+                                </div>
+                    <div>
+                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">学号</p>
+                        <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">${isUndergraduate ? '2018110101' : '2022210101'}</p>
+                            </div>
+                                    <div>
+                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">专业</p>
+                        <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">计算机科学与技术</p>
+                                    </div>
+                                    <div>
+                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">入学时间</p>
+                        <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">${isUndergraduate ? '2018-09-01' : '2022-09-01'}</p>
+                                    </div>
+                                    <div>
+                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">学位</p>
+                        <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">${isUndergraduate ? '工学学士' : '工学硕士'}</p>
+                                    </div>
+                                    <div>
+                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">毕业时间</p>
+                        <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">${isUndergraduate ? '2022-06-30' : '在读'}</p>
+                                    </div>
+                                </div>
+                            </div>
+            
+            ${isUndergraduate ? `
+            <div style="background-color: rgba(0, 0, 0, 0.02); border-radius: 10px; padding: 20px; margin-bottom: 25px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h4 style="font-size: 1.1rem; color: var(--dark-color); margin: 0;">学习成果</h4>
+                    <button id="view-transcript" style="background: none; border: none; color: var(--primary-color); font-size: 0.9rem; cursor: pointer;">查看成绩单</button>
+                            </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">GPA</p>
+                        <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">3.8/4.0</p>
+                                </div>
+                    <div>
+                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">荣誉</p>
+                        <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">优秀毕业生</p>
+                            </div>
+                    <div>
+                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">学分</p>
+                        <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">156/150</p>
+                    </div>
+                    <div>
+                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">排名</p>
+                        <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">Top 15%</p>
+                    </div>
+                </div>
+            </div>
+            ` : `
+            <div style="background-color: rgba(0, 0, 0, 0.02); border-radius: 10px; padding: 20px; margin-bottom: 25px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h4 style="font-size: 1.1rem; color: var(--dark-color); margin: 0;">研究方向</h4>
+                    <button id="view-research" style="background: none; border: none; color: var(--primary-color); font-size: 0.9rem; cursor: pointer;">查看研究项目</button>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">导师</p>
+                        <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">李明教授</p>
+                    </div>
+                    <div>
+                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">研究方向</p>
+                        <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">区块链技术与应用</p>
+                    </div>
+                    <div>
+                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">已修学分</p>
+                        <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">42/60</p>
+                    </div>
+                    <div>
+                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">研究进展</p>
+                        <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">70%</p>
+                    </div>
+                </div>
+            </div>
+            `}
+            
+            <div style="background-color: rgba(0, 0, 0, 0.02); border-radius: 10px; padding: 20px; margin-bottom: 25px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h4 style="font-size: 1.1rem; color: var(--dark-color); margin: 0;">区块链信息</h4>
+                    <button id="verify-blockchain" style="background: none; border: none; color: var(--primary-color); font-size: 0.9rem; cursor: pointer;">验证真实性</button>
+                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">区块高度</p>
+                    <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">#${isUndergraduate ? '1286388' : '1286390'}</p>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">交易哈希</p>
+                    <div style="display: flex; align-items: center;">
+                        <p style="font-size: 0.9rem; font-family: monospace; word-break: break-all; color: var(--dark-color); margin: 0; flex: 1; overflow: hidden; text-overflow: ellipsis;">${isUndergraduate ? '0x7a8b9c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b' : '0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b'}</p>
+                        <button id="copy-hash" style="background: none; border: none; color: var(--primary-color); font-size: 0.9rem; margin-left: 10px; cursor: pointer;">复制</button>
+                    </div>
+                                </div>
+                                <div>
+                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">上链时间</p>
+                    <p style="font-size: 1rem; font-weight: 500; color: var(--dark-color);">${isUndergraduate ? '2022-07-02 14:30:22' : '2023-09-15 09:15:47'}</p>
+                                </div>
+                            </div>
+            
+            <div style="background-color: rgba(0, 200, 83, 0.05); border-radius: 10px; padding: 20px; display: flex; align-items: center; margin-bottom: 25px;">
+                <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--success-color); color: white; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                        <path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" />
+                    </svg>
+                            </div>
+                            <div>
+                    <h4 style="font-size: 1rem; color: var(--dark-color); margin-bottom: 5px;">区块链验证</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-color); margin: 0;">该证书已通过区块链验证，信息真实可靠。上次验证时间: ${new Date().toLocaleString()}</p>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <button id="download-certificate" style="padding: 12px 25px; background-color: var(--primary-color); color: white; border: none; border-radius: 5px; font-weight: 500; cursor: pointer; display: flex; align-items: center;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="margin-right: 8px;">
+                        <path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" />
+                    </svg>
+                    下载证书
+                </button>
+                <div class="dropdown" style="position: relative;">
+                    <button id="share-certificate" style="padding: 12px 25px; background-color: white; color: var(--primary-color); border: 1px solid var(--primary-color); border-radius: 5px; font-weight: 500; cursor: pointer; display: flex; align-items: center;">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="margin-right: 8px;">
+                            <path d="M18,16.08C17.24,16.08 16.56,16.38 16.04,16.85L8.91,12.7C8.96,12.47 9,12.24 9,12C9,11.76 8.96,11.53 8.91,11.3L15.96,7.19C16.5,7.69 17.21,8 18,8A3,3 0 0,0 21,5A3,3 0 0,0 18,2A3,3 0 0,0 15,5C15,5.24 15.04,5.47 15.09,5.7L8.04,9.81C7.5,9.31 6.79,9 6,9A3,3 0 0,0 3,12A3,3 0 0,0 6,15C6.79,15 7.5,14.69 8.04,14.19L15.16,18.34C15.11,18.55 15.08,18.77 15.08,19C15.08,20.61 16.39,21.91 18,21.91C19.61,21.91 20.92,20.61 20.92,19A2.92,2.92 0 0,0 18,16.08Z" />
+                        </svg>
+                        分享证书
+                    </button>
+                    <div class="dropdown-menu" style="position: absolute; top: 100%; left: 0; right: 0; background-color: white; border-radius: 5px; box-shadow: var(--shadow-md); margin-top: 5px; display: none; z-index: 10;">
+                        <div class="dropdown-item" style="padding: 10px 15px; cursor: pointer; transition: background-color 0.3s;" data-share-type="wechat">
+                            <div style="display: flex; align-items: center;">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="#07C160" style="margin-right: 10px;">
+                                    <path d="M8.691,2C13.664,2,16.4,4.94,16.4,8.445c0,3.818-3.682,6.827-8.655,6.827c-0.945,0-1.946-0.146-2.873-0.364L1.709,16.818l1.382-3.273C2.291,12.618,1.6,10.382,1.6,8.445C1.6,4.94,4.336,2,8.691,2M8.691,0C3.891,0,0,3.799,0,8.445c0,2.346,0.891,4.473,2.327,6.145l-2.2,5.2l5.873-2.618c0.837,0.182,1.764,0.273,2.691,0.273c4.8,0,8.691-3.799,8.691-8.445C17.382,3.799,13.491,0,8.691,0L8.691,0z" />
+                                </svg>
+                                微信
+                            </div>
+                        </div>
+                        <div class="dropdown-item" style="padding: 10px 15px; cursor: pointer; transition: background-color 0.3s;" data-share-type="weibo">
+                            <div style="display: flex; align-items: center;">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="#E6162D" style="margin-right: 10px;">
+                                    <path d="M9.82,13.3C7.627,13.3,5.847,14.363,5.847,15.755c0,1.37,1.78,2.432,3.973,2.432c2.194,0,3.972-1.063,3.972-2.432C13.793,14.363,12.014,13.3,9.82,13.3z M11.068,16.059c-0.279,0.347-0.886,0.486-1.415,0.229c-0.51-0.248-0.674-0.714-0.393-1.028c0.28-0.313,0.855-0.457,1.363-0.229C11.127,15.26,11.351,15.694,11.068,16.059z M9.69,15.123c-0.152,0.222-0.522,0.288-0.802,0.16c-0.261-0.129-0.367-0.392-0.222-0.596c0.147-0.204,0.5-0.279,0.763-0.165C9.693,14.655,9.845,14.902,9.69,15.123z" />
+                                    <path d="M17.724,8.9C17.347,6.928,15.415,5.613,13.47,5.932c-0.417,0.07-0.708,0.476-0.674,0.926c0.047,0.432,0.437,0.728,0.871,0.657c1.168-0.196,2.158,0.673,2.384,1.841c0.057,0.301,0.07,0.656,0.035,0.904c-0.077,0.551,0.277,1.029,0.77,1.084c0.494,0.057,0.95-0.33,1.027-0.868C17.918,9.966,17.837,9.457,17.724,8.9z" />
+                                    <path d="M18.34,5.083c-1.198-1.523-2.958-2.089-4.579-1.659c-0.549,0.139-0.877,0.743-0.736,1.339c0.142,0.599,0.724,0.962,1.27,0.823c0.967-0.248,2.016,0.083,2.733,0.986c0.371,0.466,0.501,1.068,0.41,1.544c-0.131,0.688,0.239,1.33,0.83,1.439c0.587,0.107,1.136-0.354,1.268-1.045C19.65,7.326,19.258,6.25,18.34,5.083z" />
+                                    <path d="M21.82,13.159c-0.205-0.604-0.902-0.854-1.506-0.562c-0.605,0.292-0.929,1.021-0.742,1.629c0.169,0.544,0.285,1.122,0.285,1.729c0,2.946-2.388,5.343-5.333,5.343c-2.946,0-5.333-2.397-5.333-5.343c0-0.443,0.058-0.868,0.156-1.279c0.15-0.626-0.248-1.24-0.874-1.353c-0.625-0.119-1.203,0.262-1.352,0.883c-0.14,0.583-0.221,1.18-0.221,1.793c0,3.897,3.333,7.334,7.667,7.334s7.667-3.337,7.667-7.334C22,14.42,21.943,13.777,21.82,13.159z" />
+                                </svg>
+                                微博
+                            </div>
+                        </div>
+                        <div class="dropdown-item" style="padding: 10px 15px; cursor: pointer; transition: background-color 0.3s;" data-share-type="copy">
+                            <div style="display: flex; align-items: center;">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="var(--primary-color)" style="margin-right: 10px;">
+                                    <path d="M16,1H4C2.9,1 2,1.9 2,3V17H4V3H16V1M19,5H8C6.9,5 6,5.9 6,7V21C6,22.1 6.9,23 8,23H19C20.1,23 21,22.1 21,21V7C21,5.9 20.1,5 19,5M19,21H8V7H19V21Z" />
+                                </svg>
+                                复制链接
+                            </div>
+                        </div>
+                    </div>
+                                </div>
+                            </div>
+                        `;
+                    
+                    // 显示模态框
+                    document.getElementById('modal-backdrop').style.display = 'block';
+        document.getElementById('certificate-modal').style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                    
+        // 绑定下载证书按钮事件
+        document.getElementById('download-certificate').addEventListener('click', function() {
+            downloadCertificate(certificateTitle);
+        });
+        
+        // 绑定复制交易哈希按钮事件
+        document.getElementById('copy-hash').addEventListener('click', function() {
+            const hash = isUndergraduate ? '0x7a8b9c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b' : '0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b';
+            copyToClipboard(hash);
+            showNotification('复制成功', '交易哈希已复制到剪贴板', 'success');
+        });
+        
+        // 绑定验证真实性按钮事件
+        document.getElementById('verify-blockchain').addEventListener('click', function() {
+            this.disabled = true;
+            this.innerHTML = '验证中...';
+            
+            setTimeout(() => {
+                this.disabled = false;
+                this.innerHTML = '验证真实性';
+                showNotification('验证完成', '该证书通过了区块链验证，内容真实有效', 'success');
+            }, 2000);
+        });
+        
+        // 绑定分享证书按钮事件
+        const shareButton = document.getElementById('share-certificate');
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+        
+        shareButton.addEventListener('click', function() {
+            if (dropdownMenu.style.display === 'block') {
+                dropdownMenu.style.display = 'none';
+            } else {
+                dropdownMenu.style.display = 'block';
+            }
+        });
+        
+        // 绑定下拉菜单项点击事件
+        document.querySelectorAll('.dropdown-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = 'rgba(0, 0, 0, 0.05)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = 'transparent';
+            });
+            
+            item.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const shareType = this.getAttribute('data-share-type');
+                shareContent(shareType, certificateTitle);
+                dropdownMenu.style.display = 'none';
+            });
+        });
+        
+        // 点击其他地方关闭下拉菜单
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.dropdown')) {
+                dropdownMenu.style.display = 'none';
+            }
+        });
+        
+        // 绑定查看成绩单/研究项目按钮事件
+        if (isUndergraduate) {
+            document.getElementById('view-transcript').addEventListener('click', function() {
+                showTranscript();
+            });
+        } else {
+            document.getElementById('view-research').addEventListener('click', function() {
+                showResearchProjects();
+            });
+        }
+    }
+    
+    // 辅助函数：复制内容到剪贴板
+    function copyToClipboard(text) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+    }
+    
+    // 分享内容
+    function shareContent(type, title) {
+        const shareUrl = window.location.href + '?certificate=' + encodeURIComponent(title);
+        
+        switch (type) {
+            case 'wechat':
+                showNotification('分享成功', '已复制分享链接，请打开微信粘贴', 'success');
+                copyToClipboard(shareUrl);
+                break;
+            case 'weibo':
+                const weiboUrl = `http://service.weibo.com/share/share.php?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent('我的' + title + '证书 #学链通#')}`;
+                window.open(weiboUrl, '_blank');
+                break;
+            case 'copy':
+                copyToClipboard(shareUrl);
+                showNotification('复制成功', '证书链接已复制到剪贴板', 'success');
+                break;
+        }
+    }
+    </script>
+
+    <script>
+    // 查看成绩单
+    function showTranscript() {
+        // 创建成绩单模态框
+        const transcriptModal = document.createElement('div');
+        transcriptModal.id = 'transcript-modal';
+        transcriptModal.className = 'modal';
+        transcriptModal.style.cssText = 'display: block; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; border-radius: 10px; width: 90%; max-width: 800px; z-index: 120; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); overflow: hidden;';
+        
+        // 样例成绩数据
+        const coursesData = [
+            { code: 'CS101', name: '计算机科学导论', credit: 4, score: 95, grade: 'A+', semester: '2018-2019学年第一学期' },
+            { code: 'MA101', name: '高等数学(一)', credit: 5, score: 88, grade: 'A', semester: '2018-2019学年第一学期' },
+            { code: 'EN101', name: '大学英语(一)', credit: 3, score: 92, grade: 'A', semester: '2018-2019学年第一学期' },
+            { code: 'CS102', name: '程序设计基础', credit: 4, score: 96, grade: 'A+', semester: '2018-2019学年第一学期' },
+            { code: 'PH101', name: '大学物理(一)', credit: 4, score: 85, grade: 'B+', semester: '2018-2019学年第一学期' },
+            { code: 'CS201', name: '数据结构', credit: 4, score: 94, grade: 'A', semester: '2018-2019学年第二学期' },
+            { code: 'MA102', name: '高等数学(二)', credit: 5, score: 90, grade: 'A', semester: '2018-2019学年第二学期' },
+            { code: 'CS202', name: '计算机组成原理', credit: 4, score: 87, grade: 'B+', semester: '2018-2019学年第二学期' },
+            { code: 'CS301', name: '操作系统', credit: 4, score: 92, grade: 'A', semester: '2019-2020学年第一学期' },
+            { code: 'CS302', name: '编译原理', credit: 4, score: 89, grade: 'B+', semester: '2019-2020学年第一学期' },
+            { code: 'CS401', name: '区块链原理与应用', credit: 3, score: 96, grade: 'A+', semester: '2020-2021学年第一学期' },
+            { code: 'CS402', name: '人工智能', credit: 3, score: 93, grade: 'A', semester: '2020-2021学年第一学期' }
+        ];
+        
+        // 按学期分组
+        const semesterGroups = {};
+        coursesData.forEach(course => {
+            if (!semesterGroups[course.semester]) {
+                semesterGroups[course.semester] = [];
+            }
+            semesterGroups[course.semester].push(course);
+        });
+        
+        // 构建模态框内容
+        transcriptModal.innerHTML = `
+            <div style="padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 1.2rem; color: var(--dark-color);">本科成绩单</h3>
+                <button class="modal-close-btn" style="background: none; border: none; cursor: pointer; color: var(--text-color); font-size: 1.5rem;">&times;</button>
+            </div>
+            <div style="padding: 20px; max-height: 70vh; overflow-y: auto;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div>
+                        <h4 style="margin: 0 0 5px 0; font-size: 1.1rem; color: var(--dark-color);">张力 / 计算机科学与技术</h4>
+                        <p style="margin: 0; font-size: 0.9rem; color: var(--text-color);">学号: 2018110101 | 班级: 计算机1801班</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <h4 style="margin: 0 0 5px 0; font-size: 1.1rem; color: var(--dark-color);">GPA: 3.8/4.0</h4>
+                        <p style="margin: 0; font-size: 0.9rem; color: var(--text-color);">总学分: 156/150</p>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <div style="margin-bottom: 20px; display: flex; align-items: center;">
+                        <h4 style="margin: 0; font-size: 1rem; color: var(--dark-color);">成绩统计</h4>
+                        <div style="margin-left: auto; display: flex; gap: 15px;">
+                            <button id="download-transcript" style="padding: 6px 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 5px; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center;">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 5px;">
+                                    <path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" />
+                                </svg>
+                                下载PDF
+                            </button>
+                            <button id="share-transcript" style="padding: 6px 12px; background-color: white; color: var(--primary-color); border: 1px solid var(--primary-color); border-radius: 5px; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center;">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 5px;">
+                                    <path d="M18,16.08C17.24,16.08 16.56,16.38 16.04,16.85L8.91,12.7C8.96,12.47 9,12.24 9,12C9,11.76 8.96,11.53 8.91,11.3L15.96,7.19C16.5,7.69 17.21,8 18,8A3,3 0 0,0 21,5A3,3 0 0,0 18,2A3,3 0 0,0 15,5C15,5.24 15.04,5.47 15.09,5.7L8.04,9.81C7.5,9.31 6.79,9 6,9A3,3 0 0,0 3,12A3,3 0 0,0 6,15C6.79,15 7.5,14.69 8.04,14.19L15.16,18.34C15.11,18.55 15.08,18.77 15.08,19C15.08,20.61 16.39,21.91 18,21.91C19.61,21.91 20.92,20.61 20.92,19A2.92,2.92 0 0,0 18,16.08Z" />
+                                </svg>
+                                分享
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; background-color: rgba(0, 0, 0, 0.02); padding: 15px; border-radius: 10px;">
+                        <div style="text-align: center; flex: 1;">
+                            <p style="margin: 0 0 5px 0; font-size: 0.85rem; color: var(--text-color);">A+ / A</p>
+                            <p style="margin: 0; font-size: 1.2rem; font-weight: 500; color: var(--success-color);">75%</p>
+                        </div>
+                        <div style="text-align: center; flex: 1; border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color);">
+                            <p style="margin: 0 0 5px 0; font-size: 0.85rem; color: var(--text-color);">B+ / B</p>
+                            <p style="margin: 0; font-size: 1.2rem; font-weight: 500; color: var(--primary-color);">25%</p>
+                        </div>
+                        <div style="text-align: center; flex: 1;">
+                            <p style="margin: 0 0 5px 0; font-size: 0.85rem; color: var(--text-color);">C+ 及以下</p>
+                            <p style="margin: 0; font-size: 1.2rem; font-weight: 500; color: var(--text-color);">0%</p>
+                        </div>
+                    </div>
+                </div>
+                
+                ${Object.keys(semesterGroups).map(semester => `
+                    <div class="semester-group" style="margin-bottom: 25px;">
+                        <h4 style="font-size: 1rem; color: var(--dark-color); margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid var(--border-color);">${semester}</h4>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background-color: rgba(0, 0, 0, 0.02);">
+                                    <th style="padding: 10px; text-align: left; font-size: 0.85rem; font-weight: 500; color: var(--dark-color); border-bottom: 1px solid var(--border-color);">课程代码</th>
+                                    <th style="padding: 10px; text-align: left; font-size: 0.85rem; font-weight: 500; color: var(--dark-color); border-bottom: 1px solid var(--border-color);">课程名称</th>
+                                    <th style="padding: 10px; text-align: center; font-size: 0.85rem; font-weight: 500; color: var(--dark-color); border-bottom: 1px solid var(--border-color);">学分</th>
+                                    <th style="padding: 10px; text-align: center; font-size: 0.85rem; font-weight: 500; color: var(--dark-color); border-bottom: 1px solid var(--border-color);">成绩</th>
+                                    <th style="padding: 10px; text-align: center; font-size: 0.85rem; font-weight: 500; color: var(--dark-color); border-bottom: 1px solid var(--border-color);">等级</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${semesterGroups[semester].map(course => `
+                                    <tr class="course-row" style="transition: background-color 0.3s;">
+                                        <td style="padding: 10px; text-align: left; font-size: 0.85rem; color: var(--text-color); border-bottom: 1px solid var(--border-color);">${course.code}</td>
+                                        <td style="padding: 10px; text-align: left; font-size: 0.85rem; color: var(--text-color); border-bottom: 1px solid var(--border-color);">${course.name}</td>
+                                        <td style="padding: 10px; text-align: center; font-size: 0.85rem; color: var(--text-color); border-bottom: 1px solid var(--border-color);">${course.credit}</td>
+                                        <td style="padding: 10px; text-align: center; font-size: 0.85rem; color: var(--text-color); border-bottom: 1px solid var(--border-color);">${course.score}</td>
+                                        <td style="padding: 10px; text-align: center; font-size: 0.85rem; color: ${course.grade.includes('A') ? 'var(--success-color)' : course.grade.includes('B') ? 'var(--primary-color)' : 'var(--text-color)'}; font-weight: 500; border-bottom: 1px solid var(--border-color);">${course.grade}</td>
+                                    </tr>
+                                `).join('')}
+                                <tr>
+                                    <td colspan="2" style="padding: 10px; text-align: right; font-size: 0.85rem; font-weight: 500;">学期统计:</td>
+                                    <td style="padding: 10px; text-align: center; font-size: 0.85rem; font-weight: 500;">${semesterGroups[semester].reduce((sum, course) => sum + course.credit, 0)}</td>
+                                    <td style="padding: 10px; text-align: center; font-size: 0.85rem; font-weight: 500;">${(semesterGroups[semester].reduce((sum, course) => sum + course.score * course.credit, 0) / semesterGroups[semester].reduce((sum, course) => sum + course.credit, 0)).toFixed(1)}</td>
+                                    <td style="padding: 10px; text-align: center; font-size: 0.85rem; font-weight: 500;">GPA: ${(semesterGroups[semester].reduce((sum, course) => {
+                                        let gpa = 0;
+                                        if (course.grade === 'A+') gpa = 4.0;
+                                        else if (course.grade === 'A') gpa = 3.7;
+                                        else if (course.grade === 'B+') gpa = 3.3;
+                                        else if (course.grade === 'B') gpa = 3.0;
+                                        return sum + gpa * course.credit;
+                                    }, 0) / semesterGroups[semester].reduce((sum, course) => sum + course.credit, 0)).toFixed(2)}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `).join('')}
+                
+                <div style="text-align: center; margin-top: 30px; padding: 15px; border-top: 1px solid var(--border-color);">
+                    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="var(--success-color)" style="margin-right: 10px;">
+                            <path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" />
+                        </svg>
+                        <p style="margin: 0; font-size: 0.9rem; color: var(--success-color);">此成绩单已通过区块链验证，内容真实有效。</p>
+                    </div>
+                    <p style="margin: 0; font-size: 0.85rem; color: var(--text-color);">北京大学教务处 2022-06-30</p>
+                </div>
+            </div>
+        `;
+        
+        // 添加到文档
+        document.body.appendChild(transcriptModal);
+        
+        // 绑定关闭按钮事件
+        transcriptModal.querySelector('.modal-close-btn').addEventListener('click', function() {
+            document.body.removeChild(transcriptModal);
+        });
+        
+        // 绑定下载PDF按钮事件
+        document.getElementById('download-transcript').addEventListener('click', function() {
+            showNotification('下载开始', '成绩单PDF下载已开始，请稍等片刻。', 'info');
+            
+            setTimeout(() => {
+                showNotification('下载完成', '成绩单PDF已成功下载到您的设备。', 'success');
+            }, 2000);
+        });
+        
+        // 绑定分享按钮事件
+        document.getElementById('share-transcript').addEventListener('click', function() {
+            copyToClipboard(window.location.href + '?transcript=2018110101');
+            showNotification('分享成功', '成绩单链接已复制到剪贴板', 'success');
+        });
+        
+        // 为课程行添加悬停效果
+        document.querySelectorAll('.course-row').forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = 'rgba(0, 0, 0, 0.02)';
+            });
+            
+            row.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = 'transparent';
+            });
+        });
+    }
+    
+    // 查看研究项目
+    function showResearchProjects() {
+        // 创建研究项目模态框
+        const researchModal = document.createElement('div');
+        researchModal.id = 'research-modal';
+        researchModal.className = 'modal';
+        researchModal.style.cssText = 'display: block; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; border-radius: 10px; width: 90%; max-width: 800px; z-index: 120; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); overflow: hidden;';
+        
+        // 样例研究项目数据
+        const projectsData = [
+            {
+                title: '基于区块链技术的教育证书管理系统',
+                status: '进行中',
+                progress: 70,
+                description: '本项目旨在开发一个基于区块链技术的教育证书管理系统，解决传统证书容易伪造、验证困难等问题。系统将实现证书上链、多方验证、隐私保护等功能。',
+                advisor: '李明教授',
+                startDate: '2022-09',
+                expectedEndDate: '2024-06'
+            },
+            {
+                title: '教育数据共享隐私保护机制研究',
+                status: '已完成',
+                progress: 100,
+                description: '本研究探讨了在教育数据共享过程中的隐私保护机制，提出了一种基于零知识证明的数据共享方案，有效解决了数据共享与隐私保护之间的矛盾。',
+                advisor: '李明教授',
+                startDate: '2022-09',
+                endDate: '2023-06'
+            }
+        ];
+        
+        // 构建模态框内容
+        researchModal.innerHTML = `
+            <div style="padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 1.2rem; color: var(--dark-color);">研究项目</h3>
+                <button class="modal-close-btn" style="background: none; border: none; cursor: pointer; color: var(--text-color); font-size: 1.5rem;">&times;</button>
+            </div>
+            <div style="padding: 20px; max-height: 70vh; overflow-y: auto;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div>
+                        <h4 style="margin: 0 0 5px 0; font-size: 1.1rem; color: var(--dark-color);">张力 / 计算机科学与技术</h4>
+                        <p style="margin: 0; font-size: 0.9rem; color: var(--text-color);">硕士研究生 | 导师: 李明教授</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <h4 style="margin: 0 0 5px 0; font-size: 1.1rem; color: var(--dark-color);">研究方向: 区块链技术与应用</h4>
+                        <p style="margin: 0; font-size: 0.9rem; color: var(--text-color);">已修学分: 42/60</p>
+                    </div>
+                </div>
+                
+                <div class="research-projects">
+                    ${projectsData.map(project => `
+                        <div class="project-card" style="background-color: rgba(0, 0, 0, 0.02); border-radius: 10px; padding: 20px; margin-bottom: 20px; transition: transform 0.3s, box-shadow 0.3s;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                                <h4 style="margin: 0; font-size: 1.1rem; color: var(--dark-color);">${project.title}</h4>
+                                <span class="badge badge-${project.status === '进行中' ? 'warning' : 'success'}" style="padding: 5px 10px;">${project.status}</span>
+                            </div>
+                            <p style="font-size: 0.9rem; color: var(--text-color); margin-bottom: 15px;">${project.description}</p>
+                            
+                            <div style="margin-bottom: 15px;">
+                                <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 5px;">研究进度</p>
+                                <div style="display: flex; align-items: center;">
+                                    <div style="flex: 1; height: 6px; background-color: var(--light-color); border-radius: 3px; overflow: hidden; margin-right: 10px;">
+                                        <div style="height: 100%; width: ${project.progress}%; background-color: ${project.status === '进行中' ? 'var(--warning-color)' : 'var(--success-color)'};"></div>
+                                    </div>
+                                    <span style="font-size: 0.85rem; font-weight: 500; color: var(--dark-color);">${project.progress}%</span>
+                                </div>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                                <div>
+                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">指导老师</p>
+                                    <p style="font-size: 0.9rem; font-weight: 500; color: var(--dark-color);">${project.advisor}</p>
+                                </div>
+                                <div>
+                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">开始时间</p>
+                                    <p style="font-size: 0.9rem; font-weight: 500; color: var(--dark-color);">${project.startDate}</p>
+                                </div>
+                                <div>
+                                    <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 3px;">${project.status === '进行中' ? '预计完成' : '完成时间'}</p>
+                                    <p style="font-size: 0.9rem; font-weight: 500; color: var(--dark-color);">${project.status === '进行中' ? project.expectedEndDate : project.endDate}</p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                                <button class="view-detail-btn" style="padding: 6px 12px; background-color: white; color: var(--primary-color); border: 1px solid var(--primary-color); border-radius: 5px; font-size: 0.9rem; cursor: pointer;">查看详情</button>
+                                ${project.status === '已完成' ? `
+                                    <button class="view-paper-btn" style="padding: 6px 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 5px; font-size: 0.9rem; cursor: pointer;">阅读论文</button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <h4 style="font-size: 1rem; color: var(--dark-color); margin-bottom: 15px;">课题组</h4>
+                    <div style="display: flex; justify-content: center; gap: 20px;">
+                        <div style="text-align: center;">
+                            <div style="width: 60px; height: 60px; border-radius: 50%; background-color: var(--light-color); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+                                <svg viewBox="0 0 24 24" width="30" height="30" fill="var(--primary-color)">
+                                    <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" />
+                                </svg>
+                            </div>
+                            <p style="margin: 0; font-size: 0.9rem; font-weight: 500; color: var(--dark-color);">李明教授</p>
+                            <p style="margin: 0; font-size: 0.8rem; color: var(--text-color);">导师</p>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="width: 60px; height: 60px; border-radius: 50%; background-color: var(--light-color); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+                                <svg viewBox="0 0 24 24" width="30" height="30" fill="var(--primary-color)">
+                                    <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" />
+                                </svg>
+                            </div>
+                            <p style="margin: 0; font-size: 0.9rem; font-weight: 500; color: var(--dark-color);">王研</p>
+                            <p style="margin: 0; font-size: 0.8rem; color: var(--text-color);">博士生</p>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="width: 60px; height: 60px; border-radius: 50%; background-color: var(--light-color); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+                                <svg viewBox="0 0 24 24" width="30" height="30" fill="var(--primary-color)">
+                                    <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" />
+                                </svg>
+                            </div>
+                            <p style="margin: 0; font-size: 0.9rem; font-weight: 500; color: var(--dark-color);">张力</p>
+                            <p style="margin: 0; font-size: 0.8rem; color: var(--text-color);">硕士生</p>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="width: 60px; height: 60px; border-radius: 50%; background-color: var(--light-color); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+                                <svg viewBox="0 0 24 24" width="30" height="30" fill="var(--primary-color)">
+                                    <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" />
+                                </svg>
+                            </div>
+                            <p style="margin: 0; font-size: 0.9rem; font-weight: 500; color: var(--dark-color);">李华</p>
+                            <p style="margin: 0; font-size: 0.8rem; color: var(--text-color);">硕士生</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // 添加到文档
+        document.body.appendChild(researchModal);
+        
+        // 绑定关闭按钮事件
+        researchModal.querySelector('.modal-close-btn').addEventListener('click', function() {
+            document.body.removeChild(researchModal);
+        });
+        
+        // 为项目卡片添加悬停效果
+        document.querySelectorAll('.project-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+                this.style.boxShadow = 'var(--shadow-md)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = 'none';
+            });
+        });
+        
+        // 绑定查看详情按钮事件
+        document.querySelectorAll('.view-detail-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const projectTitle = this.closest('.project-card').querySelector('h4').textContent;
+                showNotification('功能提示', `查看"${projectTitle}"详情功能即将上线`, 'info');
+            });
+        });
+        
+        // 绑定阅读论文按钮事件
+        document.querySelectorAll('.view-paper-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const projectTitle = this.closest('.project-card').querySelector('h4').textContent;
+                showNotification('下载开始', `"${projectTitle}"论文下载已开始，请稍等片刻。`, 'info');
+                
+                setTimeout(() => {
+                    showNotification('下载完成', `"${projectTitle}"论文已成功下载到您的设备。`, 'success');
+                }, 2000);
+            });
+        });
+    }
+    </script>
+
+    <script>
+    // 显示所有证书
+    function showAllCertificates() {
+        // 创建证书列表模态框
+        const certificatesModal = document.createElement('div');
+        certificatesModal.id = 'all-certificates-modal';
+        certificatesModal.className = 'modal';
+        certificatesModal.style.cssText = 'display: block; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; border-radius: 10px; width: 90%; max-width: 900px; z-index: 120; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); overflow: hidden;';
+        
+        // 样例证书数据
+        const certificatesData = [
+            {
+                id: 1,
+                type: '本科学历证书',
+                school: '北京大学',
+                major: '计算机科学与技术',
+                degree: '工学学士',
+                graduationDate: '2022-06-30',
+                verified: true
+            },
+            {
+                id: 2,
+                type: '硕士学历证书',
+                school: '北京大学',
+                major: '计算机科学与技术',
+                degree: '工学硕士',
+                graduationDate: '在读',
+                verified: true
+            },
+            {
+                id: 3,
+                type: '英语六级证书',
+                school: 'CET',
+                score: '625',
+                date: '2020-12-20',
+                verified: true
+            },
+            {
+                id: 4,
+                type: '计算机等级考试四级证书',
+                school: 'NCRE',
+                specification: '数据库工程师',
+                date: '2021-03-15',
+                verified: true
+            }
+        ];
+        
+        // 构建模态框内容
+        certificatesModal.innerHTML = `
+            <div style="padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 1.2rem; color: var(--dark-color);">全部证书</h3>
+                <button class="modal-close-btn" style="background: none; border: none; cursor: pointer; color: var(--text-color); font-size: 1.5rem;">&times;</button>
+            </div>
+            <div style="padding: 20px; max-height: 70vh; overflow-y: auto;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h4 style="margin: 0; font-size: 1rem; color: var(--dark-color);">张力的证书 (${certificatesData.length})</h4>
+                    <button id="add-certificate" style="padding: 8px 15px; background-color: var(--primary-color); color: white; border: none; border-radius: 5px; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 5px;">
+                            <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                        </svg>
+                        添加证书
+                    </button>
+                </div>
+                
+                <div class="certificates-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+                    ${certificatesData.map(cert => `
+                        <div class="certificate-card-grid" style="background-color: rgba(0, 0, 0, 0.02); border-radius: 10px; padding: 20px; transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; position: relative;">
+                            ${cert.verified ? `
+                                <div style="position: absolute; top: 15px; right: 15px;">
+                                    <svg viewBox="0 0 24 24" width="22" height="22" fill="var(--success-color)">
+                                        <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M11,16.5L6.5,12L7.91,10.59L11,13.67L16.59,8.09L18,9.5L11,16.5Z" />
+                                    </svg>
+                                </div>
+                            ` : ''}
+                            
+                            <div style="text-align: center; margin-bottom: 15px;">
+                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgMTlMMTkgMTIuNTM0NVY1TDEyIDExLjVMNSA1VjEyLjUzNDVMMTIgMTlaIiBzdHJva2U9IiMxQTI5ODAiIHN0cm9rZS13aWR0aD0iMiIgLz48L3N2Zz4=" alt="${cert.school}校徽" style="width: 60px; height: 60px;">
+                                <h4 style="font-size: 1rem; font-weight: 600; color: var(--dark-color); margin: 10px 0 5px 0;">${cert.type}</h4>
+                                <p style="font-size: 0.85rem; color: var(--text-color); margin: 0;">${cert.school}</p>
+                            </div>
+                            
+                            <div style="background-color: rgba(255, 255, 255, 0.5); border-radius: 5px; padding: 10px; margin-bottom: 15px;">
+                                ${cert.major ? `
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                        <span style="font-size: 0.8rem; color: var(--text-color);">专业</span>
+                                        <span style="font-size: 0.8rem; font-weight: 500; color: var(--dark-color);">${cert.major}</span>
+                                    </div>
+                                ` : ''}
+                                
+                                ${cert.degree ? `
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                        <span style="font-size: 0.8rem; color: var(--text-color);">学位</span>
+                                        <span style="font-size: 0.8rem; font-weight: 500; color: var(--dark-color);">${cert.degree}</span>
+                                    </div>
+                                ` : ''}
+                                
+                                ${cert.score ? `
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                        <span style="font-size: 0.8rem; color: var(--text-color);">分数</span>
+                                        <span style="font-size: 0.8rem; font-weight: 500; color: var(--dark-color);">${cert.score}</span>
+                                    </div>
+                                ` : ''}
+                                
+                                ${cert.specification ? `
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                        <span style="font-size: 0.8rem; color: var(--text-color);">方向</span>
+                                        <span style="font-size: 0.8rem; font-weight: 500; color: var(--dark-color);">${cert.specification}</span>
+                                    </div>
+                                ` : ''}
+                                
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="font-size: 0.8rem; color: var(--text-color);">${cert.graduationDate ? '毕业时间' : '获得时间'}</span>
+                                    <span style="font-size: 0.8rem; font-weight: 500; color: var(--dark-color);">${cert.graduationDate || cert.date}</span>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: 10px;">
+                                <button class="view-cert-btn" data-id="${cert.id}" style="flex: 1; background-color: var(--primary-color); color: white; border: none; padding: 8px 0; border-radius: 5px; font-size: 0.8rem; cursor: pointer;">查看详情</button>
+                                <button class="download-cert-btn" data-id="${cert.id}" style="flex: 1; background-color: white; color: var(--primary-color); border: 1px solid var(--primary-color); padding: 8px 0; border-radius: 5px; font-size: 0.8rem; cursor: pointer;">下载证书</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        
+        // 添加到文档
+        document.body.appendChild(certificatesModal);
+        
+        // 绑定关闭按钮事件
+        certificatesModal.querySelector('.modal-close-btn').addEventListener('click', function() {
+            document.body.removeChild(certificatesModal);
+        });
+        
+        // 为证书卡片添加悬停效果
+        document.querySelectorAll('.certificate-card-grid').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+                this.style.boxShadow = 'var(--shadow-md)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = 'none';
+            });
+        });
+        
+        // 绑定查看详情按钮事件
+        document.querySelectorAll('.view-cert-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const certId = parseInt(this.getAttribute('data-id'));
+                const cert = certificatesData.find(c => c.id === certId);
+                
+                if (cert) {
+                    // 关闭当前模态框
+                    document.body.removeChild(certificatesModal);
+                    
+                    // 查找对应证书卡片并显示详情
+                    if (cert.type === '本科学历证书' || cert.type === '硕士学历证书') {
+                        const index = cert.type === '本科学历证书' ? 0 : 1;
+                        const certificateCard = document.querySelectorAll('.card-body .certificate-card')[index];
+                        if (certificateCard) {
+                            showCertificateDetail(cert.type, certificateCard);
+                        }
+                } else {
+                        showNotification('功能提示', `查看${cert.type}详情功能即将上线`, 'info');
+                    }
+                }
+            });
+        });
+        
+        // 绑定下载证书按钮事件
+        document.querySelectorAll('.download-cert-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const certId = parseInt(this.getAttribute('data-id'));
+                const cert = certificatesData.find(c => c.id === certId);
+                
+                if (cert) {
+                    downloadCertificate(cert.type);
+                }
+            });
+        });
+        
+        // 绑定添加证书按钮事件
+        document.getElementById('add-certificate').addEventListener('click', function() {
+            showAddCertificateDialog();
+        });
+    }
+    
+    // 显示添加证书对话框
+    function showAddCertificateDialog() {
+        // 创建添加证书对话框
+        const addCertDialog = document.createElement('div');
+        addCertDialog.id = 'add-certificate-dialog';
+        addCertDialog.className = 'modal';
+        addCertDialog.style.cssText = 'display: block; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; border-radius: 10px; width: 90%; max-width: 500px; z-index: 130; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); overflow: hidden;';
+        
+        // 构建对话框内容
+        addCertDialog.innerHTML = `
+            <div style="padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 1.2rem; color: var(--dark-color);">添加证书</h3>
+                <button class="modal-close-btn" style="background: none; border: none; cursor: pointer; color: var(--text-color); font-size: 1.5rem;">&times;</button>
+            </div>
+            <div style="padding: 20px;">
+                <div style="margin-bottom: 20px;">
+                    <label for="cert-type" style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--dark-color);">证书类型</label>
+                    <select id="cert-type" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; font-size: 0.9rem;">
+                        <option value="">选择证书类型</option>
+                        <option value="education">学历证书</option>
+                        <option value="language">语言能力证书</option>
+                        <option value="professional">职业资格证书</option>
+                        <option value="competition">竞赛获奖证书</option>
+                        <option value="other">其他证书</option>
+                    </select>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label for="cert-name" style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--dark-color);">证书名称</label>
+                    <input type="text" id="cert-name" placeholder="输入证书名称" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; font-size: 0.9rem;">
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label for="cert-issuer" style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--dark-color);">颁发机构</label>
+                    <input type="text" id="cert-issuer" placeholder="输入颁发机构" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; font-size: 0.9rem;">
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label for="cert-date" style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--dark-color);">获得日期</label>
+                    <input type="date" id="cert-date" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; font-size: 0.9rem;">
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label for="cert-file" style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--dark-color);">上传证书</label>
+                    <input type="file" id="cert-file" accept=".pdf,.jpg,.jpeg,.png" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; font-size: 0.9rem;">
+                    <p style="margin: 5px 0 0 0; font-size: 0.8rem; color: var(--text-color);">支持PDF、JPG、PNG格式，文件大小不超过10MB</p>
+                </div>
+                
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                    <button id="cancel-add-cert" style="padding: 10px 20px; background-color: var(--light-color); color: var(--text-color); border: none; border-radius: 5px; font-size: 0.9rem; cursor: pointer;">取消</button>
+                    <button id="submit-add-cert" style="padding: 10px 20px; background-color: var(--primary-color); color: white; border: none; border-radius: 5px; font-size: 0.9rem; cursor: pointer;">提交</button>
+                </div>
+            </div>
+        `;
+        
+        // 添加到文档
+        document.body.appendChild(addCertDialog);
+        
+        // 绑定关闭按钮事件
+        addCertDialog.querySelector('.modal-close-btn').addEventListener('click', function() {
+            document.body.removeChild(addCertDialog);
+        });
+        
+        // 绑定取消按钮事件
+        document.getElementById('cancel-add-cert').addEventListener('click', function() {
+            document.body.removeChild(addCertDialog);
+        });
+        
+        // 绑定提交按钮事件
+        document.getElementById('submit-add-cert').addEventListener('click', function() {
+            const certType = document.getElementById('cert-type').value;
+            const certName = document.getElementById('cert-name').value;
+            const certIssuer = document.getElementById('cert-issuer').value;
+            const certDate = document.getElementById('cert-date').value;
+            const certFile = document.getElementById('cert-file').files[0];
+            
+            // 简单表单验证
+            if (!certType || !certName || !certIssuer || !certDate) {
+                showNotification('提交失败', '请填写完整的证书信息', 'error');
+                return;
+            }
+            
+            if (!certFile) {
+                showNotification('提交失败', '请上传证书文件', 'error');
+                return;
+            }
+            
+            // 关闭对话框
+            document.body.removeChild(addCertDialog);
+            
+            // 显示上传中通知
+            showNotification('上传中', '正在上传证书文件，请稍等...', 'info');
+            
+            // 模拟上传过程
+            setTimeout(() => {
+                showNotification('上传成功', '证书已成功上传，等待审核', 'success');
+                
+                // 模拟添加新消息通知
+                setTimeout(() => {
+                    showNotification('新消息', '您的证书已提交成功，正在等待审核', 'info');
+                }, 3000);
+            }, 2000);
+        });
+    }
+</script>
+
+</html> 
 </html> 
