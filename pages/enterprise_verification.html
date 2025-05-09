@@ -1496,7 +1496,7 @@
                                             <label class="form-label">颁发机构</label>
                                             <select class="form-select">
                                                 <option value="">选择颁发机构</option>
-                                                <option value="1">北京大学</option>
+                                                <option value="1">学链通大学</option>
                                                 <option value="2">清华大学</option>
                                                 <option value="3">上海交通大学</option>
                                                 <option value="4">复旦大学</option>
@@ -1651,7 +1651,7 @@
                                             </div>
                                             <div class="certificate-data">
                                                 <div class="certificate-label">学校</div>
-                                                <div class="certificate-value">北京大学</div>
+                                                <div class="certificate-value">学链通大学</div>
                                             </div>
                                             <div class="certificate-data">
                                                 <div class="certificate-label">专业</div>
@@ -1824,7 +1824,7 @@
                                 <div class="history-list">
                                     <div class="history-item">
                                         <div class="history-item-header">
-                                            <div class="history-item-title">张伟 - 北京大学</div>
+                                            <div class="history-item-title">张伟 - 学链通大学</div>
                                             <div class="history-item-date">2023-05-22 14:30</div>
                                         </div>
                                         <div class="history-item-content">
@@ -2167,9 +2167,9 @@
                     resultCardBody.innerHTML = '';
                     
                     // 重新添加结果元素
-                    if (isSuccess) {
+                if (isSuccess) {
                         resultCardBody.appendChild(successResult);
-                        successResult.style.display = 'block';
+                    successResult.style.display = 'block';
                         
                         // 添加动画效果
                         const resultIcon = successResult.querySelector('.result-icon-success');
@@ -2188,9 +2188,9 @@
                         
                         // 更新证书信息
                         updateCertificateInfo();
-                    } else {
+                } else {
                         resultCardBody.appendChild(failedResult);
-                        failedResult.style.display = 'block';
+                    failedResult.style.display = 'block';
                         
                         // 动画效果
                         const resultIcon = failedResult.querySelector('.result-icon-danger');
@@ -2308,7 +2308,7 @@
                 // 添加记录到历史记录
                 addHistoryRecord({
                     name: activeMethod === 'person' ? personForm.querySelector('input').value : '张伟',
-                    school: activeMethod === 'person' ? personForm.querySelector('input:nth-child(3)').value : '北京大学',
+                    school: activeMethod === 'person' ? personForm.querySelector('input:nth-child(3)').value : '学链通大学',
                     certNumber: activeMethod === 'certificate' ? certificateForm.querySelector('input').value : '10384120200601546X',
                     timestamp: timestampStr
                 });
