@@ -201,6 +201,7 @@ npm start
 - `GET /api/blockchain/blocks`: 获取最新区块列表
 - `GET /api/blockchain/transactions`: 获取最新交易列表
 
+
 ### 证书管理
 - `POST /api/certificates`: 创建证书
 - `GET /api/certificates`: 获取证书列表
@@ -214,12 +215,16 @@ npm start
 - 展示系统品牌、产品特点、技术优势、应用场景、合作伙伴等信息。
 - 支持导航到各大功能模块（如登录、联系我们等）。
 - 响应式设计，适配PC和移动端。
+![image](https://github.com/user-attachments/assets/49d674bc-7bcf-488a-ae38-3c8561e2f56f)
+
 
 ## 登录与注册（login.html）
 - 支持多角色登录（学生、高校、企业、政府部门）。
 - 不同角色注册表单自适应显示（如学生需填写验证码）。
 - 登录后根据角色跳转到对应的功能页面。
 - 表单校验与错误提示，带有加载动画。
+![image](https://github.com/user-attachments/assets/9b13ed4f-eb46-486f-a70c-030cd569b60f)
+
 
 ## 企业验证平台（enterprise_verification.html）
 - 企业用户可通过三种方式验证学历信息：
@@ -230,6 +235,8 @@ npm start
 - 验证结果展示（成功/失败），并显示详细学历信息及区块链存证信息。
 - 验证历史记录列表，支持搜索、筛选、分页、导出。
 - 批量验证入口。
+![image](https://github.com/user-attachments/assets/9b009568-05a9-4a4f-8163-a435c4596c61)
+
 
 ## 区块链浏览器（blockchain_explorer.html）
 - 区块链网络概览（区块高度、TPS、节点数、总交易数）。
@@ -238,6 +245,7 @@ npm start
 - 区块链数据统计（趋势图、节点分布饼图）。
 - 节点状态监控（CPU/内存/区块高度/状态），支持刷新。
 - 数据导出、报告生成功能（提示即将上线）。
+![image](https://github.com/user-attachments/assets/ea7390f0-50e5-49dd-b9c2-93b0a76cae0e)
 
 ##  证书验证（certificate_verification.html）
 - 证书验证页面（目前主要为样式和结构，功能待完善）。
