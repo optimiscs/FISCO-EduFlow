@@ -3,6 +3,8 @@
 > 第18届中国大学生计算机设计大赛 软件应用与开发-区块链应用与开发 作品 
 
 > 学链通是基于fisco区块链技术的学历全流程管理系统，立足于 **区块链技术** 赋能教育新基建的国家战略方向，应用于 **跨境学历互认、政企人才快速核验、个人教育数据主权管理** 等高价值场景，致力于保障人才流动中的**可信认证与隐私安全**，能够提供学历信息上链、证书验证、企业验证等功能。除此之外，区块链浏览器是系统的重要组成部分，用于查看和监控区块链网络的实时数据。
+>
+> 可以访问我们的 [作品主页](https://optimiscs.github.io/FISCO-EduFlow/index.html ) 来了解更多信息
 
 ## 项目简介
 ![【演示文档-PPT】学链通—基于 FISCO 区块链的学历全流程管理系统_02](https://github.com/user-attachments/assets/2f0298c5-6337-4065-a381-5c1be2b65dc9)
@@ -18,7 +20,8 @@
 - **过度依赖**第三方认证机构
 - 文件格式单一，**兼容性差**
 - 隐私保护能力**有限**
--  **中心化**管理模式，系统**鲁棒性差**
+- **中心化**管理模式，系统**鲁棒性差**
+
 ![image](https://github.com/user-attachments/assets/a46d7327-7397-4fa5-bb30-ab23783b5955)
 
 
@@ -27,7 +30,7 @@
 ![【演示文档-PPT】学链通—基于 FISCO 区块链的学历全流程管理系统_07](https://github.com/user-attachments/assets/cc46c0d5-9c58-47bd-a138-5277eea3eeea)
 
 ## 战略支持
-随着国民经济的不断增长与科技的发展，十三届全国人大四次会议明确提出要加快数字化社会发展， 区块链成为十四五规划中的七大发展产业之一这标志着**区块链升级为国家战略**。2023年，我国区块链专利申请量、授权量分别为**8.4万件**和**2.4万件**，持续位居**全球首位**。国内区块链产业园区分布在**18个省、直辖市**，陆续**开源**了FISCO BCOS、ChainMaker**等区块链底层项目。这为新型学历认证系统的开发提供了技术支持。
+随着国民经济的不断增长与科技的发展，十三届全国人大四次会议明确提出要加快数字化社会发展， 区块链成为十四五规划中的七大发展产业之一这标志着**区块链升级为国家战略**。2023年，我国区块链专利申请量、授权量分别为**8.4万件**和**2.4万件**，持续位居**全球首位**。国内区块链产业园区分布在**18个省、直辖市**，陆续**开源**了**FISCO BCOS、ChainMaker**等区块链底层项目。这为新型学历认证系统的开发提供了技术支持。
 ![【演示文档-PPT】学链通—基于 FISCO 区块链的学历全流程管理系统_08](https://github.com/user-attachments/assets/24eb3dce-a6ff-48a9-883e-c0a8861978e0)
 
 
@@ -108,12 +111,29 @@
 ### 前端部署
 
 1. 克隆项目到本地
-```bash
-git clone https://github.com/your-username/xuchain.git
-cd xuchain
-```
 
-2. 使用Web服务器（如Nginx, Apache）部署前端文件
+    ```bash
+    git clone https://github.com/your-username/xuchain.git
+    cd xuchain
+    ```
+
+2. 进入`assert`文件夹
+
+    ```
+    cd assert
+    ```
+
+3. 运行以下命令安装依赖：
+
+    ```
+    npm install
+    ```
+
+4. 启动前端开发服务器：
+
+    ```
+    npm start
+    ```
 
 ### 后端部署
 
@@ -129,46 +149,13 @@ cp .env.example .env
 # 编辑.env文件，配置必要的环境变量
 ```
 
-3. 启动MongoDB数据库
+3. 启动后端服务
 ```bash
-# 确保MongoDB服务已启动
+node server.js
+
+# 自动重启 Node.js 应用
+npx nodemon server.js
 ```
-
-4. 启动FISCO BCOS节点
-```bash
-# 确保FISCO BCOS节点已启动
-```
-
-5. 启动后端服务
-```bash
-# 开发环境
-npm run dev
-
-# 生产环境
-npm start
-```
-
-## API接口
-
-### 用户认证
-- `POST /api/auth/register`: 用户注册
-- `POST /api/auth/login`: 用户登录
-- `GET /api/auth/me`: 获取当前用户信息
-
-### 区块链浏览
-- `GET /api/blockchain/overview`: 获取区块链概览
-- `GET /api/blockchain/blocks`: 获取最新区块列表
-- `GET /api/blockchain/transactions`: 获取最新交易列表
-
-
-### 证书管理
-- `POST /api/certificates`: 创建证书
-- `GET /api/certificates`: 获取证书列表
-
-### 验证服务
-- `POST /api/verify/certificate-number`: 通过证书编号验证
-- `POST /api/verify/personal-info`: 通过个人信息验证
-- `GET /api/verify/history`: 获取验证历史记录
 
 ## 首页（index.html）
 - 展示系统品牌、产品特点、技术优势、应用场景、合作伙伴等信息。
@@ -232,7 +219,6 @@ npm start
 
 展望未来五年，我们预期**2025年至2026年**为初创期，主要进行**产品打磨与场景试点**，为作品顺利进入市场打下坚实的基础。**2026年至2028年**为发展期，我们将致力于实现**产品的全面商业化与积极的市场拓展**。**2028年及以后，我们将步入成熟期**，我们将实现**行业标准化引领与智能生态的全面建设**，最终构建起一个高阶的、完善的智能教育生态基础设施。
 ![【演示文档-PPT】学链通—基于 FISCO 区块链的学历全流程管理系统_21](https://github.com/user-attachments/assets/8cbb35c1-a944-4123-b7d7-56a575818b7d)
-
 
 学链通，一个深度融合**区块链、CA认证及零知识证明**等前沿技术，专注于研发**安全可信、高效便捷**的学历全流程管理系统。通过赋能学历信息的**可信流转与高效验证**，致力于**优化人才流动机制**，为国家**人才强国战略**贡献核心力量。
 ![【演示文档-PPT】学链通—基于 FISCO 区块链的学历全流程管理系统_22](https://github.com/user-attachments/assets/b68d4509-9dc6-4533-bdb3-c7ffb72b0ed9)
