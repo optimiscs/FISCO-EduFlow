@@ -225,5 +225,5 @@ npx nodemon server.js
 
 ## 联系方式
 
-如有问题或建议，请联系：support@xuchain.edu.cn
+如有问题或建议，请联系：wisdomgo@163.com
 
