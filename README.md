@@ -75,7 +75,8 @@
 
 
 零知识证明技术可以有效保护用户的隐私安全信息，即可让验证者相信他们是正确的。在系统中，我们采用零知识证明**保证学生的“非必要隐私信息”**，**防止隐私的“过度泄露”**。
-![image](https://github.com/user-attachments/assets/4d20a7f7-4698-4d59-86c4-7142d06a5320)
+![image](https://github.com/user-attachments/assets/46139042-517c-42a8-b2ff-8a22797d75fb)
+
 
 
 
