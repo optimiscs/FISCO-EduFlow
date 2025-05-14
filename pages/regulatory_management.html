@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教育部门监管管理系统 - 学链通</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/regulatory-management.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 侧边导航栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                    </svg>
+                </div>
+                <div class="logo-text">学链通管理</div>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#dashboard" class="nav-link active">
+                        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect width="7" height="9" x="3" y="3" rx="1"></rect>
+                            <rect width="7" height="5" x="14" y="3" rx="1"></rect>
+                            <rect width="7" height="9" x="14" y="12" rx="1"></rect>
+                            <rect width="7" height="5" x="3" y="16" rx="1"></rect>
+                        </svg>
+                        <span>系统概览</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#nodes" class="nav-link">
+                        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                        </svg>
+                        <span>节点管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#transactions" class="nav-link">
+                        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                        </svg>
+                        <span>交易监控</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#alerts" class="nav-link">
+                        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        <span>异常警报</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#appeals" class="nav-link">
+                        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        <span>申诉处理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#settings" class="nav-link">
+                        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                        <span>系统设置</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- 主内容区域 -->
+        <main class="main-content">
+            <!-- 顶部状态栏 -->
+            <header class="topbar">
+                <h1 class="page-title">教育部门管理</h1>
+                <div class="user-menu">
+                    <div class="notification-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            <span>管</span>
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">管理员</div>
+                            <div class="user-role">系统管理员</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 内容区域 -->
+            <div class="content-wrapper">
+                <!-- 系统状态面板 -->
+                <div class="row">
+                    <div class="col col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">系统状态</h2>
+                                <div class="system-status">
+                                    <div class="status-indicator status-active"></div>
+                                    <div class="status-text">系统运行中</div>
+                                    <span style="margin-left: 15px; font-size: 0.8rem; color: #888;">最后更新: 2023-11-01 08:30:22</span>
+                                    <button class="btn btn-outline btn-sm" style="margin-left: 10px;">刷新状态</button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col col-3">
+                                        <div>CPU 使用率</div>
+                                        <div class="progress-bar">
+                                            <div class="progress-bar-inner" style="width: 45%; background-color: var(--primary-color);"></div>
+                                        </div>
+                                        <div class="progress-info">
+                                            <span>45%</span>
+                                            <span>正常</span>
+                                        </div>
+                                    </div>
+                                    <div class="col col-3">
+                                        <div>内存使用率</div>
+                                        <div class="progress-bar">
+                                            <div class="progress-bar-inner" style="width: 65%; background-color: var(--warning-color);"></div>
+                                        </div>
+                                        <div class="progress-info">
+                                            <span>65%</span>
+                                            <span>偏高</span>
+                                        </div>
+                                    </div>
+                                    <div class="col col-3">
+                                        <div>存储空间</div>
+                                        <div class="progress-bar">
+                                            <div class="progress-bar-inner" style="width: 52%; background-color: var(--primary-color);"></div>
+                                        </div>
+                                        <div class="progress-info">
+                                            <span>52%</span>
+                                            <span>正常</span>
+                                        </div>
+                                    </div>
+                                    <div class="col col-3">
+                                        <div>网络带宽</div>
+                                        <div class="progress-bar">
+                                            <div class="progress-bar-inner" style="width: 28%; background-color: var(--success-color);"></div>
+                                        </div>
+                                        <div class="progress-info">
+                                            <span>28%</span>
+                                            <span>良好</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 节点管理部分 -->
+                <div class="row" id="node-management-section">
+                    <div class="col col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">节点管理</h2>
+                                <div class="card-tools">
+                                    <button class="btn btn-primary btn-sm" id="add-node-btn">添加节点</button>
+                                    <button class="btn btn-outline btn-sm" id="export-nodes-btn">导出列表</button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row" style="margin-bottom: 15px;">
+                                    <div class="col col-12" style="display: flex; align-items: center;">
+                                        <div class="search-box">
+                                            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <circle cx="11" cy="11" r="8"></circle>
+                                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                            </svg>
+                                            <input type="text" class="search-input" placeholder="搜索节点" id="node-search">
+                                        </div>
+                                        <select class="filter-select" id="node-type-filter">
+                                            <option value="all">所有类型</option>
+                                            <option value="school">学校节点</option>
+                                            <option value="gov">政府节点</option>
+                                            <option value="enterprise">企业节点</option>
+                                        </select>
+                                        <select class="filter-select" id="node-status-filter">
+                                            <option value="all">所有状态</option>
+                                            <option value="active">活跃</option>
+                                            <option value="inactive">非活跃</option>
+                                            <option value="pending">待审核</option>
+                                            <option value="suspended">已暂停</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" id="select-all-nodes"></th>
+                                            <th>节点ID</th>
+                                            <th>节点名称</th>
+                                            <th>类型</th>
+                                            <th>IP地址</th>
+                                            <th>状态</th>
+                                            <th>上线时间</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="nodes-table-body">
+                                        <tr>
+                                            <td><input type="checkbox" class="node-checkbox"></td>
+                                            <td>NODE001</td>
+                                            <td>北京大学节点</td>
+                                            <td>学校节点</td>
+                                            <td>192.168.1.101</td>
+                                            <td><span class="status-badge status-badge-active">活跃</span></td>
+                                            <td>2023-10-15 08:30:00</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline node-details-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline">日志</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><input type="checkbox" class="node-checkbox"></td>
+                                            <td>NODE002</td>
+                                            <td>教育部监管节点</td>
+                                            <td>政府节点</td>
+                                            <td>192.168.1.102</td>
+                                            <td><span class="status-badge status-badge-active">活跃</span></td>
+                                            <td>2023-10-10 09:15:00</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline node-details-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline">日志</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><input type="checkbox" class="node-checkbox"></td>
+                                            <td>NODE003</td>
+                                            <td>清华大学节点</td>
+                                            <td>学校节点</td>
+                                            <td>192.168.1.103</td>
+                                            <td><span class="status-badge status-badge-inactive">非活跃</span></td>
+                                            <td>2023-10-20 14:45:00</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline node-details-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline">日志</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><input type="checkbox" class="node-checkbox"></td>
+                                            <td>NODE004</td>
+                                            <td>腾讯企业节点</td>
+                                            <td>企业节点</td>
+                                            <td>192.168.1.104</td>
+                                            <td><span class="status-badge status-badge-pending">待审核</span></td>
+                                            <td>2023-10-28 16:20:00</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline node-details-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline">日志</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><input type="checkbox" class="node-checkbox"></td>
+                                            <td>NODE005</td>
+                                            <td>上海交大节点</td>
+                                            <td>学校节点</td>
+                                            <td>192.168.1.105</td>
+                                            <td><span class="status-badge status-badge-suspended">已暂停</span></td>
+                                            <td>2023-10-05 10:30:00</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline node-details-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline">日志</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <button class="btn btn-outline btn-sm" id="batch-operation-btn">批量操作</button>
+                                        <span style="margin-left: 10px; font-size: 0.8rem;">已选择 <span id="selected-count">0</span> 项</span>
+                                    </div>
+                                    <div class="pagination">
+                                        <div class="page-item active">1</div>
+                                        <div class="page-item">2</div>
+                                        <div class="page-item">3</div>
+                                        <div class="page-item">...</div>
+                                        <div class="page-item">10</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 交易监控部分 -->
+                <div class="row">
+                    <div class="col col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">交易数据监控</h2>
+                                <div class="card-tools">
+                                    <select class="filter-select" id="time-granularity">
+                                        <option value="day">日</option>
+                                        <option value="week">周</option>
+                                        <option value="month">月</option>
+                                        <option value="year">年</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="transactions-chart" height="250"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 异常警报部分 -->
+                <div class="row">
+                    <div class="col col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">异常警报</h2>
+                                <div class="card-tools">
+                                    <button class="btn btn-outline btn-sm" id="refresh-alerts-btn">刷新</button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div id="alerts-container">
+                                    <div class="alert-item" style="padding: 15px; border-left: 4px solid var(--danger-color); background: rgba(255, 82, 82, 0.05); margin-bottom: 15px; border-radius: 5px;">
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <strong style="color: var(--danger-color);">节点异常 #ALT001</strong>
+                                            <span style="font-size: 0.8rem; color: #888;">2023-11-01 07:15:22</span>
+                                        </div>
+                                        <div style="margin-top: 5px;">NODE003 (清华大学节点) 连接中断，已尝试重连3次</div>
+                                        <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+                                            <span class="status-badge status-badge-suspended">待处理</span>
+                                            <button class="btn btn-sm btn-outline">查看详情</button>
+                                        </div>
+                                    </div>
+                                    <div class="alert-item" style="padding: 15px; border-left: 4px solid var(--warning-color); background: rgba(255, 152, 0, 0.05); margin-bottom: 15px; border-radius: 5px;">
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <strong style="color: var(--warning-color);">交易延迟 #ALT002</strong>
+                                            <span style="font-size: 0.8rem; color: #888;">2023-11-01 05:30:15</span>
+                                        </div>
+                                        <div style="margin-top: 5px;">系统检测到交易确认时间异常延长，平均确认时间超过30秒</div>
+                                        <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+                                            <span class="status-badge status-badge-suspended">待处理</span>
+                                            <button class="btn btn-sm btn-outline">查看详情</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 申诉处理部分 -->
+                <div class="row">
+                    <div class="col col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">申诉处理</h2>
+                                <div class="card-tools">
+                                    <select class="filter-select" id="appeal-status-filter">
+                                        <option value="all">所有状态</option>
+                                        <option value="pending">待处理</option>
+                                        <option value="processing">处理中</option>
+                                        <option value="resolved">已解决</option>
+                                        <option value="rejected">已拒绝</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div id="appeals-container">
+                                    <div class="appeal-item" style="padding: 15px; border: 1px solid var(--border-color); margin-bottom: 15px; border-radius: 5px;">
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <strong>学历信息异议 #APP001</strong>
+                                            <span class="status-badge status-badge-pending">待处理</span>
+                                        </div>
+                                        <div style="margin-top: 5px; font-size: 0.9rem;">
+                                            <span style="color: #888;">申诉人:</span> 李明
+                                            <span style="margin-left: 15px; color: #888;">学号:</span> 20180101
+                                            <span style="margin-left: 15px; color: #888;">提交时间:</span> 2023-10-30 14:20:00
+                                        </div>
+                                        <div style="margin-top: 10px;">
+                                            <p>我的毕业证书信息有误，专业名称显示为"计算机科学"，但实际应为"计算机科学与技术"。</p>
+                                        </div>
+                                        <div style="margin-top: 10px; text-align: right;">
+                                            <button class="btn btn-sm btn-primary process-appeal-btn">处理申诉</button>
+                                        </div>
+                                    </div>
+                                    <div class="appeal-item" style="padding: 15px; border: 1px solid var(--border-color); margin-bottom: 15px; border-radius: 5px;">
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <strong>证书丢失补办 #APP002</strong>
+                                            <span class="status-badge status-badge-pending">待处理</span>
+                                        </div>
+                                        <div style="margin-top: 5px; font-size: 0.9rem;">
+                                            <span style="color: #888;">申诉人:</span> 张华
+                                            <span style="margin-left: 15px; color: #888;">学号:</span> 20150234
+                                            <span style="margin-left: 15px; color: #888;">提交时间:</span> 2023-10-29 09:45:00
+                                        </div>
+                                        <div style="margin-top: 10px;">
+                                            <p>由于个人原因，我的毕业证书原件遗失，需要申请电子版证书重新下载权限。</p>
+                                        </div>
+                                        <div style="margin-top: 10px; text-align: right;">
+                                            <button class="btn btn-sm btn-primary process-appeal-btn">处理申诉</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 页脚 -->
+            <footer class="footer">
+                © 2023 学链通 - 区块链学历管理系统 | 基于FISCO BCOS开发 | 版本 v1.2.5
+            </footer>
+        </main>
+    </div>
+
+    <!-- 节点详情弹窗 -->
+    <div id="node-details-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center;">
+        <div style="background: white; width: 80%; max-width: 800px; border-radius: 10px; padding: 20px; max-height: 80vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <h2 id="modal-node-title">节点详情</h2>
+                <button id="close-modal" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <div id="node-details-content">
+                <!-- 节点详情内容会通过JS动态生成 -->
+            </div>
+            <div style="text-align: right; margin-top: 20px;">
+                <button class="btn btn-outline" id="close-details-btn">关闭</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 添加节点弹窗 -->
+    <div id="add-node-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center;">
+        <div style="background: white; width: 80%; max-width: 600px; border-radius: 10px; padding: 20px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <h2>添加新节点</h2>
+                <button id="close-add-modal" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <form id="add-node-form">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px;">节点名称</label>
+                    <input type="text" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 5px;" required>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px;">节点类型</label>
+                    <select style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 5px;" required>
+                        <option value="">请选择</option>
+                        <option value="school">学校节点</option>
+                        <option value="gov">政府节点</option>
+                        <option value="enterprise">企业节点</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px;">IP地址</label>
+                    <input type="text" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 5px;" required>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px;">端口</label>
+                    <input type="number" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 5px;" required>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px;">公钥</label>
+                    <textarea style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 5px; height: 100px;" required></textarea>
+                </div>
+                <div style="text-align: right;">
+                    <button type="button" class="btn btn-outline" id="cancel-add-node">取消</button>
+                    <button type="submit" class="btn btn-primary" id="submit-add-node">添加</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 批量操作弹窗 -->
+    <div id="batch-operation-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center;">
+        <div style="background: white; width: 80%; max-width: 400px; border-radius: 10px; padding: 20px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <h2>批量操作</h2>
+                <button id="close-batch-modal" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <p style="margin-bottom: 20px;">已选择 <span id="batch-selected-count">0</span> 个节点，请选择操作：</p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button class="btn btn-outline" id="batch-activate">激活节点</button>
+                <button class="btn btn-outline" id="batch-deactivate">停用节点</button>
+                <button class="btn btn-outline" id="batch-delete">删除节点</button>
+                <button class="btn btn-outline" id="batch-export">导出节点信息</button>
+            </div>
+            <div style="text-align: right; margin-top: 20px;">
+                <button class="btn btn-outline" id="cancel-batch-operation">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 申诉处理弹窗 -->
+    <div id="process-appeal-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center;">
+        <div style="background: white; width: 80%; max-width: 600px; border-radius: 10px; padding: 20px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <h2 id="appeal-title">处理申诉</h2>
+                <button id="close-appeal-modal" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <div id="appeal-details" style="margin-bottom: 20px; padding: 15px; background: rgba(0,0,0,0.02); border-radius: 5px;">
+                <!-- 申诉详情内容会通过JS动态生成 -->
+            </div>
+            <form id="process-appeal-form">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px;">处理结果</label>
+                    <select id="appeal-result" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 5px;" required>
+                        <option value="">请选择</option>
+                        <option value="approve">批准申诉</option>
+                        <option value="reject">拒绝申诉</option>
+                        <option value="needmore">需要更多信息</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px;">处理说明</label>
+                    <textarea id="appeal-notes" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 5px; height: 100px;" required></textarea>
+                </div>
+                <div style="text-align: right;">
+                    <button type="button" class="btn btn-outline" id="cancel-process-appeal">取消</button>
+                    <button type="submit" class="btn btn-primary" id="submit-process-appeal">提交</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- 警报详情弹窗 -->
+    <div id="alert-details-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center;">
+        <div style="background: white; width: 80%; max-width: 600px; border-radius: 10px; padding: 20px; max-height: 80vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <h2 id="modal-alert-title">警报详情</h2>
+                <button id="close-alert-modal" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <div id="alert-details-content">
+                <!-- 警报详情内容会通过JS动态生成 -->
+            </div>
+            <div style="margin-top: 20px; display: flex; justify-content: space-between;">
+                <div>
+                    <button class="btn btn-primary" id="resolve-alert-btn">标记为已解决</button>
+                </div>
+                <div>
+                    <button class="btn btn-outline" id="close-alert-details-btn">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script src="../assets/js/regulatory-management.js"></script>
+</body>
+</html> 

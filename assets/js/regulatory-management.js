@@ -743,44 +743,375 @@ function initAlertSystem() {
             <div style="margin-top: 5px;">${alert.content}</div>
             <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
                 <span class="status-badge status-badge-suspended">待处理</span>
-                <button class="btn btn-sm btn-outline alert-details-btn" data-alert-id="${alert.id}" data-alert-type="${alert.type}" data-alert-content="${alert.content}" data-alert-time="${alert.time}" data-alert-severity="${alert.severity}">查看详情</button>
+                <button class="btn btn-sm btn-outline alert-details-btn">查看详情</button>
             </div>
         `;
         
-        // 为新添加的按钮添加事件监听
-        const detailsBtn = alertElement.querySelector('.alert-details-btn');
-        if (detailsBtn) {
-            detailsBtn.addEventListener('click', function() {
-                showAlertDetails(this.dataset);
+        // 插入到容器的最前面
+        alertsContainer.insertBefore(alertElement, alertsContainer.firstChild);
+        
+        // 为新添加的按钮绑定事件
+        const detailBtn = alertElement.querySelector('.alert-details-btn');
+        if (detailBtn) {
+            detailBtn.addEventListener('click', function() {
+                showAlertDetails(alert);
+            });
+        }
+    }
+    
+    // 显示警报详情
+    function showAlertDetails(alert) {
+        // 创建模态框，如果不存在
+        let alertModal = document.getElementById('alert-details-modal');
+        if (!alertModal) {
+            alertModal = document.createElement('div');
+            alertModal.id = 'alert-details-modal';
+            alertModal.style.display = 'none';
+            alertModal.style.position = 'fixed';
+            alertModal.style.top = '0';
+            alertModal.style.left = '0';
+            alertModal.style.width = '100%';
+            alertModal.style.height = '100%';
+            alertModal.style.background = 'rgba(0,0,0,0.5)';
+            alertModal.style.zIndex = '100';
+            alertModal.style.alignItems = 'center';
+            alertModal.style.justifyContent = 'center';
+            
+            const modalContent = `
+                <div style="background: white; width: 80%; max-width: 600px; border-radius: 10px; padding: 20px; max-height: 80vh; overflow-y: auto;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                        <h2 id="modal-alert-title">警报详情</h2>
+                        <button id="close-alert-modal" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                    </div>
+                    <div id="alert-details-content">
+                        <!-- 警报详情内容会通过JS动态生成 -->
+                    </div>
+                    <div style="margin-top: 20px; display: flex; justify-content: space-between;">
+                        <div>
+                            <button class="btn btn-primary" id="resolve-alert-btn">标记为已解决</button>
+                        </div>
+                        <div>
+                            <button class="btn btn-outline" id="close-alert-details-btn">关闭</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            alertModal.innerHTML = modalContent;
+            document.body.appendChild(alertModal);
+            
+            // 绑定关闭按钮事件
+            const closeModalBtn = document.getElementById('close-alert-modal');
+            const closeDetailsBtn = document.getElementById('close-alert-details-btn');
+            
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', function() {
+                    document.getElementById('alert-details-modal').style.display = 'none';
+                });
+            }
+            
+            if (closeDetailsBtn) {
+                closeDetailsBtn.addEventListener('click', function() {
+                    document.getElementById('alert-details-modal').style.display = 'none';
+                });
+            }
+            
+            // 绑定解决按钮事件
+            const resolveBtn = document.getElementById('resolve-alert-btn');
+            if (resolveBtn) {
+                resolveBtn.addEventListener('click', function() {
+                    const alertId = document.getElementById('modal-alert-title').getAttribute('data-alert-id');
+                    resolveAlert(alertId);
+                    document.getElementById('alert-details-modal').style.display = 'none';
+                });
+            }
+        }
+        
+        // 设置警报详情内容
+        const alertTitle = document.getElementById('modal-alert-title');
+        const alertContent = document.getElementById('alert-details-content');
+        
+        // 设置标题和ID属性
+        alertTitle.textContent = `警报详情 - ${alert.type} #${alert.id}`;
+        alertTitle.setAttribute('data-alert-id', alert.id);
+        
+        // 获取随机的相关信息
+        const relatedEvents = generateRelatedEvents(alert);
+        const suggestedActions = generateSuggestedActions(alert);
+        
+        // 生成详情内容HTML
+        const detailsHTML = `
+            <div style="padding: 15px; background: ${alert.severity === 'danger' ? 'rgba(255, 82, 82, 0.05)' : 'rgba(255, 152, 0, 0.05)'}; border-radius: 5px; margin-bottom: 15px;">
+                <div style="margin-bottom: 10px;">
+                    <strong>警报ID:</strong> ${alert.id}
+                    <strong style="margin-left: 20px;">严重程度:</strong> 
+                    <span style="color: var(--${alert.severity}-color);">
+                        ${alert.severity === 'danger' ? '严重' : '警告'}
+                    </span>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <strong>时间:</strong> ${alert.time}
+                    <strong style="margin-left: 20px;">状态:</strong> 待处理
+                </div>
+                <div style="margin-top: 10px;">
+                    <strong>内容:</strong>
+                    <p style="margin-top: 5px;">${alert.content}</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <h3 style="margin-bottom: 10px; font-size: 1rem;">相关事件</h3>
+                <ul style="padding-left: 20px;">
+                    ${relatedEvents.map(event => `<li style="margin-bottom: 5px;">${event}</li>`).join('')}
+                </ul>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <h3 style="margin-bottom: 10px; font-size: 1rem;">建议操作</h3>
+                <ol style="padding-left: 20px;">
+                    ${suggestedActions.map(action => `<li style="margin-bottom: 8px;">${action}</li>`).join('')}
+                </ol>
+            </div>
+            
+            <div style="margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.02); border-radius: 5px;">
+                <h3 style="margin-bottom: 10px; font-size: 1rem;">影响分析</h3>
+                <p>${generateImpactAnalysis(alert)}</p>
+            </div>
+        `;
+        
+        // 更新详情内容
+        alertContent.innerHTML = detailsHTML;
+        
+        // 显示模态框
+        alertModal.style.display = 'flex';
+    }
+    
+    // 生成相关事件
+    function generateRelatedEvents(alert) {
+        const events = [
+            `系统在${formatTimeDiff(Math.floor(Math.random() * 60) + 10)}前检测到性能下降`,
+            `${getRandomNodeId()}在${formatTimeDiff(Math.floor(Math.random() * 120) + 30)}前报告连接问题`,
+            `在警报发生前${Math.floor(Math.random() * 5) + 1}分钟有${Math.floor(Math.random() * 10) + 1}次失败的认证尝试`,
+            `系统日志记录了${Math.floor(Math.random() * 3) + 1}个相关错误`,
+            `${Math.floor(Math.random() * 50) + 10}个交易在警报发生时处于挂起状态`
+        ];
+        
+        // 随机选择2-3个事件
+        const count = Math.floor(Math.random() * 2) + 2;
+        const selectedEvents = [];
+        
+        for (let i = 0; i < count; i++) {
+            const randomIndex = Math.floor(Math.random() * events.length);
+            selectedEvents.push(events[randomIndex]);
+            events.splice(randomIndex, 1);
+        }
+        
+        return selectedEvents;
+    }
+    
+    // 随机获取节点ID
+    function getRandomNodeId() {
+        return `NODE00${Math.floor(Math.random() * 5) + 1}`;
+    }
+    
+    // 格式化时间差
+    function formatTimeDiff(minutes) {
+        if (minutes < 60) {
+            return `${minutes}分钟`;
+        } else {
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            return `${hours}小时${mins > 0 ? mins + '分钟' : ''}`;
+        }
+    }
+    
+    // 生成建议操作
+    function generateSuggestedActions(alert) {
+        const commonActions = [
+            '查看相关节点的日志文件',
+            '通知系统管理员',
+            '检查网络连接状态'
+        ];
+        
+        let specificActions = [];
+        
+        // 根据警报类型生成特定建议
+        switch (alert.type) {
+            case '节点异常':
+                specificActions = [
+                    '检查节点服务器硬件状态',
+                    '重启节点服务',
+                    '验证节点配置是否正确'
+                ];
+                break;
+            case '交易延迟':
+                specificActions = [
+                    '检查系统负载情况',
+                    '分析当前交易队列',
+                    '暂时减少新交易的接入'
+                ];
+                break;
+            case '存储空间不足':
+                specificActions = [
+                    '清理过期的日志文件',
+                    '增加存储空间',
+                    '优化数据存储策略'
+                ];
+                break;
+            case '安全警告':
+                specificActions = [
+                    '立即锁定相关账户',
+                    '检查访问日志',
+                    '更新防火墙规则'
+                ];
+                break;
+            case '共识异常':
+                specificActions = [
+                    '检查所有节点状态',
+                    '分析区块数据',
+                    '协调各节点重新同步'
+                ];
+                break;
+            default:
+                specificActions = [
+                    '检查系统资源使用情况',
+                    '优化系统配置',
+                    '考虑增加系统资源'
+                ];
+        }
+        
+        // 随机组合通用操作和特定操作
+        const actions = [...specificActions];
+        const randomCommonAction = commonActions[Math.floor(Math.random() * commonActions.length)];
+        actions.push(randomCommonAction);
+        
+        // 随机排序
+        return actions.sort(() => Math.random() - 0.5);
+    }
+    
+    // 生成影响分析
+    function generateImpactAnalysis(alert) {
+        const impacts = {
+            '节点异常': '此节点异常可能导致部分校方用户无法访问系统或上传数据。如果持续时间超过30分钟，将影响学历证书的及时上链和验证。建议尽快恢复节点连接，以避免数据同步延迟。',
+            '交易延迟': '交易延迟会导致新证书上链时间延长，影响用户体验。如果延迟持续增加，可能会造成交易队列拥堵，进一步降低系统性能。建议检查网络连接和共识机制是否正常运行。',
+            '存储空间不足': '存储空间不足将影响节点存储新的区块数据，长期可能导致节点无法参与共识，影响整个网络的性能和安全性。建议及时扩容或优化存储空间。',
+            '安全警告': '检测到的可疑操作可能是攻击者试图访问系统敏感数据或干扰系统运行。此类威胁可能会损害数据完整性和系统可用性，需要立即应对以防止潜在的安全事件。',
+            '共识异常': '共识异常可能导致区块链分叉，影响数据一致性。若不及时解决，可能导致不同节点间数据不一致，严重破坏区块链的可信性。建议立即协调各节点进行数据同步和问题排查。',
+            '系统性能下降': '系统性能下降会导致用户操作响应时间延长，影响整体用户体验。长期存在可能指示系统资源不足或存在优化空间。建议分析性能瓶颈并进行相应调整。'
+        };
+        
+        return impacts[alert.type] || '此警报可能影响系统的正常运行，建议及时处理以避免潜在的服务中断或数据问题。';
+    }
+    
+    // 标记警报为已解决
+    function resolveAlert(alertId) {
+        const alertItems = document.querySelectorAll('.alert-item');
+        
+        alertItems.forEach(item => {
+            const idMatch = item.querySelector('strong').textContent.match(/#([A-Z0-9]+)/);
+            if (idMatch && idMatch[1] === alertId) {
+                const statusBadge = item.querySelector('.status-badge');
+                if (statusBadge) {
+                    statusBadge.textContent = '已解决';
+                    statusBadge.className = 'status-badge status-badge-active';
+                }
+            }
+        });
+        
+        // 显示成功消息
+        showMessage('警报已成功标记为已解决', 'success');
+    }
+    
+    // 显示消息提示
+    function showMessage(message, type = 'info') {
+        // 创建消息元素
+        const messageElement = document.createElement('div');
+        messageElement.className = 'message-toast';
+        messageElement.style.position = 'fixed';
+        messageElement.style.bottom = '20px';
+        messageElement.style.right = '20px';
+        messageElement.style.padding = '10px 15px';
+        messageElement.style.borderRadius = '5px';
+        messageElement.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+        messageElement.style.zIndex = '1000';
+        messageElement.style.minWidth = '200px';
+        messageElement.style.display = 'flex';
+        messageElement.style.alignItems = 'center';
+        messageElement.style.justifyContent = 'space-between';
+        
+        // 设置样式基于类型
+        if (type === 'success') {
+            messageElement.style.backgroundColor = '#e7f7ee';
+            messageElement.style.borderLeft = '4px solid var(--success-color)';
+            messageElement.style.color = '#2a805b';
+        } else if (type === 'error') {
+            messageElement.style.backgroundColor = '#fdf2f2';
+            messageElement.style.borderLeft = '4px solid var(--danger-color)';
+            messageElement.style.color = '#c73636';
+        } else {
+            messageElement.style.backgroundColor = '#f0f7ff';
+            messageElement.style.borderLeft = '4px solid var(--primary-color)';
+            messageElement.style.color = '#2b679b';
+        }
+        
+        // 设置内容
+        messageElement.innerHTML = `
+            <span>${message}</span>
+            <button style="background: none; border: none; cursor: pointer; font-size: 1.2rem; margin-left: 10px;">&times;</button>
+        `;
+        
+        // 添加到文档
+        document.body.appendChild(messageElement);
+        
+        // 绑定关闭按钮事件
+        const closeBtn = messageElement.querySelector('button');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function() {
+                document.body.removeChild(messageElement);
             });
         }
         
-        // 插入到容器的最前面
-        alertsContainer.insertBefore(alertElement, alertsContainer.firstChild);
+        // 自动关闭
+        setTimeout(() => {
+            if (document.body.contains(messageElement)) {
+                document.body.removeChild(messageElement);
+            }
+        }, 3000);
     }
     
-    // 为现有的查看详情按钮添加事件监听
-    const existingDetailsBtns = document.querySelectorAll('#alerts-container .btn');
-    existingDetailsBtns.forEach(btn => {
-        // 为现有按钮添加必要的数据属性
-        const alertItem = btn.closest('.alert-item');
-        const alertType = alertItem.querySelector('strong').textContent.split(' #')[0];
-        const alertId = alertItem.querySelector('strong').textContent.match(/#([A-Z0-9]+)/)[1];
-        const alertContent = alertItem.querySelector('div:nth-child(2)').textContent;
-        const alertTime = alertItem.querySelector('span').textContent;
-        const alertSeverity = alertItem.style.borderLeft.includes('danger') ? 'danger' : 'warning';
-        
-        btn.setAttribute('data-alert-id', alertId);
-        btn.setAttribute('data-alert-type', alertType);
-        btn.setAttribute('data-alert-content', alertContent);
-        btn.setAttribute('data-alert-time', alertTime);
-        btn.setAttribute('data-alert-severity', alertSeverity);
-        
-        btn.classList.add('alert-details-btn');
-        btn.addEventListener('click', function() {
-            showAlertDetails(this.dataset);
+    // 为现有警报绑定详情按钮事件
+    function bindExistingAlertEvents() {
+        const detailButtons = document.querySelectorAll('.alert-item .btn-outline');
+        detailButtons.forEach(btn => {
+            btn.classList.add('alert-details-btn'); // 添加类名以便识别
+            btn.addEventListener('click', function() {
+                const alertItem = this.closest('.alert-item');
+                const alertTypeEl = alertItem.querySelector('strong');
+                const alertTimeEl = alertItem.querySelector('span');
+                const alertContentEl = alertItem.querySelectorAll('div')[1];
+                
+                if (alertTypeEl && alertTimeEl && alertContentEl) {
+                    const alertTypeFull = alertTypeEl.textContent;
+                    const match = alertTypeFull.match(/^(.+) #(ALT\d+)$/);
+                    
+                    if (match) {
+                        const alertObj = {
+                            id: match[2],
+                            type: match[1],
+                            severity: alertTypeEl.style.color.includes('danger') ? 'danger' : 'warning',
+                            content: alertContentEl.textContent,
+                            time: alertTimeEl.textContent
+                        };
+                        
+                        showAlertDetails(alertObj);
+                    }
+                }
+            });
         });
-    });
+    }
+    
+    // 绑定现有警报详情按钮事件
+    bindExistingAlertEvents();
     
     // 刷新按钮事件
     const refreshAlertsBtn = document.getElementById('refresh-alerts-btn');
@@ -791,401 +1122,6 @@ function initAlertSystem() {
             addAlertToUI(newAlert);
         });
     }
-}
-
-/**
- * 显示警报详情
- */
-function showAlertDetails(alertData) {
-    // 检查是否已有警报详情模态框，如果没有则创建
-    let alertDetailsModal = document.getElementById('alert-details-modal');
-    
-    if (!alertDetailsModal) {
-        // 创建模态框
-        alertDetailsModal = document.createElement('div');
-        alertDetailsModal.id = 'alert-details-modal';
-        alertDetailsModal.style.display = 'none';
-        alertDetailsModal.style.position = 'fixed';
-        alertDetailsModal.style.top = '0';
-        alertDetailsModal.style.left = '0';
-        alertDetailsModal.style.width = '100%';
-        alertDetailsModal.style.height = '100%';
-        alertDetailsModal.style.background = 'rgba(0,0,0,0.5)';
-        alertDetailsModal.style.zIndex = '100';
-        alertDetailsModal.style.alignItems = 'center';
-        alertDetailsModal.style.justifyContent = 'center';
-        
-        // 创建模态框内容
-        const modalContent = document.createElement('div');
-        modalContent.style.background = 'white';
-        modalContent.style.width = '80%';
-        modalContent.style.maxWidth = '600px';
-        modalContent.style.borderRadius = '10px';
-        modalContent.style.padding = '20px';
-        modalContent.style.maxHeight = '80vh';
-        modalContent.style.overflowY = 'auto';
-        
-        // 模态框标题和关闭按钮
-        const modalHeader = document.createElement('div');
-        modalHeader.style.display = 'flex';
-        modalHeader.style.justifyContent = 'space-between';
-        modalHeader.style.marginBottom = '20px';
-        
-        const modalTitle = document.createElement('h2');
-        modalTitle.id = 'alert-modal-title';
-        
-        const closeButton = document.createElement('button');
-        closeButton.id = 'close-alert-modal';
-        closeButton.style.background = 'none';
-        closeButton.style.border = 'none';
-        closeButton.style.fontSize = '1.5rem';
-        closeButton.style.cursor = 'pointer';
-        closeButton.innerHTML = '&times;';
-        closeButton.addEventListener('click', function() {
-            alertDetailsModal.style.display = 'none';
-        });
-        
-        modalHeader.appendChild(modalTitle);
-        modalHeader.appendChild(closeButton);
-        
-        // 详情内容区域
-        const detailsContent = document.createElement('div');
-        detailsContent.id = 'alert-details-content';
-        
-        // 操作按钮区域
-        const actionsArea = document.createElement('div');
-        actionsArea.style.marginTop = '20px';
-        actionsArea.style.display = 'flex';
-        actionsArea.style.justifyContent = 'space-between';
-        
-        const statusSelect = document.createElement('select');
-        statusSelect.id = 'alert-status-select';
-        statusSelect.style.padding = '5px';
-        statusSelect.style.borderRadius = '5px';
-        
-        const pendingOption = document.createElement('option');
-        pendingOption.value = 'pending';
-        pendingOption.textContent = '待处理';
-        
-        const processingOption = document.createElement('option');
-        processingOption.value = 'processing';
-        processingOption.textContent = '处理中';
-        
-        const resolvedOption = document.createElement('option');
-        resolvedOption.value = 'resolved';
-        resolvedOption.textContent = '已解决';
-        
-        statusSelect.appendChild(pendingOption);
-        statusSelect.appendChild(processingOption);
-        statusSelect.appendChild(resolvedOption);
-        
-        const buttonsContainer = document.createElement('div');
-        
-        const handleButton = document.createElement('button');
-        handleButton.id = 'handle-alert-btn';
-        handleButton.className = 'btn btn-primary';
-        handleButton.textContent = '处理警报';
-        handleButton.addEventListener('click', function() {
-            // 更新警报状态的逻辑
-            const statusValue = statusSelect.value;
-            const alertId = alertDetailsModal.getAttribute('data-alert-id');
-            
-            // 找到对应的警报项并更新状态
-            const alertItem = document.querySelector(`.alert-item strong:contains('#${alertId}')`).closest('.alert-item');
-            if (alertItem) {
-                const statusBadge = alertItem.querySelector('.status-badge');
-                if (statusBadge) {
-                    if (statusValue === 'resolved') {
-                        statusBadge.textContent = '已解决';
-                        statusBadge.className = 'status-badge status-badge-active';
-                    } else if (statusValue === 'processing') {
-                        statusBadge.textContent = '处理中';
-                        statusBadge.className = 'status-badge status-badge-pending';
-                    } else {
-                        statusBadge.textContent = '待处理';
-                        statusBadge.className = 'status-badge status-badge-suspended';
-                    }
-                }
-            }
-            
-            // 关闭模态框
-            alertDetailsModal.style.display = 'none';
-        });
-        
-        const closeButton2 = document.createElement('button');
-        closeButton2.className = 'btn btn-outline';
-        closeButton2.textContent = '关闭';
-        closeButton2.addEventListener('click', function() {
-            alertDetailsModal.style.display = 'none';
-        });
-        
-        buttonsContainer.appendChild(handleButton);
-        buttonsContainer.appendChild(document.createTextNode(' ')); // 添加空格
-        buttonsContainer.appendChild(closeButton2);
-        
-        actionsArea.appendChild(statusSelect);
-        actionsArea.appendChild(buttonsContainer);
-        
-        // 组装模态框
-        modalContent.appendChild(modalHeader);
-        modalContent.appendChild(detailsContent);
-        modalContent.appendChild(actionsArea);
-        alertDetailsModal.appendChild(modalContent);
-        
-        // 添加到文档中
-        document.body.appendChild(alertDetailsModal);
-    }
-    
-    // 更新模态框内容
-    document.getElementById('alert-modal-title').textContent = `警报详情 - ${alertData.alertType} #${alertData.alertId}`;
-    
-    // 存储警报ID用于后续更新
-    alertDetailsModal.setAttribute('data-alert-id', alertData.alertId);
-    
-    // 准备详情内容
-    const severityClass = alertData.alertSeverity === 'danger' ? 'danger' : 'warning';
-    const severityText = alertData.alertSeverity === 'danger' ? '严重' : '警告';
-    
-    // 生成详情HTML
-    const detailsHTML = `
-        <div style="margin-bottom: 15px;">
-            <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                <div style="width: 12px; height: 12px; border-radius: 50%; background-color: var(--${severityClass}-color); margin-right: 8px;"></div>
-                <span style="font-weight: bold; color: var(--${severityClass}-color);">${severityText}级别</span>
-            </div>
-            <div style="margin-bottom: 10px;">
-                <strong>警报ID:</strong> ${alertData.alertId}
-            </div>
-            <div style="margin-bottom: 10px;">
-                <strong>警报类型:</strong> ${alertData.alertType}
-            </div>
-            <div style="margin-bottom: 10px;">
-                <strong>发生时间:</strong> ${alertData.alertTime}
-            </div>
-        </div>
-        
-        <div style="margin-bottom: 15px;">
-            <h3 style="font-size: 1rem; margin-bottom: 10px;">警报内容</h3>
-            <div style="padding: 10px; background: rgba(0,0,0,0.02); border-radius: 5px;">
-                ${alertData.alertContent}
-            </div>
-        </div>
-        
-        <div style="margin-bottom: 15px;">
-            <h3 style="font-size: 1rem; margin-bottom: 10px;">详细诊断</h3>
-            <div style="padding: 10px; background: rgba(0,0,0,0.02); border-radius: 5px;">
-                <p>警报触发原因: ${getRandomTriggerReason(alertData.alertType)}</p>
-                <p>系统建议: ${getRandomSystemSuggestion(alertData.alertType)}</p>
-                <p>影响范围: ${getRandomImpactScope()}</p>
-                <p>可能导致的问题: ${getRandomPotentialIssues(alertData.alertType)}</p>
-            </div>
-        </div>
-        
-        <div style="margin-bottom: 15px;">
-            <h3 style="font-size: 1rem; margin-bottom: 10px;">处理记录</h3>
-            <div style="padding: 10px; background: rgba(0,0,0,0.02); border-radius: 5px; font-style: italic; color: #888;">
-                暂无处理记录
-            </div>
-        </div>
-    `;
-    
-    // 更新详情内容
-    document.getElementById('alert-details-content').innerHTML = detailsHTML;
-    
-    // 显示模态框
-    alertDetailsModal.style.display = 'flex';
-}
-
-/**
- * 获取随机触发原因
- */
-function getRandomTriggerReason(alertType) {
-    const reasons = {
-        '节点异常': [
-            '网络连接中断导致节点无法正常通信',
-            '节点服务器硬件故障',
-            '节点磁盘空间已满',
-            '节点软件版本不兼容导致连接失败'
-        ],
-        '交易延迟': [
-            '系统负载过高导致处理能力下降',
-            '网络拥塞影响数据传输',
-            '共识节点数量不足导致确认延迟',
-            '某节点处理效率低下影响整体性能'
-        ],
-        '存储空间不足': [
-            '系统日志过大占用空间',
-            '数据存储增长速度超过预期',
-            '临时文件未及时清理',
-            '备份数据占用过多空间'
-        ],
-        '安全警告': [
-            '检测到异常IP多次尝试访问敏感接口',
-            '用户账户短时间内多次登录失败',
-            '检测到非常规操作流程',
-            '系统关键文件被修改'
-        ],
-        '共识异常': [
-            '部分节点数据不一致导致共识失败',
-            '网络分区导致节点间通信中断',
-            '某节点响应超时影响共识过程',
-            '恶意节点尝试提交无效数据'
-        ],
-        '系统性能下降': [
-            '数据库查询效率降低',
-            '系统资源占用过高',
-            '并发请求数量激增',
-            '网络带宽受限'
-        ]
-    };
-    
-    // 如果找不到对应类型的原因，返回通用原因
-    const typeReasons = reasons[alertType] || [
-        '系统检测到异常行为',
-        '性能指标超出正常范围',
-        '系统组件响应异常',
-        '网络或硬件资源受限'
-    ];
-    
-    return typeReasons[Math.floor(Math.random() * typeReasons.length)];
-}
-
-/**
- * 获取随机系统建议
- */
-function getRandomSystemSuggestion(alertType) {
-    const suggestions = {
-        '节点异常': [
-            '检查节点服务器网络连接状态',
-            '重启节点服务并检查日志',
-            '联系节点管理员确认服务器状态',
-            '尝试手动同步节点数据'
-        ],
-        '交易延迟': [
-            '检查系统资源使用情况并优化',
-            '临时增加处理节点数量',
-            '调整交易批处理参数',
-            '检查并优化数据库索引'
-        ],
-        '存储空间不足': [
-            '清理过期日志和临时文件',
-            '增加存储空间',
-            '优化数据存储策略',
-            '检查并删除冗余数据'
-        ],
-        '安全警告': [
-            '暂时封锁可疑IP地址',
-            '检查系统日志寻找异常访问模式',
-            '强制重置受影响用户密码',
-            '更新安全规则和防火墙配置'
-        ],
-        '共识异常': [
-            '检查所有节点的区块数据一致性',
-            '重新同步出现问题的节点',
-            '暂时排除问题节点直到修复完成',
-            '检查网络连接质量'
-        ],
-        '系统性能下降': [
-            '优化数据库查询语句',
-            '增加系统资源配置',
-            '实施流量控制措施',
-            '检查并修复内存泄漏问题'
-        ]
-    };
-    
-    // 如果找不到对应类型的建议，返回通用建议
-    const typeSuggestions = suggestions[alertType] || [
-        '检查系统日志获取详细错误信息',
-        '联系系统维护人员进行排查',
-        '重启相关服务组件',
-        '监控系统指标变化趋势'
-    ];
-    
-    return typeSuggestions[Math.floor(Math.random() * typeSuggestions.length)];
-}
-
-/**
- * 获取随机影响范围
- */
-function getRandomImpactScope() {
-    const scopes = [
-        '仅影响单个节点，系统整体运行正常',
-        '影响特定类型的所有节点，系统核心功能正常',
-        '影响系统部分功能，用户可能会感知到延迟',
-        '影响系统多个关键组件，用户体验受到明显影响',
-        '全系统范围影响，部分功能暂时不可用'
-    ];
-    
-    return scopes[Math.floor(Math.random() * scopes.length)];
-}
-
-/**
- * 获取随机潜在问题
- */
-function getRandomPotentialIssues(alertType) {
-    const issues = {
-        '节点异常': [
-            '如不及时处理，可能导致该节点数据丢失',
-            '长时间离线可能影响网络整体稳定性',
-            '节点重连后需要较长时间同步数据',
-            '可能影响依赖该节点的证书验证功能'
-        ],
-        '交易延迟': [
-            '用户操作响应时间延长，影响使用体验',
-            '高峰时段可能出现交易堆积',
-            '部分实时性要求高的功能可能受影响',
-            '长时间延迟可能导致部分交易超时'
-        ],
-        '存储空间不足': [
-            '系统可能无法存储新数据',
-            '数据库性能下降影响查询效率',
-            '备份功能可能无法正常执行',
-            '系统日志可能无法完整记录'
-        ],
-        '安全警告': [
-            '系统数据安全可能受到威胁',
-            '用户隐私信息可能泄露风险',
-            '非授权操作可能篡改系统数据',
-            '系统服务可能被恶意中断'
-        ],
-        '共识异常': [
-            '可能导致区块链分叉',
-            '交易确认延迟或失败',
-            '数据一致性受损',
-            '需要人工干预解决冲突'
-        ],
-        '系统性能下降': [
-            '用户请求处理时间延长',
-            '高并发场景可能出现请求失败',
-            '后台任务执行效率降低',
-            '系统响应超时增加'
-        ]
-    };
-    
-    // 如果找不到对应类型的问题，返回通用问题
-    const typeIssues = issues[alertType] || [
-        '系统稳定性可能受到影响',
-        '用户体验可能下降',
-        '数据处理可能出现延迟',
-        '系统资源消耗可能增加'
-    ];
-    
-    return typeIssues[Math.floor(Math.random() * typeIssues.length)];
-}
-
-/**
- * 扩展document.querySelector以支持包含文本内容的选择器
- */
-if (!Element.prototype.matches) {
-    Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
-}
-
-if (!document.querySelectorAll.contains) {
-    document.querySelectorAll.contains = function(selector) {
-        const elements = document.querySelectorAll(selector.split(':contains(')[0]);
-        const contains = selector.split(':contains(')[1].split(')')[0];
-        return Array.from(elements).filter(element => element.textContent.includes(contains));
-    };
 }
 
 /**
