@@ -199,9 +199,33 @@
                                             <svg class="upload-icon" viewBox="0 0 24 24" fill="currentColor">
                                                 <path d="M14,13V17H10V13H7L12,8L17,13M19.35,10.03C18.67,6.59 15.64,4 12,4C9.11,4 6.6,5.64 5.35,8.03C2.34,8.36 0,10.9 0,14A6,6 0 0,0 6,20H19A5,5 0 0,0 24,15C24,12.36 21.95,10.22 19.35,10.03Z" />
                                             </svg>
-                                            <p class="upload-text">拖拽Excel文件到此处或点击上传</p>
-                                            <p class="upload-hint">支持 .xlsx, .xls 格式，单次最多导入1000条记录</p>
-                                            <button class="btn btn-primary">选择文件</button>
+                                            <p class="upload-text">拖拽CSV文件到此处或点击上传</p>
+                                            <p class="upload-hint">支持 .csv 格式，单次最多导入1000条记录</p>
+                                            <div style="display: flex; gap: 10px; justify-content: center;">
+                                                <button class="btn btn-primary" id="fileSelectBtn">选择文件</button>
+                                                <button class="btn btn-outline" id="downloadTemplateBtn">下载模板</button>
+                                            </div>
+                                            <input type="file" id="fileInput" accept=".csv" style="display: none;">
+                                        </div>
+                                        <!-- 上传进度条 -->
+                                        <div id="uploadProgress" style="display: none; margin-top: 15px;">
+                                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                                <span>上传进度</span>
+                                                <span id="progressText">0%</span>
+                                            </div>
+                                            <div class="progress-bar">
+                                                <div id="progressFill" class="progress-fill"></div>
+                                            </div>
+                                        </div>
+                                        <!-- 文件预览 -->
+                                        <div id="filePreview" style="display: none; margin-top: 15px;">
+                                            <h4>文件预览</h4>
+                                            <div id="previewTable" class="table-container" style="max-height: 200px; overflow: auto;">
+                                                <!-- 预览表格将在这里生成 -->
+                                            </div>
+                                            <div style="margin-top: 10px; font-size: 0.9rem; color: #666;">
+                                                <span id="fileInfo"></span>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col col-6">
@@ -212,7 +236,7 @@
                                             <div class="card-body">
                                                 <div class="form-group">
                                                     <label class="form-label">选择操作类型</label>
-                                                    <select class="form-select">
+                                                    <select class="form-select" id="operationType">
                                                         <option value="">请选择操作类型</option>
                                                         <option value="upload">批量上链</option>
                                                         <option value="verify">批量审核</option>
@@ -222,10 +246,24 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="form-label">操作说明</label>
-                                                    <textarea class="form-control" rows="3" placeholder="请输入本次操作的说明信息（选填）"></textarea>
+                                                    <textarea class="form-control" rows="3" placeholder="请输入本次操作的说明信息（选填）" id="operationDescription"></textarea>
                                                 </div>
-                                                <div style="display: flex; justify-content: flex-end;">
-                                                    <button class="btn btn-primary">执行操作</button>
+                                                <div class="form-group">
+                                                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e9ecef;">
+                                                        <h5 style="margin: 0 0 10px 0; font-size: 1rem;">数据验证结果</h5>
+                                                        <div id="validationResults">
+                                                            <p style="margin: 0; color: #666;">请先上传CSV文件进行数据验证</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                    <button class="btn btn-outline" id="validateDataBtn" style="display: none;">
+                                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 5px; vertical-align: text-top;">
+                                                            <path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" />
+                                                        </svg>
+                                                        验证数据
+                                                    </button>
+                                                    <button class="btn btn-primary" id="executeOperationBtn" disabled>执行操作</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -738,6 +776,466 @@
     <!-- JavaScript 增强功能 -->
     <script src="../scripts/school_management.js"></script>
     
+    <!-- 批量上传功能 -->
+    <script>
+    // 批量上传管理器
+    class BulkUploadManager {
+        constructor() {
+            this.csvData = null;
+            this.validatedData = null;
+            this.currentFile = null;
+            this.init();
+        }
+        
+        init() {
+            this.bindEvents();
+            this.setupDragAndDrop();
+        }
+        
+        bindEvents() {
+            const fileInput = document.getElementById('fileInput');
+            const fileSelectBtn = document.getElementById('fileSelectBtn');
+            const downloadTemplateBtn = document.getElementById('downloadTemplateBtn');
+            const validateBtn = document.getElementById('validateDataBtn');
+            const executeBtn = document.getElementById('executeOperationBtn');
+            
+            fileSelectBtn.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            downloadTemplateBtn.addEventListener('click', () => {
+                this.downloadTemplate();
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                this.handleFileSelect(e.target.files[0]);
+            });
+            
+            validateBtn.addEventListener('click', () => {
+                this.validateData();
+            });
+            
+            executeBtn.addEventListener('click', () => {
+                this.executeOperation();
+            });
+        }
+        
+        setupDragAndDrop() {
+            const dropZone = document.getElementById('dropZone');
+            
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+            
+            dropZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    this.handleFileSelect(files[0]);
+                }
+            });
+        }
+        
+        handleFileSelect(file) {
+            if (!file) return;
+            
+            // 验证文件类型
+            if (!file.name.toLowerCase().endsWith('.csv')) {
+                this.showNotification('请选择CSV文件', 'error');
+                return;
+            }
+            
+            // 验证文件大小 (5MB限制)
+            if (file.size > 5 * 1024 * 1024) {
+                this.showNotification('文件大小不能超过5MB', 'error');
+                return;
+            }
+            
+            this.currentFile = file;
+            this.readCSVFile(file);
+        }
+        
+        readCSVFile(file) {
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                try {
+                    const csv = e.target.result;
+                    this.csvData = this.parseCSV(csv);
+                    this.showFilePreview();
+                    this.showValidateButton();
+                } catch (error) {
+                    this.showNotification('CSV文件解析失败: ' + error.message, 'error');
+                }
+            };
+            
+            reader.onerror = () => {
+                this.showNotification('文件读取失败', 'error');
+            };
+            
+            reader.readAsText(file, 'UTF-8');
+        }
+        
+        parseCSV(csv) {
+            const lines = csv.trim().split('\n');
+            if (lines.length < 2) {
+                throw new Error('CSV文件至少需要包含标题行和一行数据');
+            }
+            
+            const headers = this.parseCSVLine(lines[0]);
+            const data = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                if (lines[i].trim()) {
+                    const row = this.parseCSVLine(lines[i]);
+                    const rowData = {};
+                    
+                    headers.forEach((header, index) => {
+                        rowData[header] = row[index] || '';
+                    });
+                    
+                    data.push(rowData);
+                }
+            }
+            
+            return {
+                headers: headers,
+                data: data,
+                totalRows: data.length
+            };
+        }
+        
+        parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            
+            result.push(current.trim());
+            return result;
+        }
+        
+        showFilePreview() {
+            const preview = document.getElementById('filePreview');
+            const previewTable = document.getElementById('previewTable');
+            const fileInfo = document.getElementById('fileInfo');
+            
+            // 显示文件信息
+            fileInfo.textContent = `文件: ${this.currentFile.name} | 大小: ${this.formatFileSize(this.currentFile.size)} | 记录数: ${this.csvData.totalRows}`;
+            
+            // 生成预览表格
+            let tableHTML = '<table class="table"><thead><tr>';
+            this.csvData.headers.forEach(header => {
+                tableHTML += `<th>${this.escapeHtml(header)}</th>`;
+            });
+            tableHTML += '</tr></thead><tbody>';
+            
+            // 只显示前5行数据作为预览
+            const previewRows = this.csvData.data.slice(0, 5);
+            previewRows.forEach(row => {
+                tableHTML += '<tr>';
+                this.csvData.headers.forEach(header => {
+                    tableHTML += `<td title="${this.escapeHtml(row[header])}">${this.escapeHtml(row[header])}</td>`;
+                });
+                tableHTML += '</tr>';
+            });
+            
+            if (this.csvData.totalRows > 5) {
+                tableHTML += `<tr><td colspan="${this.csvData.headers.length}" style="text-align: center; color: #666; font-style: italic;">... 还有 ${this.csvData.totalRows - 5} 行数据</td></tr>`;
+            }
+            
+            tableHTML += '</tbody></table>';
+            previewTable.innerHTML = tableHTML;
+            preview.style.display = 'block';
+        }
+        
+        showValidateButton() {
+            document.getElementById('validateDataBtn').style.display = 'inline-block';
+        }
+        
+        validateData() {
+            if (!this.csvData) {
+                this.showNotification('请先上传CSV文件', 'error');
+                return;
+            }
+            
+            const requiredFields = ['学号', '姓名', '学院', '专业', '学历', '入学年份', '毕业年份'];
+            const results = document.getElementById('validationResults');
+            let validationHTML = '';
+            let isValid = true;
+            let validCount = 0;
+            let errorCount = 0;
+            let warningCount = 0;
+            
+            // 检查必需字段
+            const missingFields = requiredFields.filter(field => !this.csvData.headers.includes(field));
+            if (missingFields.length > 0) {
+                validationHTML += this.createValidationItem('error', `缺少必需字段: ${missingFields.join(', ')}`);
+                isValid = false;
+                errorCount++;
+            }
+            
+            // 验证数据记录
+            const duplicateStudentIds = new Set();
+            const studentIds = new Set();
+            
+            this.csvData.data.forEach((row, index) => {
+                const rowErrors = [];
+                
+                // 验证学号
+                if (!row['学号'] || row['学号'].trim() === '') {
+                    rowErrors.push('学号不能为空');
+                } else if (studentIds.has(row['学号'])) {
+                    duplicateStudentIds.add(row['学号']);
+                } else {
+                    studentIds.add(row['学号']);
+                }
+                
+                // 验证姓名
+                if (!row['姓名'] || row['姓名'].trim() === '') {
+                    rowErrors.push('姓名不能为空');
+                }
+                
+                // 验证入学年份
+                const admissionYear = parseInt(row['入学年份']);
+                if (isNaN(admissionYear) || admissionYear < 1900 || admissionYear > new Date().getFullYear()) {
+                    rowErrors.push('入学年份格式错误');
+                }
+                
+                // 验证毕业年份
+                const graduationYear = parseInt(row['毕业年份']);
+                if (!isNaN(graduationYear) && graduationYear > new Date().getFullYear() + 10) {
+                    rowErrors.push('毕业年份可能有误');
+                }
+                
+                if (rowErrors.length > 0) {
+                    validationHTML += this.createValidationItem('error', `第${index + 2}行: ${rowErrors.join(', ')}`);
+                    errorCount++;
+                    isValid = false;
+                }
+            });
+            
+            // 检查重复学号
+            if (duplicateStudentIds.size > 0) {
+                validationHTML += this.createValidationItem('error', `发现重复学号: ${Array.from(duplicateStudentIds).join(', ')}`);
+                errorCount++;
+                isValid = false;
+            }
+            
+            // 显示统计信息
+            if (isValid) {
+                validCount = this.csvData.totalRows;
+                validationHTML = this.createValidationItem('success', `验证通过！共 ${validCount} 条记录可以导入`) + validationHTML;
+                document.getElementById('executeOperationBtn').disabled = false;
+                this.validatedData = this.csvData.data;
+            } else {
+                validationHTML = this.createValidationItem('error', `验证失败！发现 ${errorCount} 个错误，请修正后重新上传`) + validationHTML;
+                document.getElementById('executeOperationBtn').disabled = true;
+            }
+            
+            results.innerHTML = validationHTML;
+        }
+        
+        createValidationItem(type, message) {
+            const icons = {
+                success: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" /></svg>',
+                error: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M13,13H11V7H13M13,17H11V15H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg>',
+                warning: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z" /></svg>'
+            };
+            
+            return `<div class="validation-item validation-${type}">${icons[type]} ${this.escapeHtml(message)}</div>`;
+        }
+        
+        executeOperation() {
+            const operationType = document.getElementById('operationType').value;
+            const description = document.getElementById('operationDescription').value;
+            
+            if (!operationType) {
+                this.showNotification('请选择操作类型', 'error');
+                return;
+            }
+            
+            if (!this.validatedData) {
+                this.showNotification('请先验证数据', 'error');
+                return;
+            }
+            
+            this.showProgress();
+            
+            // 模拟批量操作
+            this.simulateBulkOperation(operationType, description);
+        }
+        
+        simulateBulkOperation(operationType, description) {
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            let progress = 0;
+            
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 100) progress = 100;
+                
+                progressFill.style.width = progress + '%';
+                progressText.textContent = Math.round(progress) + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        this.handleOperationComplete(operationType);
+                    }, 500);
+                }
+            }, 200);
+        }
+        
+        handleOperationComplete(operationType) {
+            this.hideProgress();
+            
+            const operationNames = {
+                upload: '批量上链',
+                verify: '批量审核',
+                export: '导出数据',
+                notify: '批量通知'
+            };
+            
+            const message = `${operationNames[operationType]}操作完成！处理了 ${this.validatedData.length} 条记录`;
+            this.showNotification(message, 'success');
+            
+            // 重置表单
+            this.resetForm();
+            
+            // 更新统计数据（模拟）
+            this.updateStatistics(operationType);
+        }
+        
+        showProgress() {
+            document.getElementById('uploadProgress').style.display = 'block';
+            document.getElementById('executeOperationBtn').disabled = true;
+        }
+        
+        hideProgress() {
+            document.getElementById('uploadProgress').style.display = 'none';
+            document.getElementById('executeOperationBtn').disabled = false;
+        }
+        
+        resetForm() {
+            document.getElementById('fileInput').value = '';
+            document.getElementById('filePreview').style.display = 'none';
+            document.getElementById('validateDataBtn').style.display = 'none';
+            document.getElementById('operationType').value = '';
+            document.getElementById('operationDescription').value = '';
+            document.getElementById('validationResults').innerHTML = '<p style="margin: 0; color: #666;">请先上传CSV文件进行数据验证</p>';
+            document.getElementById('executeOperationBtn').disabled = true;
+            
+            this.csvData = null;
+            this.validatedData = null;
+            this.currentFile = null;
+        }
+        
+        updateStatistics(operationType) {
+            // 这里可以更新页面上的统计数字
+            if (operationType === 'upload') {
+                const uploadedCount = document.querySelector('.stat-card:nth-child(2) .stat-value');
+                if (uploadedCount) {
+                    const current = parseInt(uploadedCount.textContent.replace(/,/g, ''));
+                    const newCount = current + this.validatedData.length;
+                    uploadedCount.textContent = newCount.toLocaleString();
+                }
+            }
+        }
+        
+        formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        downloadTemplate() {
+            const templateData = [
+                ['学号', '姓名', '性别', '身份证号', '学院', '专业', '学历', '学制', '入学年份', '毕业年份', '备注'],
+                ['2020010001', '张三', '男', '110101199001011234', '计算机学院', '计算机科学与技术', '本科', '4', '2020', '2024', ''],
+                ['2020010002', '李四', '女', '110101199001021234', '计算机学院', '软件工程', '本科', '4', '2020', '2024', ''],
+                ['2021010001', '王五', '男', '110101199101011234', '管理学院', '工商管理', '本科', '4', '2021', '2025', ''],
+                ['2022010001', '赵六', '女', '110101199201011234', '理学院', '数学与应用数学', '本科', '4', '2022', '2026', '']
+            ];
+            
+            // 转换为CSV格式
+            const csvContent = templateData.map(row => 
+                row.map(field => {
+                    // 如果字段包含逗号、双引号或换行符，需要用双引号包围
+                    if (field.includes(',') || field.includes('"') || field.includes('\n')) {
+                        return '"' + field.replace(/"/g, '""') + '"';
+                    }
+                    return field;
+                }).join(',')
+            ).join('\n');
+            
+            // 创建下载链接
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = '学生信息导入模板.csv';
+            link.style.display = 'none';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            URL.revokeObjectURL(link.href);
+            
+            this.showNotification('CSV模板已下载，请按照模板格式填写数据', 'success');
+        }
+        
+        showNotification(message, type = 'info') {
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // 3秒后自动移除
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+        }
+    }
+    
+    // 初始化批量上传管理器
+    document.addEventListener('DOMContentLoaded', function() {
+        new BulkUploadManager();
+    });
+    </script>
+    
     <!-- 额外样式 -->
     <style>
     /* 快速操作卡片 */
@@ -1020,6 +1518,89 @@
     .upload-zone.dragover {
         border-color: #3A7BD5;
         background-color: rgba(58, 123, 213, 0.05);
+    }
+    
+    /* 上传进度条 */
+    .progress-bar {
+        width: 100%;
+        height: 8px;
+        background-color: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #3A7BD5, #00d2ff);
+        border-radius: 4px;
+        transition: width 0.3s ease;
+        width: 0%;
+    }
+    
+    /* 文件预览表格 */
+    #previewTable table {
+        font-size: 0.9rem;
+    }
+    
+    #previewTable th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    
+    #previewTable td {
+        white-space: nowrap;
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* 验证结果样式 */
+    .validation-success {
+        color: #28a745;
+        font-weight: 500;
+    }
+    
+    .validation-error {
+        color: #dc3545;
+        font-weight: 500;
+    }
+    
+    .validation-warning {
+        color: #ffc107;
+        font-weight: 500;
+    }
+    
+    .validation-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+        padding: 8px;
+        border-radius: 4px;
+        background: rgba(0,0,0,0.02);
+    }
+    
+    .validation-item svg {
+        margin-right: 8px;
+        flex-shrink: 0;
+    }
+    
+    /* 上传状态指示器 */
+    .upload-status {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #28a745;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
     }
     
     /* 通知样式 */

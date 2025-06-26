@@ -31,6 +31,11 @@ function initNavigation() {
     // 为每个导航链接添加点击事件
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
+            // 如果是退出登录链接，不拦截，让浏览器处理跳转
+            if (this.getAttribute('href') === '../login.html') {
+                return; // 直接返回，让浏览器处理页面跳转
+            }
+            
             e.preventDefault();
     
             // 移除所有active状态
