@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>证书生成 - 学链通</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/student_dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 左侧导航栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 18,13.79 18,15.47C17.76,16 17.47,16.5 17.13,17Z"/>
+                    </svg>
+                </div>
+                <span class="logo-text">学链通</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="student_dashboard.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M13,3V9H21V3M13,21H21V11H13M3,21H11V15H3M3,13H11V3H3V13Z" />
+                        </svg>
+                        <span>仪表盘</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="student_education.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,3L1,9L12,15L21,10.09V17H23V9M5,13.18V17.18L12,21L19,17.18V13.18L12,17L5,13.18Z" />
+                        </svg>
+                        <span>学历信息</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="student_certificate.html" class="nav-link active">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M4,3C2.89,3 2,3.89 2,5V15A2,2 0 0,0 4,17H12V22L15,19L18,22V17H20A2,2 0 0,0 22,15V8L22,6V5A2,2 0 0,0 20,3H16V3H4M12,5L15,7L18,5V8.5L21,10L18,11.5V15L15,13L12,15V11.5L9,10L12,8.5V5M4,5H9V7H4V5M4,9H7V11H4V9M4,13H9V15H4V13Z" />
+                        </svg>
+                        <span>证书生成</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="student_authorization.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" />
+                        </svg>
+                        <span>授权管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="student_privacy.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z" />
+                        </svg>
+                        <span>隐私设置</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="student_messages.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4C22,2.89 21.1,2 20,2Z" />
+                        </svg>
+                        <span>消息通知</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="student_settings.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" />
+                        </svg>
+                        <span>账号设置</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <a href="../login.html" class="nav-link logout-link">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z" />
+                    </svg>
+                    <span>退出登录</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- 主内容区域 -->
+        <main class="main-content">
+            <!-- 顶部状态栏 -->
+            <div class="topbar">
+                <h1 class="page-title">证书生成</h1>
+                <div class="user-menu">
+                    <div class="notification-icon">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M21,19V20H3V19L5,17V11C5,7.9 7.03,5.17 10,4.29C10,4.19 10,4.1 10,4A2,2 0 0,1 12,2A2,2 0 0,1 14,4C14,4.1 14,4.19 14,4.29C16.97,5.17 19,7.9 19,11V17L21,19M14,21A2,2 0 0,1 12,23A2,2 0 0,1 10,21" />
+                        </svg>
+                        <div class="notification-badge">3</div>
+                    </div>
+                    <div class="user-profile">
+                        <div class="user-avatar">ZL</div>
+                        <div class="user-info">
+                            <div class="user-name">张力</div>
+                            <div class="user-role">计算机科学与技术 / 本科生</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 内容区域 -->
+            <div class="content-wrapper">
+                <div class="row">
+                    <!-- 证书类型选择 -->
+                    <div class="col col-12">
+                        <div class="certificate-wizard">
+                            <div class="wizard-steps">
+                                <div class="step active">
+                                    <div class="step-number">1</div>
+                                    <div class="step-title">选择证书</div>
+                                </div>
+                                <div class="step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-title">配置信息</div>
+                                </div>
+                                <div class="step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-title">预览确认</div>
+                                </div>
+                                <div class="step">
+                                    <div class="step-number">4</div>
+                                    <div class="step-title">生成下载</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 证书模板选择 -->
+                    <div class="col col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">选择证书模板</h3>
+                                <div class="card-tools">
+                                    <span class="badge badge-primary">2个可用学历</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="certificate-templates">
+                                    <!-- 本科证书模板 -->
+                                    <div class="template-card">
+                                        <div class="template-preview">
+                                            <div class="certificate-mockup">
+                                                <div class="certificate-header">
+                                                    <div class="school-logo">
+                                                        <svg viewBox="0 0 24 24" width="40" height="40" fill="var(--primary-color)">
+                                                            <path d="M12,3L1,9L12,15L21,10.09V17H23V9M5,13.18V17.18L12,21L19,17.18V13.18L12,17L5,13.18Z" />
+                                                        </svg>
+                                                    </div>
+                                                    <h4>学链通大学</h4>
+                                                    <h3>毕业证书</h3>
+                                                </div>
+                                                <div class="certificate-content">
+                                                    <p class="student-name">张力</p>
+                                                    <p class="certificate-text">完成了本科学业</p>
+                                                    <p class="major-text">计算机科学与技术专业</p>
+                                                    <div class="certificate-details">
+                                                        <span>学位：工学学士</span>
+                                                        <span>毕业时间：2024年6月</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="template-info">
+                                            <h4>本科学历证书</h4>
+                                            <p>计算机科学与技术专业 · 工学学士学位</p>
+                                            <div class="template-status">
+                                                <span class="badge badge-success">已上链</span>
+                                                <span class="badge badge-primary">可生成</span>
+                                            </div>
+                                            <button class="btn btn-primary template-select-btn" data-degree="bachelor">选择此模板</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- 硕士证书模板 -->
+                                    <div class="template-card">
+                                        <div class="template-preview">
+                                            <div class="certificate-mockup">
+                                                <div class="certificate-header">
+                                                    <div class="school-logo">
+                                                        <svg viewBox="0 0 24 24" width="40" height="40" fill="var(--primary-color)">
+                                                            <path d="M12,3L1,9L12,15L21,10.09V17H23V9M5,13.18V17.18L12,21L19,17.18V13.18L12,17L5,13.18Z" />
+                                                        </svg>
+                                                    </div>
+                                                    <h4>学链通大学</h4>
+                                                    <h3>学位证书</h3>
+                                                </div>
+                                                <div class="certificate-content">
+                                                    <p class="student-name">张力</p>
+                                                    <p class="certificate-text">完成了硕士学业</p>
+                                                    <p class="major-text">计算机科学与技术专业</p>
+                                                    <div class="certificate-details">
+                                                        <span>学位：工学硕士</span>
+                                                        <span>预计毕业：2026年6月</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="template-info">
+                                            <h4>硕士学历证书</h4>
+                                            <p>计算机科学与技术专业 · 工学硕士学位</p>
+                                            <div class="template-status">
+                                                <span class="badge badge-warning">在读</span>
+                                                <span class="badge badge-success">已上链</span>
+                                            </div>
+                                            <button class="btn btn-outline template-select-btn" data-degree="master">选择此模板</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 证书配置 -->
+                    <div class="col col-8">
+                        <div class="card" id="certificate-config" style="display: none;">
+                            <div class="card-header">
+                                <h3 class="card-title">证书配置</h3>
+                            </div>
+                            <div class="card-body">
+                                <form id="certificate-form">
+                                    <div class="form-group">
+                                        <label>证书类型</label>
+                                        <input type="text" class="form-control" id="cert-type" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>学生姓名</label>
+                                        <input type="text" class="form-control" value="张力" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>学校名称</label>
+                                        <input type="text" class="form-control" value="学链通大学" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>专业名称</label>
+                                        <input type="text" class="form-control" value="计算机科学与技术" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>证书用途</label>
+                                        <select class="form-control" id="cert-purpose">
+                                            <option value="employment">求职就业</option>
+                                            <option value="further-study">继续深造</option>
+                                            <option value="verification">学历认证</option>
+                                            <option value="other">其他用途</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>生成格式</label>
+                                        <div class="checkbox-group">
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" checked> PDF格式
+                                            </label>
+                                            <label class="checkbox-label">
+                                                <input type="checkbox"> 图片格式 (PNG)
+                                            </label>
+                                            <label class="checkbox-label">
+                                                <input type="checkbox"> 区块链验证码
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>备注说明</label>
+                                        <textarea class="form-control" rows="3" placeholder="添加任何特殊说明或要求"></textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="card-footer">
+                                <button class="btn btn-outline" id="back-to-templates">返回选择</button>
+                                <button class="btn btn-primary" id="preview-certificate">预览证书</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 生成进度 -->
+                    <div class="col col-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">生成历史</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="generation-history">
+                                    <div class="history-item">
+                                        <div class="history-status">
+                                            <svg viewBox="0 0 24 24" width="20" height="20" fill="var(--success-color)">
+                                                <path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" />
+                                            </svg>
+                                        </div>
+                                        <div class="history-content">
+                                            <h5>本科学历证书</h5>
+                                            <p>2024-10-15 14:30</p>
+                                            <div class="history-actions">
+                                                <button class="btn btn-sm btn-outline">重新下载</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="history-item">
+                                        <div class="history-status">
+                                            <svg viewBox="0 0 24 24" width="20" height="20" fill="var(--warning-color)">
+                                                <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M7,13L12,18L17,13L15.59,11.59L12,15.17L8.41,11.59L7,13Z" />
+                                            </svg>
+                                        </div>
+                                        <div class="history-content">
+                                            <h5>硕士学历证书</h5>
+                                            <p>生成中...</p>
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" style="width: 65%;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 区块链信息 -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">区块链验证</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="blockchain-info">
+                                    <div class="info-item">
+                                        <span class="info-label">链上状态：</span>
+                                        <span class="info-value">
+                                            <span class="badge badge-success">已确认</span>
+                                        </span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">区块高度：</span>
+                                        <span class="info-value">256,741</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">哈希值：</span>
+                                        <span class="info-value hash-value">0x4a5b...89c3</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">确认时间：</span>
+                                        <span class="info-value">2024-10-15</span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-outline btn-sm">查看详细信息</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 证书预览模态框 -->
+    <div id="certificate-preview-modal" class="modal-backdrop" style="display: none;">
+        <div class="modal certificate-modal">
+            <div class="modal-header">
+                <h3>证书预览</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="certificate-preview">
+                    <div class="certificate-full">
+                        <!-- 完整证书预览将通过JavaScript生成 -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="edit-certificate">修改信息</button>
+                <button class="btn btn-primary" id="generate-certificate">生成证书</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/student_dashboard.js"></script>
+</body>
+</html> 

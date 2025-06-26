@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仪表盘 - 企业验证平台</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/enterprise_verification.css">
+    <style>
+        /* 图表相关样式 */
+        .chart-container {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            height: 400px;
+            position: relative;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-title svg {
+            color: #3A7BD5;
+        }
+
+        .time-selector {
+            display: flex;
+            gap: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 0.3rem;
+        }
+
+        .time-btn {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: transparent;
+            color: #666;
+        }
+
+        .time-btn.active {
+            background: linear-gradient(45deg, #3A7BD5, #00d2ff);
+            color: white;
+            box-shadow: 0 2px 8px rgba(58, 123, 213, 0.3);
+        }
+
+        .time-btn:hover:not(.active) {
+            background: rgba(58, 123, 213, 0.1);
+            color: #3A7BD5;
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 280px;
+            border-radius: 8px;
+            cursor: crosshair;
+            display: block;
+        }
+
+        .chart-labels {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 60px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .chart-y-labels {
+            position: absolute;
+            left: 10px;
+            top: 0;
+            height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+            padding: 20px 0;
+            width: 40px;
+            z-index: 10;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .chart-tooltip {
+            position: absolute;
+            background: linear-gradient(45deg, #3A7BD5, #00d2ff);
+            color: white;
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 4px 12px rgba(58, 123, 213, 0.3);
+            z-index: 1000;
+        }
+
+        .chart-tooltip.visible {
+            opacity: 1;
+        }
+
+        /* 饼图样式 */
+        .pie-chart-container {
+            text-align: center;
+            padding-top: 10px;
+            position: relative;
+        }
+
+        .chart-legend {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            margin-top: 20px;
+            padding: 0 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: #666;
+            padding: 0.3rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .legend-item:hover {
+            background: rgba(58, 123, 213, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .legend-item.highlighted {
+            background: rgba(58, 123, 213, 0.15);
+            color: #3A7BD5;
+            font-weight: 500;
+        }
+
+        .legend-color {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .pie-chart-tooltip {
+            position: absolute;
+            background: linear-gradient(45deg, #3A7BD5, #00d2ff);
+            color: white;
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 4px 12px rgba(58, 123, 213, 0.3);
+            z-index: 1000;
+            white-space: nowrap;
+        }
+
+        .pie-chart-tooltip.visible {
+            opacity: 1;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #666;
+            border: 1px solid #e9ecef;
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.75rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 左侧导航栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 18,13.79 18,15.47C17.76,16 17.47,16.5 17.13,17Z"/>
+                    </svg>
+                </div>
+                <span class="logo-text">学链通</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="enterprise_dashboard.html" class="nav-link active">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M13,3V9H21V3M13,21H21V11H13M3,21H11V15H3M3,13H11V3H3V13Z" />
+                        </svg>
+                        <span>仪表盘</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="enterprise_verification.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" />
+                        </svg>
+                        <span>证书验证</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="enterprise_history.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M13.5,8H12V13L16.28,15.54L17,14.33L13.5,12.25V8M13,3A9,9 0 0,0 4,12H1L4.96,16.03L9,12H6A7,7 0 0,1 13,5A7,7 0 0,1 20,12A7,7 0 0,1 13,19C11.07,19 9.32,18.21 8.06,16.94L6.64,18.36C8.27,20 10.5,21 13,21A9,9 0 0,0 22,12A9,9 0 0,0 13,3" />
+                        </svg>
+                        <span>验证历史</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="enterprise_batch.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,10A3,3 0 0,0 11,13A3,3 0 0,0 14,16A3,3 0 0,0 17,13A3,3 0 0,0 14,10M14,18A5,5 0 0,1 9,13A5,5 0 0,1 14,8A5,5 0 0,1 19,13A5,5 0 0,1 14,18M14,2A11,11 0 0,0 3,13A11,11 0 0,0 14,24A11,11 0 0,0 25,13A11,11 0 0,0 14,2Z" />
+                        </svg>
+                        <span>批量验证</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="enterprise_profile.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" />
+                        </svg>
+                        <span>企业信息</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="enterprise_settings.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" />
+                        </svg>
+                        <span>系统设置</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-footer" style="padding: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1); margin-top: auto;">
+                <a href="../login.html" class="nav-link" style="justify-content: flex-start; padding: 10px 0;">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z" />
+                    </svg>
+                    <span>退出登录</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <!-- 顶部状态栏 -->
+            <div class="topbar">
+                <h1 class="page-title">仪表盘</h1>
+                <div class="user-menu">
+                    <div class="notification-icon">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                            <path d="M21,19V20H3V19L5,17V11C5,7.9 7.03,5.17 10,4.29C10,4.19 10,4.1 10,4A2,2 0 0,1 12,2A2,2 0 0,1 14,4C14,4.1 14,4.19 14,4.29C16.97,5.17 19,7.9 19,11V17L21,19M14,21A2,2 0 0,1 12,23A2,2 0 0,1 10,21M19.75,3.19L18.33,4.61C20.04,6.3 21,8.6 21,11H23C23,8.07 21.84,5.25 19.75,3.19M1,11H3C3,8.6 3.96,6.3 5.67,4.61L4.25,3.19C2.16,5.25 1,8.07 1,11Z"/>
+                        </svg>
+                        <span class="notification-badge">2</span>
+                    </div>
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            <span>A</span>
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">阿里巴巴</div>
+                            <div class="user-role">企业用户</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 内容区域 -->
+            <div class="content-wrapper">
+                <!-- 统计概览区域 -->
+                <div class="row">
+                    <div class="col col-3">
+                        <div class="stat-card" style="background: linear-gradient(45deg, #3A7BD5, #00d2ff);">
+                            <div class="stat-title">今日验证</div>
+                            <div class="stat-value">37</div>
+                            <div class="stat-description">较昨日增长 
+                                <span class="stat-trend-icon trend-up">
+                                    8% <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                        <path d="M7,15L12,10L17,15H7Z" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24" width="80" height="80" fill="currentColor">
+                                    <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M11,16.5L18,9.5L16.59,8.09L11,13.67L7.91,10.59L6.5,12L11,16.5Z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col col-3">
+                        <div class="stat-card" style="background: linear-gradient(45deg, #11998e, #38ef7d);">
+                            <div class="stat-title">验证通过</div>
+                            <div class="stat-value">426</div>
+                            <div class="stat-description">本月覆盖率 92.5%</div>
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24" width="80" height="80" fill="currentColor">
+                                    <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col col-3">
+                        <div class="stat-card" style="background: linear-gradient(45deg, #FF512F, #F09819);">
+                            <div class="stat-title">验证失败</div>
+                            <div class="stat-value">12</div>
+                            <div class="stat-description">
+                                较上月减少
+                                <span class="stat-trend-icon trend-down">
+                                    5% <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                        <path d="M7,10L12,15L17,10H7Z" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24" width="80" height="80" fill="currentColor">
+                                    <path d="M13,13H11V7H13M13,17H11V15H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col col-3">
+                        <div class="stat-card" style="background: linear-gradient(45deg, #614385, #516395);">
+                            <div class="stat-title">近7日趋势</div>
+                            <div class="stat-value">+15%</div>
+                            <div class="stat-description">验证量持续增长</div>
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24" width="80" height="80" fill="currentColor">
+                                    <path d="M3,22V8H7V22H3M10,22V2H14V22H10M17,22V14H21V22H17Z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 图表和数据分析区域 -->
+                <div class="row" style="margin-bottom: 25px;">
+                    <div class="col col-8">
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <h3 class="chart-title">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                        <path d="M22,21H2V3H4V19H6V17H10V19H12V16H16V19H18V17H22V21Z"/>
+                                    </svg>
+                                    验证趋势分析
+                                </h3>
+                                <div class="time-selector">
+                                    <button class="time-btn" onclick="changeTimeRange('1h')">1小时</button>
+                                    <button class="time-btn active" onclick="changeTimeRange('24h')">24小时</button>
+                                    <button class="time-btn" onclick="changeTimeRange('7d')">7天</button>
+                                    <button class="time-btn" onclick="changeTimeRange('30d')">30天</button>
+                                </div>
+                            </div>
+                            <div class="chart-wrapper">
+                                                            <div class="chart-y-labels" id="yLabels">
+                                <span>108</span>
+                                <span>90</span>
+                                <span>72</span>
+                                <span>54</span>
+                                <span>36</span>
+                                <span>18</span>
+                                <span>0</span>
+                            </div>
+                                <canvas class="chart-canvas" id="verificationChart" width="600" height="280"></canvas>
+                            </div>
+                            <div class="chart-labels" id="xLabels">
+                                <span>00:00</span>
+                                <span>02:00</span>
+                                <span>04:00</span>
+                                <span>06:00</span>
+                                <span>08:00</span>
+                                <span>10:00</span>
+                                <span>12:00</span>
+                                <span>14:00</span>
+                                <span>16:00</span>
+                                <span>18:00</span>
+                                <span>20:00</span>
+                                <span>22:00</span>
+                            </div>
+                            <div class="chart-tooltip" id="chartTooltip"></div>
+                        </div>
+                    </div>
+                    <div class="col col-4">
+                        <div class="chart-container" style="height: 420px;">
+                            <div class="chart-header">
+                                <h3 class="chart-title">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                        <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4Z"/>
+                                    </svg>
+                                    验证类型占比
+                                </h3>
+                                <div>
+                                    <button class="btn btn-outline btn-sm" onclick="refreshPieChart()">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 5px; vertical-align: text-top;">
+                                            <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+                                        </svg>
+                                        刷新
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="pie-chart-container">
+                                <canvas id="pieChart" width="200" height="200" style="margin: 0 auto;"></canvas>
+                                <div class="chart-legend">
+                                    <div class="legend-item" data-index="0" onmouseenter="highlightPieSlice(0)" onmouseleave="clearPieHighlight()">
+                                        <div class="legend-color" style="background-color: #3A7BD5;"></div>
+                                        <span>在线验证码 (45%)</span>
+                                    </div>
+                                    <div class="legend-item" data-index="1" onmouseenter="highlightPieSlice(1)" onmouseleave="clearPieHighlight()">
+                                        <div class="legend-color" style="background-color: #00d2ff;"></div>
+                                        <span>个人信息 (25%)</span>
+                                    </div>
+                                    <div class="legend-item" data-index="2" onmouseenter="highlightPieSlice(2)" onmouseleave="clearPieHighlight()">
+                                        <div class="legend-color" style="background-color: #11998e;"></div>
+                                        <span>批量验证 (20%)</span>
+                                    </div>
+                                    <div class="legend-item" data-index="3" onmouseenter="highlightPieSlice(3)" onmouseleave="clearPieHighlight()">
+                                        <div class="legend-color" style="background-color: #FF512F;"></div>
+                                        <span>扫码验证 (10%)</span>
+                                    </div>
+                                </div>
+                                <div class="pie-chart-tooltip" id="pieTooltip"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript 增强功能 -->
+    <script>
+        // 图表相关变量
+        let currentTimeRange = '24h';
+        let chartCanvas, chartCtx;
+        let pieCanvas, pieCtx;
+        let chartData = [];
+        let hoveredPoint = -1;
+        let hoveredSlice = -1;
+        let pieData = [];
+        
+        // 图表配置
+        const chartConfig = {
+            padding: 60,
+            gridColor: '#f0f0f0',
+            axisColor: '#ddd',
+            lineWidth: 3,
+            pointRadius: 5,
+            pointHoverRadius: 7
+        };
+        
+                 // 初始化图表
+         function initCharts() {
+             // 初始化折线图
+             chartCanvas = document.getElementById('verificationChart');
+             chartCtx = chartCanvas.getContext('2d');
+             
+             // 设置高DPI支持
+             const dpr = window.devicePixelRatio || 1;
+             const rect = chartCanvas.getBoundingClientRect();
+             
+             // 确保画布宽度与容器一致
+             const containerWidth = chartCanvas.parentElement.offsetWidth - 60; // 减去Y轴标签宽度
+             chartCanvas.width = containerWidth * dpr;
+             chartCanvas.height = rect.height * dpr;
+             chartCtx.scale(dpr, dpr);
+             chartCanvas.style.width = containerWidth + 'px';
+             chartCanvas.style.height = rect.height + 'px';
+            
+            // 添加鼠标事件
+            chartCanvas.addEventListener('mousemove', handleMouseMove);
+            chartCanvas.addEventListener('mouseleave', handleMouseLeave);
+            
+            // 初始化饼图
+            pieCanvas = document.getElementById('pieChart');
+            pieCtx = pieCanvas.getContext('2d');
+            
+            // 设置饼图高DPI支持
+            const pieRect = pieCanvas.getBoundingClientRect();
+            pieCanvas.width = pieRect.width * dpr;
+            pieCanvas.height = pieRect.height * dpr;
+            pieCtx.scale(dpr, dpr);
+            pieCanvas.style.width = pieRect.width + 'px';
+            pieCanvas.style.height = pieRect.height + 'px';
+            
+            // 添加饼图鼠标事件
+            pieCanvas.addEventListener('mousemove', handlePieMouseMove);
+            pieCanvas.addEventListener('mouseleave', handlePieMouseLeave);
+            
+                         // 初始化图表
+             updateChart('24h');
+             drawPieChart();
+             
+             // 调试角度计算（可选）
+             // debugPieAngles();
+        }
+        
+        // 切换时间范围
+        function changeTimeRange(range) {
+            currentTimeRange = range;
+            
+            // 更新按钮状态
+            document.querySelectorAll('.time-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 更新图表数据
+            updateChart(range);
+        }
+        
+                 // 更新图表数据
+         function updateChart(range) {
+             chartData = getChartData(range);
+             const xLabels = getXLabels(range);
+             const yLabels = getYLabels(range);
+             
+             // 更新X轴标签
+             const xLabelContainer = document.getElementById('xLabels');
+             xLabelContainer.innerHTML = xLabels.map(label => `<span>${label}</span>`).join('');
+             
+             // 更新Y轴标签
+             const yLabelContainer = document.getElementById('yLabels');
+             yLabelContainer.innerHTML = yLabels.map(label => `<span>${label}</span>`).join('');
+             
+             // 绘制图表
+             drawChart();
+         }
+        
+                 // 获取图表数据 - 更合理的验证数据
+         function getChartData(range) {
+             const data = {
+                 '1h': [8, 12, 15, 18, 22, 25, 28, 32, 35, 30, 28, 25],
+                 '24h': [15, 25, 35, 45, 58, 72, 85, 92, 88, 95, 102, 108],
+                 '7d': [420, 485, 532, 498, 576, 623, 681],
+                 '30d': [1250, 1380, 1520, 1690, 1450, 1620, 1780, 1890, 2040, 2180, 2320, 2150]
+             };
+             return data[range] || data['24h'];
+         }
+        
+                 // 获取X轴标签
+         function getXLabels(range) {
+             const labels = {
+                 '1h': ['0分', '5分', '10分', '15分', '20分', '25分', '30分', '35分', '40分', '45分', '50分', '55分'],
+                 '24h': ['00:00', '02:00', '04:00', '06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'],
+                 '7d': ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+                 '30d': ['1日', '3日', '6日', '9日', '12日', '15日', '18日', '21日', '24日', '27日', '30日', '31日']
+             };
+             return labels[range] || labels['24h'];
+         }
+         
+         // 获取Y轴标签
+         function getYLabels(range) {
+             const chartData = getChartData(range);
+             const maxValue = Math.max(...chartData);
+             const step = Math.ceil(maxValue / 6);
+             const labels = [];
+             
+             for (let i = 6; i >= 0; i--) {
+                 labels.push((step * i).toString());
+             }
+             
+             return labels;
+         }
+        
+                 // 绘制折线图
+         function drawChart() {
+             const canvas = chartCanvas;
+             const ctx = chartCtx;
+             const width = canvas.offsetWidth;
+             const height = canvas.offsetHeight;
+             
+             // 清除画布
+             ctx.clearRect(0, 0, width, height);
+             
+             // 计算绘图区域 - 确保与容器宽度一致
+             const chartArea = {
+                 left: chartConfig.padding,
+                 right: width - 20,
+                 top: 20,
+                 bottom: height - 40
+             };
+            
+            const chartWidth = chartArea.right - chartArea.left;
+            const chartHeight = chartArea.bottom - chartArea.top;
+            
+            // 绘制网格线
+            drawGrid(ctx, chartArea, chartWidth, chartHeight);
+            
+            // 绘制数据
+            if (chartData.length > 0) {
+                const maxValue = Math.max(...chartData);
+                const points = calculatePoints(chartData, chartArea, chartWidth, chartHeight, maxValue);
+                
+                // 绘制填充区域
+                drawArea(ctx, points, chartArea);
+                
+                // 绘制数据线
+                drawLine(ctx, points);
+                
+                // 绘制数据点
+                drawPoints(ctx, points);
+            }
+        }
+        
+                 // 绘制网格
+         function drawGrid(ctx, chartArea, chartWidth, chartHeight) {
+             ctx.strokeStyle = chartConfig.gridColor;
+             ctx.lineWidth = 1;
+             
+             // 水平网格线 - 根据Y轴标签数量动态绘制
+             for (let i = 0; i <= 6; i++) {
+                 const y = chartArea.top + (chartHeight / 6) * i;
+                 ctx.beginPath();
+                 ctx.moveTo(chartArea.left, y);
+                 ctx.lineTo(chartArea.right, y);
+                 ctx.stroke();
+             }
+             
+             // 垂直网格线 - 根据数据点数量动态绘制
+             const dataLength = chartData.length;
+             const xStep = chartWidth / (dataLength - 1);
+             for (let i = 0; i < dataLength; i++) {
+                 const x = chartArea.left + xStep * i;
+                 ctx.beginPath();
+                 ctx.moveTo(x, chartArea.top);
+                 ctx.lineTo(x, chartArea.bottom);
+                 ctx.stroke();
+             }
+             
+             // 绘制坐标轴
+             ctx.strokeStyle = chartConfig.axisColor;
+             ctx.lineWidth = 2;
+             
+             // X轴
+             ctx.beginPath();
+             ctx.moveTo(chartArea.left, chartArea.bottom);
+             ctx.lineTo(chartArea.right, chartArea.bottom);
+             ctx.stroke();
+             
+             // Y轴
+             ctx.beginPath();
+             ctx.moveTo(chartArea.left, chartArea.top);
+             ctx.lineTo(chartArea.left, chartArea.bottom);
+             ctx.stroke();
+         }
+        
+        // 计算数据点
+        function calculatePoints(data, chartArea, chartWidth, chartHeight, maxValue) {
+            return data.map((value, index) => {
+                const x = chartArea.left + (chartWidth / (data.length - 1)) * index;
+                const y = chartArea.bottom - (value / maxValue) * chartHeight;
+                return { x, y, value, index };
+            });
+        }
+        
+        // 绘制填充区域
+        function drawArea(ctx, points, chartArea) {
+            if (points.length === 0) return;
+            
+            // 创建渐变
+            const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+            gradient.addColorStop(0, 'rgba(58, 123, 213, 0.2)');
+            gradient.addColorStop(0.5, 'rgba(0, 210, 255, 0.1)');
+            gradient.addColorStop(1, 'rgba(0, 210, 255, 0)');
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, chartArea.bottom);
+            
+            points.forEach(point => {
+                ctx.lineTo(point.x, point.y);
+            });
+            
+            ctx.lineTo(points[points.length - 1].x, chartArea.bottom);
+            ctx.closePath();
+            ctx.fill();
+        }
+        
+        // 绘制线条
+        function drawLine(ctx, points) {
+            if (points.length === 0) return;
+            
+            // 创建线条渐变
+            const gradient = ctx.createLinearGradient(points[0].x, 0, points[points.length - 1].x, 0);
+            gradient.addColorStop(0, '#3A7BD5');
+            gradient.addColorStop(1, '#00d2ff');
+            
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = chartConfig.lineWidth;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+            
+            points.forEach(point => {
+                ctx.lineTo(point.x, point.y);
+            });
+            
+            ctx.stroke();
+        }
+        
+        // 绘制数据点
+        function drawPoints(ctx, points) {
+            points.forEach((point, index) => {
+                const isHovered = hoveredPoint === index;
+                const radius = isHovered ? chartConfig.pointHoverRadius : chartConfig.pointRadius;
+                
+                // 绘制点的背景
+                ctx.fillStyle = 'white';
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, radius + 2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 绘制点
+                ctx.fillStyle = isHovered ? '#00d2ff' : '#3A7BD5';
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+        
+        // 鼠标移动处理
+        function handleMouseMove(event) {
+            const rect = chartCanvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            
+            // 计算最近的数据点
+            let nearestPoint = -1;
+            let minDistance = Infinity;
+            
+            const chartArea = {
+                left: chartConfig.padding,
+                right: chartCanvas.offsetWidth - 20,
+                top: 20,
+                bottom: chartCanvas.offsetHeight - 40
+            };
+            
+            if (chartData.length > 0) {
+                const maxValue = Math.max(...chartData);
+                const points = calculatePoints(chartData, chartArea, 
+                    chartArea.right - chartArea.left, 
+                    chartArea.bottom - chartArea.top, 
+                    maxValue);
+                
+                points.forEach((point, index) => {
+                    const distance = Math.sqrt(Math.pow(x - point.x, 2) + Math.pow(y - point.y, 2));
+                    if (distance < minDistance && distance < 20) {
+                        minDistance = distance;
+                        nearestPoint = index;
+                    }
+                });
+            }
+            
+            if (nearestPoint !== hoveredPoint) {
+                hoveredPoint = nearestPoint;
+                drawChart();
+                
+                if (hoveredPoint >= 0) {
+                    const xLabels = getXLabels(currentTimeRange);
+                    const label = xLabels[Math.floor(hoveredPoint * xLabels.length / chartData.length)] || `点${hoveredPoint + 1}`;
+                    showTooltip(event, label, chartData[hoveredPoint]);
+                } else {
+                    hideTooltip();
+                }
+            }
+        }
+        
+        // 鼠标离开处理
+        function handleMouseLeave() {
+            hoveredPoint = -1;
+            drawChart();
+            hideTooltip();
+        }
+        
+        // 显示工具提示
+        function showTooltip(event, time, value) {
+            const tooltip = document.getElementById('chartTooltip');
+            const rect = chartCanvas.getBoundingClientRect();
+            const container = chartCanvas.closest('.chart-container').getBoundingClientRect();
+            
+            tooltip.innerHTML = `
+                <div style="font-weight: 600; margin-bottom: 0.2rem;">${time}</div>
+                <div>验证次数: ${value}</div>
+            `;
+            
+            tooltip.style.left = (event.clientX - container.left + 10) + 'px';
+            tooltip.style.top = (event.clientY - container.top - 60) + 'px';
+            tooltip.classList.add('visible');
+        }
+        
+        // 隐藏工具提示
+        function hideTooltip() {
+            const tooltip = document.getElementById('chartTooltip');
+            tooltip.classList.remove('visible');
+        }
+        
+                 // 绘制饼图
+         function drawPieChart() {
+             const canvas = pieCanvas;
+             const ctx = pieCtx;
+             const width = canvas.offsetWidth;
+             const height = canvas.offsetHeight;
+             
+             // 清除画布
+             ctx.clearRect(0, 0, width, height);
+             
+             // 饼图数据
+             pieData = [
+                 { label: '在线验证码', value: 45, color: '#3A7BD5', startAngle: 0, endAngle: 0 },
+                 { label: '个人信息', value: 25, color: '#00d2ff', startAngle: 0, endAngle: 0 },
+                 { label: '批量验证', value: 20, color: '#11998e', startAngle: 0, endAngle: 0 },
+                 { label: '扫码验证', value: 10, color: '#FF512F', startAngle: 0, endAngle: 0 }
+             ];
+             
+             const centerX = width / 2;
+             const centerY = height / 2;
+             const radius = Math.min(width, height) / 2 - 30;
+             
+             let currentAngle = -Math.PI / 2; // 从12点钟方向开始
+             
+             pieData.forEach((item, index) => {
+                 const sliceAngle = (item.value / 100) * 2 * Math.PI;
+                 item.startAngle = currentAngle;
+                 item.endAngle = currentAngle + sliceAngle;
+                 
+                 const isHovered = hoveredSlice === index;
+                 const offsetRadius = isHovered ? radius + 10 : radius;
+                 
+                 // 计算偏移位置
+                 let offsetX = centerX;
+                 let offsetY = centerY;
+                 if (isHovered) {
+                     const midAngle = (item.startAngle + item.endAngle) / 2;
+                     offsetX += Math.cos(midAngle) * 8;
+                     offsetY += Math.sin(midAngle) * 8;
+                 }
+                 
+                 // 绘制扇形
+                 ctx.beginPath();
+                 ctx.moveTo(offsetX, offsetY);
+                 ctx.arc(offsetX, offsetY, offsetRadius, currentAngle, currentAngle + sliceAngle);
+                 ctx.closePath();
+                 
+                 // 设置颜色，悬停时更亮
+                 if (isHovered) {
+                     ctx.fillStyle = lightenColor(item.color, 0.3);
+                     ctx.shadowColor = item.color;
+                     ctx.shadowBlur = 15;
+                 } else {
+                     ctx.fillStyle = item.color;
+                     ctx.shadowBlur = 0;
+                 }
+                 ctx.fill();
+                 
+                 // 绘制边框
+                 ctx.strokeStyle = 'white';
+                 ctx.lineWidth = 3;
+                 ctx.stroke();
+                 
+                 currentAngle += sliceAngle;
+             });
+             
+             // 绘制中心圆
+             ctx.shadowBlur = 0;
+             ctx.beginPath();
+             ctx.arc(centerX, centerY, radius * 0.4, 0, 2 * Math.PI);
+             ctx.fillStyle = 'white';
+             ctx.fill();
+             ctx.strokeStyle = '#f0f0f0';
+             ctx.lineWidth = 2;
+             ctx.stroke();
+             
+             // 绘制中心文字
+             ctx.fillStyle = '#666';
+             ctx.font = 'bold 12px Noto Sans SC';
+             ctx.textAlign = 'center';
+             ctx.textBaseline = 'middle';
+             ctx.fillText('验证类型', centerX, centerY);
+         }
+         
+         // 颜色加亮函数
+         function lightenColor(color, percent) {
+             const num = parseInt(color.replace("#",""), 16);
+             const amt = Math.round(2.55 * percent * 100);
+             const R = (num >> 16) + amt;
+             const G = (num >> 8 & 0x00FF) + amt;
+             const B = (num & 0x0000FF) + amt;
+             return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+                 (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+                 (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+         }
+        
+                 // 饼图鼠标移动处理 - 最新精确定位版本
+         function handlePieMouseMove(event) {
+             const rect = pieCanvas.getBoundingClientRect();
+             const x = event.clientX - rect.left;
+             const y = event.clientY - rect.top;
+             
+             const centerX = pieCanvas.offsetWidth / 2;
+             const centerY = pieCanvas.offsetHeight / 2;
+             const radius = Math.min(pieCanvas.offsetWidth, pieCanvas.offsetHeight) / 2 - 30;
+             
+             // 计算鼠标相对中心的角度和距离
+             const dx = x - centerX;
+             const dy = y - centerY;
+             const distance = Math.sqrt(dx * dx + dy * dy);
+             
+             let newHoveredSlice = -1;
+             
+             // 检查是否在饼图区域内（排除中心圆）
+             if (distance <= radius && distance > radius * 0.4) {
+                 // 使用点在多边形内算法进行精确检测
+                 for (let i = 0; i < pieData.length; i++) {
+                     if (isPointInPieSlice(x, y, centerX, centerY, radius, pieData[i].startAngle, pieData[i].endAngle)) {
+                         newHoveredSlice = i;
+                         break;
+                     }
+                 }
+             }
+             
+             // 更新悬停状态
+             if (newHoveredSlice !== hoveredSlice) {
+                 hoveredSlice = newHoveredSlice;
+                 drawPieChart();
+                 
+                 // 更新图例高亮状态
+                 document.querySelectorAll('.legend-item').forEach((item, index) => {
+                     item.classList.toggle('highlighted', index === hoveredSlice);
+                 });
+                 
+                 // 显示或隐藏工具提示
+                 if (hoveredSlice >= 0) {
+                     showPieTooltip(event, pieData[hoveredSlice]);
+                 } else {
+                     hidePieTooltip();
+                 }
+             }
+         }
+         
+         // 精确检测点是否在饼图扇形内
+         function isPointInPieSlice(x, y, centerX, centerY, radius, startAngle, endAngle) {
+             const dx = x - centerX;
+             const dy = y - centerY;
+             const distance = Math.sqrt(dx * dx + dy * dy);
+             
+             // 检查距离是否在半径范围内
+             if (distance > radius || distance < radius * 0.4) {
+                 return false;
+             }
+             
+             // 计算点的角度
+             let angle = Math.atan2(dy, dx);
+             
+             // 转换为从12点钟方向开始的正角度
+             angle = (angle + Math.PI * 2.5) % (Math.PI * 2);
+             
+             // 标准化开始和结束角度
+             let normStart = (startAngle + Math.PI * 2.5) % (Math.PI * 2);
+             let normEnd = (endAngle + Math.PI * 2.5) % (Math.PI * 2);
+             
+             // 处理跨越0度边界的情况
+             if (normEnd < normStart) {
+                 return angle >= normStart || angle <= normEnd;
+             } else {
+                 return angle >= normStart && angle <= normEnd;
+             }
+         }
+         
+         // 饼图鼠标离开处理
+         function handlePieMouseLeave() {
+             hoveredSlice = -1;
+             drawPieChart();
+             hidePieTooltip();
+             
+             // 清除图例高亮状态
+             document.querySelectorAll('.legend-item').forEach(item => {
+                 item.classList.remove('highlighted');
+             });
+         }
+         
+         // 高亮饼图扇形
+         function highlightPieSlice(index) {
+             hoveredSlice = index;
+             drawPieChart();
+             
+             // 更新图例高亮状态
+             document.querySelectorAll('.legend-item').forEach((item, i) => {
+                 item.classList.toggle('highlighted', i === index);
+             });
+             
+             // 显示对应扇形信息
+             if (index >= 0 && index < pieData.length) {
+                 const event = { clientX: 0, clientY: 0 };
+                 showPieTooltip(event, pieData[index]);
+             } else {
+                 hidePieTooltip();
+             }
+         }
+         
+         // 清除饼图高亮
+         function clearPieHighlight() {
+             hoveredSlice = -1;
+             drawPieChart();
+             hidePieTooltip();
+             
+             // 清除图例高亮状态
+             document.querySelectorAll('.legend-item').forEach(item => {
+                 item.classList.remove('highlighted');
+             });
+         }
+         
+         // 调试函数 - 用于测试角度计算
+         function debugPieAngles() {
+             console.log('饼图数据:', pieData);
+             pieData.forEach((item, index) => {
+                 console.log(`扇形 ${index}: ${item.label} - 开始角度: ${(item.startAngle * 180 / Math.PI).toFixed(1)}°, 结束角度: ${(item.endAngle * 180 / Math.PI).toFixed(1)}°`);
+             });
+         }
+         
+         // 显示饼图工具提示
+         function showPieTooltip(event, data) {
+             const tooltip = document.getElementById('pieTooltip');
+             const container = pieCanvas.closest('.pie-chart-container').getBoundingClientRect();
+             
+             tooltip.innerHTML = `
+                 <div style="font-weight: 600; margin-bottom: 0.2rem;">${data.label}</div>
+                 <div>占比: ${data.value}%</div>
+             `;
+             
+             // 智能定位工具提示
+             if (event.clientX > 0 && event.clientY > 0) {
+                 // 鼠标位置
+                 let left = event.clientX - container.left + 10;
+                 let top = event.clientY - container.top - 60;
+                 
+                 // 确保工具提示不超出容器边界
+                 if (left + 120 > container.width) {
+                     left = event.clientX - container.left - 130;
+                 }
+                 if (top < 0) {
+                     top = event.clientY - container.top + 10;
+                 }
+                 
+                 tooltip.style.left = left + 'px';
+                 tooltip.style.top = top + 'px';
+             } else {
+                 // 默认位置（用于图例悬停）
+                 tooltip.style.left = (container.width / 2 - 50) + 'px';
+                 tooltip.style.top = (container.height / 2 - 30) + 'px';
+             }
+             
+             tooltip.classList.add('visible');
+         }
+         
+         // 隐藏饼图工具提示
+         function hidePieTooltip() {
+             const tooltip = document.getElementById('pieTooltip');
+             tooltip.classList.remove('visible');
+         }
+         
+         // 刷新饼图
+         function refreshPieChart() {
+             // 添加刷新动画效果
+             pieCanvas.style.transform = 'rotate(360deg)';
+             pieCanvas.style.transition = 'transform 0.5s ease';
+             
+             setTimeout(() => {
+                 pieCanvas.style.transform = 'rotate(0deg)';
+                 pieCanvas.style.transition = 'none';
+                 drawPieChart();
+             }, 500);
+         }
+        
+        // 页面加载完成
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('企业仪表盘已加载');
+            
+            // 初始化图表
+            initCharts();
+            
+                         // 窗口大小改变时重新绘制
+             window.addEventListener('resize', function() {
+                 setTimeout(() => {
+                     initCharts();
+                 }, 100);
+             });
+             
+             // 确保图表在页面加载完成后正确初始化
+             setTimeout(() => {
+                 initCharts();
+             }, 50);
+        });
+    </script>
+</body>
+</html> 

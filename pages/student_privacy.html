@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>隐私设置 - 学链通</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/student_dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 左侧导航栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 18,13.79 18,15.47C17.76,16 17.47,16.5 17.13,17Z"/>
+                    </svg>
+                </div>
+                <span class="logo-text">学链通</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="student_dashboard.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M13,3V9H21V3M13,21H21V11H13M3,21H11V15H3M3,13H11V3H3V13Z" />
+                        </svg>
+                        <span>仪表盘</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="student_education.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,3L1,9L12,15L21,10.09V17H23V9M5,13.18V17.18L12,21L19,17.18V13.18L12,17L5,13.18Z" />
+                        </svg>
+                        <span>学历信息</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="student_certificate.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M4,3C2.89,3 2,3.89 2,5V15A2,2 0 0,0 4,17H12V22L15,19L18,22V17H20A2,2 0 0,0 22,15V8L22,6V5A2,2 0 0,0 20,3H16V3H4M12,5L15,7L18,5V8.5L21,10L18,11.5V15L15,13L12,15V11.5L9,10L12,8.5V5M4,5H9V7H4V5M4,9H7V11H4V9M4,13H9V15H4V13Z" />
+                        </svg>
+                        <span>证书生成</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="student_authorization.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z" />
+                        </svg>
+                        <span>授权管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="student_privacy.html" class="nav-link active">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z" />
+                        </svg>
+                        <span>隐私设置</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="student_messages.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4C22,2.89 21.1,2 20,2Z" />
+                        </svg>
+                        <span>消息通知</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="student_settings.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" />
+                        </svg>
+                        <span>账号设置</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <a href="../login.html" class="nav-link logout-link">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z" />
+                    </svg>
+                    <span>退出登录</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- 主内容区域 -->
+        <main class="main-content">
+            <!-- 顶部状态栏 -->
+            <div class="topbar">
+                <h1 class="page-title">隐私设置</h1>
+                <div class="user-menu">
+                    <div class="notification-icon">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M21,19V20H3V19L5,17V11C5,7.9 7.03,5.17 10,4.29C10,4.19 10,4.1 10,4A2,2 0 0,1 12,2A2,2 0 0,1 14,4C14,4.1 14,4.19 14,4.29C16.97,5.17 19,7.9 19,11V17L21,19M14,21A2,2 0 0,1 12,23A2,2 0 0,1 10,21" />
+                        </svg>
+                        <div class="notification-badge">3</div>
+                    </div>
+                    <div class="user-profile">
+                        <div class="user-avatar">ZL</div>
+                        <div class="user-info">
+                            <div class="user-name">张力</div>
+                            <div class="user-role">计算机科学与技术 / 本科生</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 内容区域 -->
+            <div class="content-wrapper">
+                <div class="row">
+                    <!-- 隐私概览 -->
+                    <div class="col col-12">
+                        <div class="card privacy-overview">
+                            <div class="card-body">
+                                <div class="privacy-status">
+                                    <div class="privacy-icon">
+                                        <svg viewBox="0 0 24 24" width="48" height="48" fill="var(--success-color)">
+                                            <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z" />
+                                        </svg>
+                                    </div>
+                                    <div class="privacy-content">
+                                        <h3>您的隐私设置安全等级：高</h3>
+                                        <p>您已启用多项隐私保护功能，个人信息得到充分保护。建议定期检查和更新隐私设置。</p>
+                                    </div>
+                                    <div class="privacy-score">
+                                        <div class="score-circle">
+                                            <span class="score-value">85</span>
+                                            <span class="score-label">分</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 证书可见性设置 -->
+                    <div class="col col-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">证书可见性</h3>
+                                <div class="card-tools">
+                                    <span class="badge badge-primary">2个证书</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="certificate-privacy-settings">
+                                    <!-- 本科证书 -->
+                                    <div class="certificate-privacy-item">
+                                        <div class="certificate-info">
+                                            <div class="certificate-icon">
+                                                <svg viewBox="0 0 24 24" width="32" height="32" fill="var(--primary-color)">
+                                                    <path d="M12,3L1,9L12,15L21,10.09V17H23V9M5,13.18V17.18L12,21L19,17.18V13.18L12,17L5,13.18Z" />
+                                                </svg>
+                                            </div>
+                                            <div class="certificate-details">
+                                                <h4>本科学历证书</h4>
+                                                <p>学链通大学 · 计算机科学与技术</p>
+                                            </div>
+                                        </div>
+                                        <div class="privacy-controls">
+                                            <select class="form-control privacy-level">
+                                                <option value="public">公开</option>
+                                                <option value="authorized" selected>仅授权可见</option>
+                                                <option value="private">私密</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- 硕士证书 -->
+                                    <div class="certificate-privacy-item">
+                                        <div class="certificate-info">
+                                            <div class="certificate-icon">
+                                                <svg viewBox="0 0 24 24" width="32" height="32" fill="var(--warning-color)">
+                                                    <path d="M12,3L1,9L12,15L21,10.09V17H23V9M5,13.18V17.18L12,21L19,17.18V13.18L12,17L5,13.18Z" />
+                                                </svg>
+                                            </div>
+                                            <div class="certificate-details">
+                                                <h4>硕士学历证书</h4>
+                                                <p>学链通大学 · 计算机科学与技术</p>
+                                            </div>
+                                        </div>
+                                        <div class="privacy-controls">
+                                            <select class="form-control privacy-level">
+                                                <option value="public">公开</option>
+                                                <option value="authorized" selected>仅授权可见</option>
+                                                <option value="private">私密</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 数据共享权限 -->
+                    <div class="col col-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">数据共享权限</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="data-sharing-settings">
+                                    <div class="setting-item">
+                                        <div class="setting-info">
+                                            <h5>基本学历信息</h5>
+                                            <p>包括学校名称、专业、学位类型</p>
+                                        </div>
+                                        <div class="setting-control">
+                                            <label class="switch">
+                                                <input type="checkbox" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="setting-item">
+                                        <div class="setting-info">
+                                            <h5>详细成绩信息</h5>
+                                            <p>包括GPA、单科成绩、排名信息</p>
+                                        </div>
+                                        <div class="setting-control">
+                                            <label class="switch">
+                                                <input type="checkbox">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="setting-item">
+                                        <div class="setting-info">
+                                            <h5>荣誉奖项信息</h5>
+                                            <p>包括获奖记录、奖学金、竞赛成绩</p>
+                                        </div>
+                                        <div class="setting-control">
+                                            <label class="switch">
+                                                <input type="checkbox" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="setting-item">
+                                        <div class="setting-info">
+                                            <h5>联系方式</h5>
+                                            <p>包括邮箱地址、手机号码</p>
+                                        </div>
+                                        <div class="setting-control">
+                                            <label class="switch">
+                                                <input type="checkbox">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="setting-item">
+                                        <div class="setting-info">
+                                            <h5>个人照片</h5>
+                                            <p>包括证件照、生活照</p>
+                                        </div>
+                                        <div class="setting-control">
+                                            <label class="switch">
+                                                <input type="checkbox">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 验证授权设置 -->
+                    <div class="col col-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">验证授权设置</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="authorization-settings">
+                                    <div class="setting-item">
+                                        <div class="setting-info">
+                                            <h5>自动批准信任企业</h5>
+                                            <p>自动批准来自已验证企业的新验证请求</p>
+                                        </div>
+                                        <div class="setting-control">
+                                            <label class="switch">
+                                                <input type="checkbox" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="setting-item">
+                                        <div class="setting-info">
+                                            <h5>验证请求通知</h5>
+                                            <p>当收到新的验证请求时通知我</p>
+                                        </div>
+                                        <div class="setting-control">
+                                            <label class="switch">
+                                                <input type="checkbox" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="setting-item">
+                                        <div class="setting-info">
+                                            <h5>验证成功通知</h5>
+                                            <p>当验证完成时发送通知</p>
+                                        </div>
+                                        <div class="setting-control">
+                                            <label class="switch">
+                                                <input type="checkbox" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="setting-item">
+                                        <div class="setting-info">
+                                            <h5>限制验证频率</h5>
+                                            <p>限制同一企业的验证请求频率</p>
+                                        </div>
+                                        <div class="setting-control">
+                                            <label class="switch">
+                                                <input type="checkbox">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="advanced-settings">
+                                    <h5>高级设置</h5>
+                                    <div class="setting-row">
+                                        <label>单日最大验证次数：</label>
+                                        <select class="form-control">
+                                            <option value="5">5次</option>
+                                            <option value="10" selected>10次</option>
+                                            <option value="20">20次</option>
+                                            <option value="unlimited">不限制</option>
+                                        </select>
+                                    </div>
+                                    <div class="setting-row">
+                                        <label>默认授权有效期：</label>
+                                        <select class="form-control">
+                                            <option value="7">7天</option>
+                                            <option value="15">15天</option>
+                                            <option value="30" selected>30天</option>
+                                            <option value="60">60天</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 安全设置 -->
+                    <div class="col col-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">安全设置</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="security-settings">
+                                    <div class="setting-item">
+                                        <div class="setting-info">
+                                            <h5>二次验证</h5>
+                                            <p>重要操作需要短信或邮箱验证</p>
+                                        </div>
+                                        <div class="setting-control">
+                                            <label class="switch">
+                                                <input type="checkbox" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="setting-item">
+                                        <div class="setting-info">
+                                            <h5>异地登录保护</h5>
+                                            <p>检测到异地登录时发送安全提醒</p>
+                                        </div>
+                                        <div class="setting-control">
+                                            <label class="switch">
+                                                <input type="checkbox" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="setting-item">
+                                        <div class="setting-info">
+                                            <h5>设备授权管理</h5>
+                                            <p>管理已授权的登录设备</p>
+                                        </div>
+                                        <div class="setting-control">
+                                            <button class="btn btn-outline btn-sm">管理设备</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="setting-item">
+                                        <div class="setting-info">
+                                            <h5>数据加密</h5>
+                                            <p>使用高级加密保护存储数据</p>
+                                        </div>
+                                        <div class="setting-control">
+                                            <span class="badge badge-success">已启用</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="security-actions">
+                                    <button class="btn btn-primary">查看活动日志</button>
+                                    <button class="btn btn-outline">下载数据副本</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 数据管理 -->
+                    <div class="col col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">数据管理</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="data-management">
+                                    <div class="data-section">
+                                        <h4>数据导出</h4>
+                                        <p>您可以下载包含您个人信息的数据副本，用于备份或迁移到其他平台。</p>
+                                        <button class="btn btn-primary">申请数据导出</button>
+                                    </div>
+
+                                    <div class="data-section">
+                                        <h4>数据删除</h4>
+                                        <p>您可以请求删除部分或全部个人数据。请注意，删除操作不可逆转。</p>
+                                        <button class="btn btn-danger">申请数据删除</button>
+                                    </div>
+
+                                    <div class="data-section">
+                                        <h4>数据可携性</h4>
+                                        <p>将您的数据以标准格式导出，便于在其他平台使用。</p>
+                                        <button class="btn btn-outline">数据迁移</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 保存设置 -->
+                <div class="settings-actions">
+                    <button class="btn btn-primary btn-lg">保存设置</button>
+                    <button class="btn btn-outline btn-lg">重置为默认</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../scripts/student_dashboard.js"></script>
+</body>
+</html> 

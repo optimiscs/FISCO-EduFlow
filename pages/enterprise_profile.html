@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企业信息 - 企业验证平台</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/enterprise_verification.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 左侧导航栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 18,13.79 18,15.47C17.76,16 17.47,16.5 17.13,17Z"/>
+                    </svg>
+                </div>
+                <span class="logo-text">学链通</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="enterprise_dashboard.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M13,3V9H21V3M13,21H21V11H13M3,21H11V15H3M3,13H11V3H3V13Z" />
+                        </svg>
+                        <span>仪表盘</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="enterprise_verification.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" />
+                        </svg>
+                        <span>证书验证</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="enterprise_history.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M13.5,8H12V13L16.28,15.54L17,14.33L13.5,12.25V8M13,3A9,9 0 0,0 4,12H1L4.96,16.03L9,12H6A7,7 0 0,1 13,5A7,7 0 0,1 20,12A7,7 0 0,1 13,19C11.07,19 9.32,18.21 8.06,16.94L6.64,18.36C8.27,20 10.5,21 13,21A9,9 0 0,0 22,12A9,9 0 0,0 13,3" />
+                        </svg>
+                        <span>验证历史</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="enterprise_batch.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,10A3,3 0 0,0 11,13A3,3 0 0,0 14,16A3,3 0 0,0 17,13A3,3 0 0,0 14,10M14,18A5,5 0 0,1 9,13A5,5 0 0,1 14,8A5,5 0 0,1 19,13A5,5 0 0,1 14,18M14,2A11,11 0 0,0 3,13A11,11 0 0,0 14,24A11,11 0 0,0 25,13A11,11 0 0,0 14,2Z" />
+                        </svg>
+                        <span>批量验证</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="enterprise_profile.html" class="nav-link active">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" />
+                        </svg>
+                        <span>企业信息</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="enterprise_settings.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" />
+                        </svg>
+                        <span>系统设置</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-footer" style="padding: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1); margin-top: auto;">
+                <a href="../login.html" class="nav-link" style="justify-content: flex-start; padding: 10px 0;">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z" />
+                    </svg>
+                    <span>退出登录</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <!-- 顶部状态栏 -->
+            <div class="topbar">
+                <h1 class="page-title">企业信息</h1>
+                <div class="user-menu">
+                    <div class="notification-icon">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                            <path d="M21,19V20H3V19L5,17V11C5,7.9 7.03,5.17 10,4.29C10,4.19 10,4.1 10,4A2,2 0 0,1 12,2A2,2 0 0,1 14,4C14,4.1 14,4.19 14,4.29C16.97,5.17 19,7.9 19,11V17L21,19M14,21A2,2 0 0,1 12,23A2,2 0 0,1 10,21M19.75,3.19L18.33,4.61C20.04,6.3 21,8.6 21,11H23C23,8.07 21.84,5.25 19.75,3.19M1,11H3C3,8.6 3.96,6.3 5.67,4.61L4.25,3.19C2.16,5.25 1,8.07 1,11Z"/>
+                        </svg>
+                        <span class="notification-badge">2</span>
+                    </div>
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            <span>A</span>
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">阿里巴巴</div>
+                            <div class="user-role">企业用户</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 内容区域 -->
+            <div class="content-wrapper">
+                <!-- 企业基本信息 -->
+                <div class="row">
+                    <div class="col col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">企业基本信息</h2>
+                                <div class="card-tools">
+                                    <button class="btn btn-primary btn-sm">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 5px; vertical-align: text-top;">
+                                            <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
+                                        </svg>
+                                        编辑信息
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col col-6">
+                                        <div class="form-group">
+                                            <label class="form-label">企业名称</label>
+                                            <div class="form-display">阿里巴巴集团控股有限公司</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">统一社会信用代码</label>
+                                            <div class="form-display">91330100MA28F3N925</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">法定代表人</label>
+                                            <div class="form-display">张勇</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">注册资本</label>
+                                            <div class="form-display">1,200,000万人民币</div>
+                                        </div>
+                                    </div>
+                                    <div class="col col-6">
+                                        <div class="form-group">
+                                            <label class="form-label">企业类型</label>
+                                            <div class="form-display">股份有限公司（外商投资、未上市）</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">成立日期</label>
+                                            <div class="form-display">1999年06月28日</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">经营状态</label>
+                                            <div class="form-display" style="color: var(--success-color);">存续（在营、开业、在册）</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">所属行业</label>
+                                            <div class="form-display">互联网和相关服务</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">注册地址</label>
+                                    <div class="form-display">浙江省杭州市余杭区五常街道文一西路969号3幢5层599室</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">经营范围</label>
+                                    <div class="form-display">技术开发、技术咨询、技术服务、技术转让；电子商务（不得从事增值电信、金融业务）；从事进出口业务；批发、零售：电子产品、通讯设备、计算机软硬件、日用百货、机械设备、五金交电、电子元器件、仪器仪表、建筑材料、装饰材料、汽车配件。</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 联系信息 -->
+                <div class="row" style="margin-top: 25px;">
+                    <div class="col col-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">联系信息</h2>
+                                <div class="card-tools">
+                                    <button class="btn btn-outline btn-sm">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 5px; vertical-align: text-top;">
+                                            <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
+                                        </svg>
+                                        编辑
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="form-label">联系人</label>
+                                    <div class="form-display">李经理</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">联系电话</label>
+                                    <div class="form-display">0571-85022088</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">移动电话</label>
+                                    <div class="form-display">138****8888</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">电子邮箱</label>
+                                    <div class="form-display">contact@alibaba.com</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">传真号码</label>
+                                    <div class="form-display">0571-85022099</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col col-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">认证信息</h2>
+                                <div class="card-tools">
+                                    <span class="badge" style="background-color: var(--success-color); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem;">已认证</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="form-label">认证状态</label>
+                                    <div class="form-display" style="color: var(--success-color);">✓ 已通过企业实名认证</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">认证时间</label>
+                                    <div class="form-display">2020年03月15日</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">认证机构</label>
+                                    <div class="form-display">学链通认证中心</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">在线验证码</label>
+                                    <div class="form-display">XLT-QYRZ-20200315-001</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">有效期至</label>
+                                    <div class="form-display">2025年03月15日</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 权限信息 -->
+                <div class="row" style="margin-top: 25px;">
+                    <div class="col col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">权限管理</h2>
+                                <div class="card-tools">
+                                    <button class="btn btn-outline btn-sm">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 5px; vertical-align: text-top;">
+                                            <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.1 14.8,9.5V11C15.4,11 16,11.6 16,12.3V15.8C16,16.4 15.4,17 14.7,17H9.2C8.6,17 8,16.4 8,15.7V12.2C8,11.6 8.6,11 9.2,11V9.5C9.2,8.1 10.6,7 12,7M12,8.2C11.2,8.2 10.5,8.7 10.5,9.5V11H13.5V9.5C13.5,8.7 12.8,8.2 12,8.2Z" />
+                                        </svg>
+                                        权限设置
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col col-3">
+                                        <div style="text-align: center; padding: 20px; border: 1px solid var(--border-color); border-radius: 8px;">
+                                            <div style="color: var(--success-color); font-size: 2rem; margin-bottom: 10px;">✓</div>
+                                            <h4 style="margin-bottom: 5px;">证书验证</h4>
+                                            <p style="color: var(--text-color); font-size: 0.85rem;">单次证书验证</p>
+                                        </div>
+                                    </div>
+                                    <div class="col col-3">
+                                        <div style="text-align: center; padding: 20px; border: 1px solid var(--border-color); border-radius: 8px;">
+                                            <div style="color: var(--success-color); font-size: 2rem; margin-bottom: 10px;">✓</div>
+                                            <h4 style="margin-bottom: 5px;">批量验证</h4>
+                                            <p style="color: var(--text-color); font-size: 0.85rem;">最多1000条/次</p>
+                                        </div>
+                                    </div>
+                                    <div class="col col-3">
+                                        <div style="text-align: center; padding: 20px; border: 1px solid var(--border-color); border-radius: 8px;">
+                                            <div style="color: var(--success-color); font-size: 2rem; margin-bottom: 10px;">✓</div>
+                                            <h4 style="margin-bottom: 5px;">API接口</h4>
+                                            <p style="color: var(--text-color); font-size: 0.85rem;">10000次/月调用</p>
+                                        </div>
+                                    </div>
+                                    <div class="col col-3">
+                                        <div style="text-align: center; padding: 20px; border: 1px solid var(--border-color); border-radius: 8px;">
+                                            <div style="color: var(--warning-color); font-size: 2rem; margin-bottom: 10px;">⚠</div>
+                                            <h4 style="margin-bottom: 5px;">高级功能</h4>
+                                            <p style="color: var(--text-color); font-size: 0.85rem;">需升级套餐</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-top: 30px; padding: 20px; background-color: rgba(0,0,0,0.02); border-radius: 8px;">
+                                    <h4 style="margin-bottom: 15px;">使用统计</h4>
+                                    <div class="row">
+                                        <div class="col col-6">
+                                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                                <span>本月验证次数</span>
+                                                <span><strong>2,456</strong> / 10,000</span>
+                                            </div>
+                                            <div style="width: 100%; height: 8px; background-color: var(--border-color); border-radius: 4px; overflow: hidden;">
+                                                <div style="height: 100%; background-color: var(--primary-color); width: 25%;"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col col-6">
+                                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                                <span>API调用次数</span>
+                                                <span><strong>1,234</strong> / 10,000</span>
+                                            </div>
+                                            <div style="width: 100%; height: 8px; background-color: var(--border-color); border-radius: 4px; overflow: hidden;">
+                                                <div style="height: 100%; background-color: var(--success-color); width: 12%;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript 增强功能 -->
+    <script src="../scripts/enterprise_profile.js"></script>
+    <style>
+        .form-display {
+            padding: 10px 0;
+            color: var(--dark-color);
+            font-weight: 500;
+            border-bottom: 1px solid transparent;
+        }
+    </style>
+</body>
+</html> 

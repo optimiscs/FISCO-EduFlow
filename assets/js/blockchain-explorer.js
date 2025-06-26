@@ -264,7 +264,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                             <div class="detail-row">
                                 <span class="detail-label">生成时间:</span>
-                                <span class="detail-value">2023-05-22 14:30:22</span>
+                                <span class="detail-value">2024-05-22 14:30:22</span>
                             </div>
                             <div class="detail-row">
                                 <span class="detail-label">交易数量:</span>
@@ -289,7 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                                 <div class="detail-row">
                                     <span class="detail-label">生成时间:</span>
-                                    <span class="detail-value">2023-05-22 14:30:22</span>
+                                    <span class="detail-value">2024-05-22 14:30:22</span>
                                 </div>
                                 <div class="detail-row">
                                     <span class="detail-label">交易数量:</span>
@@ -309,7 +309,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                                 <div class="detail-row">
                                     <span class="detail-label">交易时间:</span>
-                                    <span class="detail-value">2023-05-22 14:30:22</span>
+                                    <span class="detail-value">2024-05-22 14:30:22</span>
                                 </div>
                                 <div class="detail-row">
                                     <span class="detail-label">交易类型:</span>

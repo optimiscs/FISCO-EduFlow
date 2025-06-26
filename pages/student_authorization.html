@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>授权管理 - 学链通</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/student_dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 左侧导航栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 18,13.79 18,15.47C17.76,16 17.47,16.5 17.13,17Z"/>
+                    </svg>
+                </div>
+                <span class="logo-text">学链通</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="student_dashboard.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M13,3V9H21V3M13,21H21V11H13M3,21H11V15H3M3,13H11V3H3V13Z" />
+                        </svg>
+                        <span>仪表盘</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="student_education.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,3L1,9L12,15L21,10.09V17H23V9M5,13.18V17.18L12,21L19,17.18V13.18L12,17L5,13.18Z" />
+                        </svg>
+                        <span>学历信息</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="student_certificate.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M4,3C2.89,3 2,3.89 2,5V15A2,2 0 0,0 4,17H12V22L15,19L18,22V17H20A2,2 0 0,0 22,15V8L22,6V5A2,2 0 0,0 20,3H16V3H4M12,5L15,7L18,5V8.5L21,10L18,11.5V15L15,13L12,15V11.5L9,10L12,8.5V5M4,5H9V7H4V5M4,9H7V11H4V9M4,13H9V15H4V13Z" />
+                        </svg>
+                        <span>证书生成</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="student_authorization.html" class="nav-link active">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" />
+                        </svg>
+                        <span>授权管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="student_privacy.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z" />
+                        </svg>
+                        <span>隐私设置</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="student_messages.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4C22,2.89 21.1,2 20,2Z" />
+                        </svg>
+                        <span>消息通知</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="student_settings.html" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" />
+                        </svg>
+                        <span>账号设置</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <a href="../login.html" class="nav-link logout-link">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z" />
+                    </svg>
+                    <span>退出登录</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- 主内容区域 -->
+        <main class="main-content">
+            <!-- 顶部状态栏 -->
+            <div class="topbar">
+                <h1 class="page-title">授权管理</h1>
+                <div class="user-menu">
+                    <div class="notification-icon">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M21,19V20H3V19L5,17V11C5,7.9 7.03,5.17 10,4.29C10,4.19 10,4.1 10,4A2,2 0 0,1 12,2A2,2 0 0,1 14,4C14,4.1 14,4.19 14,4.29C16.97,5.17 19,7.9 19,11V17L21,19M14,21A2,2 0 0,1 12,23A2,2 0 0,1 10,21" />
+                        </svg>
+                        <div class="notification-badge">3</div>
+                    </div>
+                    <div class="user-profile">
+                        <div class="user-avatar">ZL</div>
+                        <div class="user-info">
+                            <div class="user-name">张力</div>
+                            <div class="user-role">计算机科学与技术 / 本科生</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 内容区域 -->
+            <div class="content-wrapper">
+                <div class="row">
+                    <!-- 授权统计 -->
+                    <div class="col col-3">
+                        <div class="card">
+                            <div class="card-body stat-card-body">
+                                <div class="stat-header">
+                                    <div class="stat-icon-wrapper stat-icon-primary">
+                                        <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--primary-color)">
+                                            <path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" />
+                                        </svg>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h3>总授权数</h3>
+                                        <p>累计创建的授权</p>
+                                    </div>
+                                </div>
+                                <div class="stat-value">12</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col col-3">
+                        <div class="card">
+                            <div class="card-body stat-card-body">
+                                <div class="stat-header">
+                                    <div class="stat-icon-wrapper stat-icon-success">
+                                        <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--success-color)">
+                                            <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+                                        </svg>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h3>有效授权</h3>
+                                        <p>当前生效中</p>
+                                    </div>
+                                </div>
+                                <div class="stat-value stat-value-success">3</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col col-3">
+                        <div class="card">
+                            <div class="card-body stat-card-body">
+                                <div class="stat-header">
+                                    <div class="stat-icon-wrapper stat-icon-warning">
+                                        <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--warning-color)">
+                                            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4M13,7H11V13H17V11H13V7Z" />
+                                        </svg>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h3>待使用</h3>
+                                        <p>等待验证中</p>
+                                    </div>
+                                </div>
+                                <div class="stat-value stat-value-warning">2</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col col-3">
+                        <div class="card">
+                            <div class="card-body stat-card-body">
+                                <div class="stat-header">
+                                    <div class="stat-icon-wrapper stat-icon-danger">
+                                        <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--danger-color)">
+                                            <path d="M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z" />
+                                        </svg>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h3>已过期</h3>
+                                        <p>需要续期</p>
+                                    </div>
+                                </div>
+                                <div class="stat-value stat-value-danger">7</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 创建新授权 -->
+                    <div class="col col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">创建新授权</h3>
+                            </div>
+                            <div class="card-body">
+                                <form id="new-authorization-form" class="authorization-form">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>授权对象 *</label>
+                                            <input type="text" class="form-control" placeholder="请输入企业或机构名称" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>联系邮箱 *</label>
+                                            <input type="email" class="form-control" placeholder="验证方邮箱地址" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>授权证书 *</label>
+                                            <select class="form-control" required>
+                                                <option value="">请选择要授权的证书</option>
+                                                <option value="bachelor">本科学历证书</option>
+                                                <option value="master">硕士学历证书</option>
+                                                <option value="all">全部证书</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>有效期 *</label>
+                                            <select class="form-control" required>
+                                                <option value="7">7天</option>
+                                                <option value="15">15天</option>
+                                                <option value="30" selected>30天</option>
+                                                <option value="60">60天</option>
+                                                <option value="90">90天</option>
+                                                <option value="custom">自定义</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>授权用途</label>
+                                            <input type="text" class="form-control" placeholder="例如：求职背景调查、入职资格验证等">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>权限范围</label>
+                                            <div class="checkbox-group">
+                                                <label class="checkbox-label">
+                                                    <input type="checkbox" checked> 基本信息（姓名、学校、专业）
+                                                </label>
+                                                <label class="checkbox-label">
+                                                    <input type="checkbox"> 详细成绩单
+                                                </label>
+                                                <label class="checkbox-label">
+                                                    <input type="checkbox"> 荣誉奖项
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary">创建授权</button>
+                                        <button type="reset" class="btn btn-outline">重置表单</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 授权列表 -->
+                    <div class="col col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">授权记录</h3>
+                                <div class="card-tools">
+                                    <select class="form-select">
+                                        <option value="all">全部状态</option>
+                                        <option value="active">有效</option>
+                                        <option value="pending">待使用</option>
+                                        <option value="used">已使用</option>
+                                        <option value="expired">已过期</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="authorization-list">
+                                    <!-- 有效授权 -->
+                                    <div class="authorization-item">
+                                        <div class="auth-status">
+                                            <div class="status-indicator status-active"></div>
+                                        </div>
+                                        <div class="auth-content">
+                                            <div class="auth-header">
+                                                <h4>腾讯科技有限公司</h4>
+                                                <span class="badge badge-success">有效</span>
+                                            </div>
+                                            <div class="auth-details">
+                                                <div class="detail-item">
+                                                    <span class="detail-label">授权证书：</span>
+                                                    <span class="detail-value">本科学历证书</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span class="detail-label">授权用途：</span>
+                                                    <span class="detail-value">入职背景调查</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span class="detail-label">创建时间：</span>
+                                                    <span class="detail-value">2024-10-15 14:30</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span class="detail-label">有效期至：</span>
+                                                    <span class="detail-value">2024-11-14 14:30</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span class="detail-label">使用次数：</span>
+                                                    <span class="detail-value">2/5 次</span>
+                                                </div>
+                                            </div>
+                                            <div class="auth-actions">
+                                                <button class="btn btn-sm btn-outline">查看详情</button>
+                                                <button class="btn btn-sm btn-outline">延期</button>
+                                                <button class="btn btn-sm btn-danger">撤销</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 待使用授权 -->
+                                    <div class="authorization-item">
+                                        <div class="auth-status">
+                                            <div class="status-indicator status-pending"></div>
+                                        </div>
+                                        <div class="auth-content">
+                                            <div class="auth-header">
+                                                <h4>阿里巴巴集团</h4>
+                                                <span class="badge badge-warning">待使用</span>
+                                            </div>
+                                            <div class="auth-details">
+                                                <div class="detail-item">
+                                                    <span class="detail-label">授权证书：</span>
+                                                    <span class="detail-value">本科学历证书</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span class="detail-label">授权用途：</span>
+                                                    <span class="detail-value">求职资格确认</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span class="detail-label">创建时间：</span>
+                                                    <span class="detail-value">2024-10-20 09:15</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span class="detail-label">有效期至：</span>
+                                                    <span class="detail-value">2024-11-19 09:15</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span class="detail-label">使用次数：</span>
+                                                    <span class="detail-value">0/3 次</span>
+                                                </div>
+                                            </div>
+                                            <div class="auth-actions">
+                                                <button class="btn btn-sm btn-outline">查看详情</button>
+                                                <button class="btn btn-sm btn-outline">发送提醒</button>
+                                                <button class="btn btn-sm btn-danger">撤销</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 已使用授权 -->
+                                    <div class="authorization-item">
+                                        <div class="auth-status">
+                                            <div class="status-indicator status-used"></div>
+                                        </div>
+                                        <div class="auth-content">
+                                            <div class="auth-header">
+                                                <h4>百度在线网络技术有限公司</h4>
+                                                <span class="badge badge-primary">已使用</span>
+                                            </div>
+                                            <div class="auth-details">
+                                                <div class="detail-item">
+                                                    <span class="detail-label">授权证书：</span>
+                                                    <span class="detail-value">硕士学历证书</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span class="detail-label">授权用途：</span>
+                                                    <span class="detail-value">实习申请验证</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span class="detail-label">使用时间：</span>
+                                                    <span class="detail-value">2024-10-18 16:45</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span class="detail-label">验证结果：</span>
+                                                    <span class="detail-value">验证成功</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span class="detail-label">使用次数：</span>
+                                                    <span class="detail-value">1/1 次</span>
+                                                </div>
+                                            </div>
+                                            <div class="auth-actions">
+                                                <button class="btn btn-sm btn-outline">查看详情</button>
+                                                <button class="btn btn-sm btn-outline">验证报告</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 已过期授权 -->
+                                    <div class="authorization-item">
+                                        <div class="auth-status">
+                                            <div class="status-indicator status-expired"></div>
+                                        </div>
+                                        <div class="auth-content">
+                                            <div class="auth-header">
+                                                <h4>华为技术有限公司</h4>
+                                                <span class="badge badge-danger">已过期</span>
+                                            </div>
+                                            <div class="auth-details">
+                                                <div class="detail-item">
+                                                    <span class="detail-label">授权证书：</span>
+                                                    <span class="detail-value">本科学历证书</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span class="detail-label">授权用途：</span>
+                                                    <span class="detail-value">校招面试资格验证</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span class="detail-label">创建时间：</span>
+                                                    <span class="detail-value">2024-09-15 11:20</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span class="detail-label">过期时间：</span>
+                                                    <span class="detail-value">2024-10-15 11:20</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span class="detail-label">使用次数：</span>
+                                                    <span class="detail-value">0/5 次</span>
+                                                </div>
+                                            </div>
+                                            <div class="auth-actions">
+                                                <button class="btn btn-sm btn-outline">查看详情</button>
+                                                <button class="btn btn-sm btn-primary">重新授权</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="pagination">
+                                    <button class="btn btn-outline btn-sm" disabled>上一页</button>
+                                    <span class="pagination-info">第 1 页，共 3 页</span>
+                                    <button class="btn btn-outline btn-sm">下一页</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../scripts/student_dashboard.js"></script>
+</body>
+</html> 
