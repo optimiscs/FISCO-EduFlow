@@ -348,12 +348,12 @@
                                                 <td><span class="badge badge-success">已上链</span></td>
                                                 <td>2024-05-20 14:30</td>
                                                 <td>
-                                                    <button class="action-btn view" title="查看详情">
+                                                    <button class="action-btn view" title="查看详情" data-student-id="2020010001" data-student-name="张三">
                                                         <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                                                             <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z" />
                                                         </svg>
                                                     </button>
-                                                    <button class="action-btn edit" title="编辑信息">
+                                                    <button class="action-btn edit" title="编辑信息" data-student-id="2020010001" data-student-name="张三">
                                                         <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                                                             <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
                                                         </svg>
@@ -377,14 +377,19 @@
                                                 <td><span class="badge badge-warning">待审核</span></td>
                                                 <td>-</td>
                                                 <td>
-                                                    <button class="action-btn view" title="查看详情">
+                                                    <button class="action-btn view" title="查看详情" data-student-id="2020010002">
                                                         <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                                                             <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z" />
                                                         </svg>
                                                     </button>
-                                                    <button class="action-btn edit" title="编辑信息">
+                                                    <button class="action-btn approve" title="审核通过" data-student-id="2020010002" data-student-name="李四">
                                                         <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                                                            <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
+                                                            <path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" />
+                                                        </svg>
+                                                    </button>
+                                                    <button class="action-btn reject" title="审核拒绝" data-student-id="2020010002" data-student-name="李四">
+                                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                                            <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
                                                         </svg>
                                                     </button>
                                                 </td>
@@ -769,6 +774,184 @@
             <div class="modal-footer">
                 <button class="btn btn-outline modal-close-btn">取消</button>
                 <button class="btn btn-primary">确认上链</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 审核通过确认弹窗 -->
+    <div class="modal" id="approveModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">审核通过确认</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <p>您确定要通过 <strong id="approve-student-name">学生姓名</strong> 的学历信息审核吗？</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">学号</label>
+                    <p id="approve-student-id">学号信息</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">审核意见</label>
+                    <textarea class="form-control" rows="3" placeholder="请输入审核意见（选填）" id="approve-comment"></textarea>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="approve-confirm-check" class="checkbox-input">
+                        <label for="approve-confirm-check" class="checkbox-label">我确认已检查学生信息，数据准确无误</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">取消</button>
+                <button class="btn btn-primary" id="confirm-approve-btn">确认通过</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 审核拒绝确认弹窗 -->
+    <div class="modal" id="rejectModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">审核拒绝确认</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <p>您确定要拒绝 <strong id="reject-student-name">学生姓名</strong> 的学历信息审核吗？</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">学号</label>
+                    <p id="reject-student-id">学号信息</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">拒绝原因 <span style="color: red;">*</span></label>
+                    <select class="form-select" id="reject-reason">
+                        <option value="">请选择拒绝原因</option>
+                        <option value="信息不完整">信息不完整</option>
+                        <option value="信息有误">信息有误</option>
+                        <option value="证明材料不足">证明材料不足</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">详细说明</label>
+                    <textarea class="form-control" rows="3" placeholder="请详细说明拒绝原因" id="reject-comment" required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">取消</button>
+                <button class="btn btn-danger" id="confirm-reject-btn">确认拒绝</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 学生详情查看弹窗 -->
+    <div class="modal" id="studentDetailViewModal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2 class="modal-title">学生详细信息</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">学号</label>
+                            <p id="detail-student-id">-</p>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">姓名</label>
+                            <p id="detail-student-name">-</p>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">性别</label>
+                            <p id="detail-student-gender">-</p>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">身份证号</label>
+                            <p id="detail-student-idcard">-</p>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">学院</label>
+                            <p id="detail-student-college">-</p>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">专业</label>
+                            <p id="detail-student-major">-</p>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">学历</label>
+                            <p id="detail-student-degree">-</p>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">学制</label>
+                            <p id="detail-student-duration">-</p>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">入学年份</label>
+                            <p id="detail-student-admission">-</p>
+                        </div>
+                    </div>
+                    <div class="col col-6">
+                        <div class="form-group">
+                            <label class="form-label">毕业年份</label>
+                            <p id="detail-student-graduation">-</p>
+                        </div>
+                    </div>
+                    <div class="col col-12">
+                        <div class="form-group">
+                            <label class="form-label">区块链信息</label>
+                            <div id="detail-blockchain-info" style="background: rgba(0,0,0,0.03); padding: 15px; border-radius: 8px; font-family: monospace;">
+                                <p style="margin: 5px 0;"><strong>交易哈希:</strong> <span id="detail-tx-hash">-</span></p>
+                                <p style="margin: 5px 0;"><strong>区块高度:</strong> <span id="detail-block-height">-</span></p>
+                                <p style="margin: 5px 0;"><strong>上链时间:</strong> <span id="detail-blockchain-time">-</span></p>
+                                <p style="margin: 5px 0;"><strong>状态:</strong> <span id="detail-status" class="badge">-</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 15px;">审核历史</h3>
+                    <div class="table-container" style="max-height: 200px; overflow-y: auto;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>操作类型</th>
+                                    <th>操作人</th>
+                                    <th>时间</th>
+                                    <th>说明</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detail-audit-history">
+                                <!-- 审核历史数据将在这里填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">关闭</button>
+                <button class="btn btn-primary" id="download-certificate-btn">下载证书</button>
             </div>
         </div>
     </div>
@@ -1233,7 +1416,479 @@
     // 初始化批量上传管理器
     document.addEventListener('DOMContentLoaded', function() {
         new BulkUploadManager();
+        new AuditManager();
     });
+    </script>
+    
+    <!-- 审核管理功能 -->
+    <script>
+    // 审核管理器
+    class AuditManager {
+        constructor() {
+            this.currentStudentData = null;
+            this.init();
+        }
+        
+        init() {
+            this.bindEvents();
+        }
+        
+        bindEvents() {
+            // 绑定审核按钮事件
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.action-btn.approve')) {
+                    this.handleApprove(e.target.closest('.action-btn.approve'));
+                } else if (e.target.closest('.action-btn.reject')) {
+                    this.handleReject(e.target.closest('.action-btn.reject'));
+                } else if (e.target.closest('.action-btn.view')) {
+                    this.handleViewDetail(e.target.closest('.action-btn.view'));
+                } else if (e.target.closest('.modal-close') || e.target.closest('.modal-close-btn')) {
+                    // 处理模态框关闭按钮
+                    const modal = e.target.closest('.modal');
+                    if (modal) {
+                        this.hideModal(modal.id);
+                    }
+                }
+            });
+            
+            // 绑定模态框确认按钮事件
+            document.getElementById('confirm-approve-btn').addEventListener('click', () => {
+                this.confirmApprove();
+            });
+            
+            document.getElementById('confirm-reject-btn').addEventListener('click', () => {
+                this.confirmReject();
+            });
+            
+            // 绑定下载证书按钮事件
+            document.getElementById('download-certificate-btn').addEventListener('click', () => {
+                this.downloadCertificate();
+            });
+            
+            // 绑定模态框背景点击关闭事件
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    this.hideModal(e.target.id);
+                }
+            });
+        }
+        
+        handleApprove(button) {
+            const studentId = button.getAttribute('data-student-id');
+            const studentName = button.getAttribute('data-student-name');
+            
+            // 填充审核通过模态框信息
+            document.getElementById('approve-student-name').textContent = studentName;
+            document.getElementById('approve-student-id').textContent = studentId;
+            document.getElementById('approve-comment').value = '';
+            document.getElementById('approve-confirm-check').checked = false;
+            
+            // 存储当前学生数据
+            this.currentStudentData = { studentId, studentName, action: 'approve' };
+            
+            // 显示模态框
+            this.showModal('approveModal');
+        }
+        
+        handleReject(button) {
+            const studentId = button.getAttribute('data-student-id');
+            const studentName = button.getAttribute('data-student-name');
+            
+            // 填充审核拒绝模态框信息
+            document.getElementById('reject-student-name').textContent = studentName;
+            document.getElementById('reject-student-id').textContent = studentId;
+            document.getElementById('reject-reason').value = '';
+            document.getElementById('reject-comment').value = '';
+            
+            // 存储当前学生数据
+            this.currentStudentData = { studentId, studentName, action: 'reject' };
+            
+            // 显示模态框
+            this.showModal('rejectModal');
+        }
+        
+        handleViewDetail(button) {
+            const studentId = button.getAttribute('data-student-id');
+            const studentName = button.getAttribute('data-student-name');
+            
+            // 模拟获取学生详细信息
+            const studentData = this.getStudentDetailData(studentId, studentName);
+            
+            // 填充详情模态框
+            this.fillDetailModal(studentData);
+            
+            // 显示模态框
+            this.showModal('studentDetailViewModal');
+        }
+        
+        confirmApprove() {
+            const confirmCheck = document.getElementById('approve-confirm-check');
+            const comment = document.getElementById('approve-comment').value;
+            
+            if (!confirmCheck.checked) {
+                this.showNotification('请确认已检查学生信息', 'error');
+                return;
+            }
+            
+            // 执行审核通过操作
+            this.executeApprove(this.currentStudentData.studentId, comment);
+        }
+        
+        confirmReject() {
+            const reason = document.getElementById('reject-reason').value;
+            const comment = document.getElementById('reject-comment').value;
+            
+            if (!reason) {
+                this.showNotification('请选择拒绝原因', 'error');
+                return;
+            }
+            
+            if (!comment.trim()) {
+                this.showNotification('请填写详细说明', 'error');
+                return;
+            }
+            
+            // 执行审核拒绝操作
+            this.executeReject(this.currentStudentData.studentId, reason, comment);
+        }
+        
+        executeApprove(studentId, comment) {
+            // 模拟API调用
+            setTimeout(() => {
+                // 更新页面状态
+                this.updateStudentStatus(studentId, 'approved');
+                
+                // 显示成功通知
+                this.showNotification(`学生 ${this.currentStudentData.studentName} 审核通过成功！`, 'success');
+                
+                // 关闭模态框
+                this.hideModal('approveModal');
+                
+                // 更新统计数据
+                this.updateStatistics('approve');
+                
+                // 记录审核历史
+                this.recordAuditHistory(studentId, '审核通过', comment);
+                
+            }, 1000);
+        }
+        
+        executeReject(studentId, reason, comment) {
+            // 模拟API调用
+            setTimeout(() => {
+                // 更新页面状态
+                this.updateStudentStatus(studentId, 'rejected');
+                
+                // 显示成功通知
+                this.showNotification(`学生 ${this.currentStudentData.studentName} 审核拒绝成功！`, 'success');
+                
+                // 关闭模态框
+                this.hideModal('rejectModal');
+                
+                // 更新统计数据
+                this.updateStatistics('reject');
+                
+                // 记录审核历史
+                this.recordAuditHistory(studentId, '审核拒绝', `${reason}: ${comment}`);
+                
+            }, 1000);
+        }
+        
+        updateStudentStatus(studentId, status) {
+            // 更新表格中的行状态
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const idCell = row.children[1]; // 学号列
+                if (idCell && idCell.textContent === studentId) {
+                    const statusCell = row.children[8]; // 状态列
+                    const actionCell = row.children[10]; // 操作列
+                    
+                    if (status === 'approved') {
+                        statusCell.innerHTML = '<span class="badge badge-success">已通过</span>';
+                        // 移除审核按钮，只保留查看按钮
+                        const viewBtn = actionCell.querySelector('.action-btn.view');
+                        actionCell.innerHTML = '';
+                        if (viewBtn) {
+                            actionCell.appendChild(viewBtn);
+                        }
+                    } else if (status === 'rejected') {
+                        statusCell.innerHTML = '<span class="badge badge-danger">已拒绝</span>';
+                        // 移除审核按钮，只保留查看按钮
+                        const viewBtn = actionCell.querySelector('.action-btn.view');
+                        actionCell.innerHTML = '';
+                        if (viewBtn) {
+                            actionCell.appendChild(viewBtn);
+                        }
+                    }
+                }
+            });
+            
+            // 更新审核管理页面中的审核项
+            const auditItems = document.querySelectorAll('.audit-item');
+            auditItems.forEach(item => {
+                const approveBtn = item.querySelector('.action-btn.approve');
+                if (approveBtn && approveBtn.getAttribute('data-student-id') === studentId) {
+                    if (status === 'approved') {
+                        // 更新审核项状态为已通过
+                        const actionsContainer = item.querySelector('.audit-actions');
+                        actionsContainer.innerHTML = `
+                            <span class="badge badge-success" style="padding: 8px 12px; font-size: 0.9rem;">已通过</span>
+                            <button class="action-btn view" data-student-id="${studentId}" data-student-name="${approveBtn.getAttribute('data-student-name')}" title="查看详情">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 5px;">
+                                    <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z" />
+                                </svg>
+                                查看详情
+                            </button>
+                        `;
+                    } else if (status === 'rejected') {
+                        // 更新审核项状态为已拒绝
+                        const actionsContainer = item.querySelector('.audit-actions');
+                        actionsContainer.innerHTML = `
+                            <span class="badge badge-danger" style="padding: 8px 12px; font-size: 0.9rem;">已拒绝</span>
+                            <button class="action-btn view" data-student-id="${studentId}" data-student-name="${approveBtn.getAttribute('data-student-name')}" title="查看详情">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 5px;">
+                                    <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z" />
+                                </svg>
+                                查看详情
+                            </button>
+                        `;
+                    }
+                }
+            });
+        }
+        
+        updateStatistics(action) {
+            // 更新页面统计数据
+            const pendingCard = document.querySelector('.stat-card:nth-child(3) .stat-value');
+            if (pendingCard) {
+                const current = parseInt(pendingCard.textContent);
+                pendingCard.textContent = current - 1;
+            }
+            
+            if (action === 'approve') {
+                const verifiedCard = document.querySelector('.stat-card:nth-child(2) .stat-value');
+                if (verifiedCard) {
+                    const current = parseInt(verifiedCard.textContent.replace(/,/g, ''));
+                    verifiedCard.textContent = (current + 1).toLocaleString();
+                }
+            }
+        }
+        
+        recordAuditHistory(studentId, action, comment) {
+            // 这里可以记录审核历史到数据库或本地存储
+            const now = new Date().toLocaleString();
+            console.log(`审核记录: ${studentId} - ${action} - ${now} - ${comment}`);
+        }
+        
+        getStudentDetailData(studentId, studentName) {
+            // 模拟获取学生详细数据
+            const mockData = {
+                '2020010001': {
+                    id: '2020010001',
+                    name: '张三',
+                    gender: '男',
+                    idCard: '110101199001011234',
+                    college: '计算机学院',
+                    major: '计算机科学与技术',
+                    degree: '本科',
+                    duration: '4年',
+                    admission: '2020年',
+                    graduation: '2024年',
+                    status: '已上链',
+                    txHash: '0x7d6a5743a5ef92d8e44f5a8d17d31cb94c7ede087c10e2f498dfccfe8de4babd',
+                    blockHeight: '1,246,783',
+                    blockchainTime: '2024-05-20 14:30:22',
+                    auditHistory: [
+                        { type: '信息录入', operator: 'admin', time: '2024-04-01 10:15', note: '初始信息录入' },
+                        { type: '信息修改', operator: '王老师', time: '2024-04-15 09:30', note: '更新专业信息' },
+                        { type: '审核通过', operator: '李主任', time: '2024-05-20 14:30', note: '学历信息审核通过' }
+                    ]
+                },
+                                 '2020010002': {
+                     id: '2020010002',
+                     name: '李四',
+                     gender: '女',
+                     idCard: '110101199001021234',
+                     college: '计算机学院',
+                     major: '软件工程',
+                     degree: '本科',
+                     duration: '4年',
+                     admission: '2020年',
+                     graduation: '2024年',
+                     status: '待审核',
+                     txHash: '-',
+                     blockHeight: '-',
+                     blockchainTime: '-',
+                     auditHistory: [
+                         { type: '信息录入', operator: 'admin', time: '2024-04-01 10:15', note: '初始信息录入' }
+                     ]
+                 },
+                 '2021010003': {
+                     id: '2021010003',
+                     name: '王五',
+                     gender: '男',
+                     idCard: '110101199101011234',
+                     college: '管理学院',
+                     major: '工商管理',
+                     degree: '本科',
+                     duration: '4年',
+                     admission: '2021年',
+                     graduation: '2025年',
+                     status: '待审核',
+                     txHash: '-',
+                     blockHeight: '-',
+                     blockchainTime: '-',
+                     auditHistory: [
+                         { type: '信息录入', operator: 'admin', time: '2024-03-15 14:20', note: '初始信息录入' },
+                         { type: '信息修改', operator: '张老师', time: '2024-04-10 11:30', note: '修正毕业年份' }
+                     ]
+                 }
+            };
+            
+            return mockData[studentId] || {
+                id: studentId,
+                name: studentName,
+                gender: '-',
+                idCard: '-',
+                college: '-',
+                major: '-',
+                degree: '-',
+                duration: '-',
+                admission: '-',
+                graduation: '-',
+                status: '-',
+                txHash: '-',
+                blockHeight: '-',
+                blockchainTime: '-',
+                auditHistory: []
+            };
+        }
+        
+        fillDetailModal(data) {
+            // 存储当前学生数据以便下载证书功能使用
+            this.currentStudentData = { studentId: data.id, studentName: data.name };
+            
+            document.getElementById('detail-student-id').textContent = data.id;
+            document.getElementById('detail-student-name').textContent = data.name;
+            document.getElementById('detail-student-gender').textContent = data.gender;
+            document.getElementById('detail-student-idcard').textContent = data.idCard;
+            document.getElementById('detail-student-college').textContent = data.college;
+            document.getElementById('detail-student-major').textContent = data.major;
+            document.getElementById('detail-student-degree').textContent = data.degree;
+            document.getElementById('detail-student-duration').textContent = data.duration;
+            document.getElementById('detail-student-admission').textContent = data.admission;
+            document.getElementById('detail-student-graduation').textContent = data.graduation;
+            
+            // 填充区块链信息
+            document.getElementById('detail-tx-hash').textContent = data.txHash;
+            document.getElementById('detail-block-height').textContent = data.blockHeight;
+            document.getElementById('detail-blockchain-time').textContent = data.blockchainTime;
+            
+            const statusBadge = document.getElementById('detail-status');
+            statusBadge.textContent = data.status;
+            statusBadge.className = 'badge';
+            if (data.status === '已上链') {
+                statusBadge.classList.add('badge-success');
+            } else if (data.status === '待审核') {
+                statusBadge.classList.add('badge-warning');
+            } else if (data.status === '已拒绝') {
+                statusBadge.classList.add('badge-danger');
+            }
+            
+            // 填充审核历史
+            const historyTBody = document.getElementById('detail-audit-history');
+            historyTBody.innerHTML = '';
+            data.auditHistory.forEach(record => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${record.type}</td>
+                    <td>${record.operator}</td>
+                    <td>${record.time}</td>
+                    <td>${record.note}</td>
+                `;
+                historyTBody.appendChild(row);
+            });
+        }
+        
+        downloadCertificate() {
+            if (this.currentStudentData) {
+                // 模拟下载证书
+                this.showNotification('证书下载已开始...', 'success');
+                
+                // 创建一个简单的HTML证书
+                const certificateContent = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>学历证书</title>
+                        <style>
+                            body { font-family: 'SimSun', serif; text-align: center; padding: 50px; }
+                            .certificate { border: 5px solid #3A7BD5; padding: 40px; margin: 20px auto; max-width: 600px; }
+                            .title { font-size: 28px; font-weight: bold; margin-bottom: 30px; color: #3A7BD5; }
+                            .content { font-size: 18px; line-height: 2; margin: 20px 0; }
+                            .signature { margin-top: 50px; text-align: right; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="certificate">
+                            <div class="title">学历证书</div>
+                            <div class="content">
+                                兹证明 <strong>${this.currentStudentData.studentName}</strong> 同学<br/>
+                                已完成学业要求，准予毕业。<br/>
+                                学号：${this.currentStudentData.studentId}<br/>
+                                颁发日期：${new Date().toLocaleDateString()}
+                            </div>
+                            <div class="signature">
+                                学链通大学<br/>
+                                ${new Date().getFullYear()}年
+                            </div>
+                        </div>
+                    </body>
+                    </html>
+                `;
+                
+                const blob = new Blob([certificateContent], { type: 'text/html;charset=utf-8' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `${this.currentStudentData.studentName}_学历证书.html`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+            }
+        }
+        
+        showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        hideModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+        
+        showNotification(message, type = 'info') {
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // 3秒后自动移除
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+        }
+    }
     </script>
     
     <!-- 额外样式 -->
@@ -1351,6 +2006,47 @@
     .audit-actions {
         display: flex;
         gap: 10px;
+    }
+    
+    /* 审核按钮样式 */
+    .action-btn.approve {
+        background-color: #28a745;
+        color: white;
+        border: 1px solid #28a745;
+    }
+    
+    .action-btn.approve:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+    }
+    
+    .action-btn.reject {
+        background-color: #dc3545;
+        color: white;
+        border: 1px solid #dc3545;
+    }
+    
+    .action-btn.reject:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+    }
+    
+    .action-btn.view:hover {
+        background-color: #3A7BD5;
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(58, 123, 213, 0.3);
+    }
+    
+    .action-btn.edit:hover {
+        background-color: #ffc107;
+        color: #212529;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3);
     }
     
     /* 图表容器 */

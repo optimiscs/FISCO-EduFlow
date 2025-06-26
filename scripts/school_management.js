@@ -655,9 +655,24 @@ function getAuditManagement() {
                                     <p>申请类型：学历信息上链</p>
                                 </div>
                                 <div class="audit-actions">
-                                    <button class="btn btn-success">通过</button>
-                                    <button class="btn btn-danger">拒绝</button>
-                                    <button class="btn btn-outline">查看详情</button>
+                                    <button class="action-btn approve" data-student-id="2020010001" data-student-name="张三" title="审核通过">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 5px;">
+                                            <path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" />
+                                        </svg>
+                                        通过
+                                    </button>
+                                    <button class="action-btn reject" data-student-id="2020010001" data-student-name="张三" title="审核拒绝">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 5px;">
+                                            <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                                        </svg>
+                                        拒绝
+                                    </button>
+                                    <button class="action-btn view" data-student-id="2020010001" data-student-name="张三" title="查看详情">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 5px;">
+                                            <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z" />
+                                        </svg>
+                                        查看详情
+                                    </button>
                                 </div>
                             </div>
                             <div class="audit-item">
@@ -667,9 +682,51 @@ function getAuditManagement() {
                                     <p>申请类型：学历信息修改</p>
                                 </div>
                                 <div class="audit-actions">
-                                    <button class="btn btn-success">通过</button>
-                                    <button class="btn btn-danger">拒绝</button>
-                                    <button class="btn btn-outline">查看详情</button>
+                                    <button class="action-btn approve" data-student-id="2020010002" data-student-name="李四" title="审核通过">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 5px;">
+                                            <path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" />
+                                        </svg>
+                                        通过
+                                    </button>
+                                    <button class="action-btn reject" data-student-id="2020010002" data-student-name="李四" title="审核拒绝">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 5px;">
+                                            <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                                        </svg>
+                                        拒绝
+                                    </button>
+                                    <button class="action-btn view" data-student-id="2020010002" data-student-name="李四" title="查看详情">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 5px;">
+                                            <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z" />
+                                        </svg>
+                                        查看详情
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="audit-item">
+                                <div class="audit-info">
+                                    <h4>王五 - 工商管理</h4>
+                                    <p>学号：2021010003 | 申请时间：2024-09-14 09:15</p>
+                                    <p>申请类型：学历信息上链</p>
+                                </div>
+                                <div class="audit-actions">
+                                    <button class="action-btn approve" data-student-id="2021010003" data-student-name="王五" title="审核通过">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 5px;">
+                                            <path d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z" />
+                                        </svg>
+                                        通过
+                                    </button>
+                                    <button class="action-btn reject" data-student-id="2021010003" data-student-name="王五" title="审核拒绝">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 5px;">
+                                            <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                                        </svg>
+                                        拒绝
+                                    </button>
+                                    <button class="action-btn view" data-student-id="2021010003" data-student-name="王五" title="查看详情">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 5px;">
+                                            <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z" />
+                                        </svg>
+                                        查看详情
+                                    </button>
                                 </div>
                             </div>
                         </div>
