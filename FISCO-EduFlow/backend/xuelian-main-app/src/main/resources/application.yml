@@ -1,0 +1,234 @@
+spring:
+  # 应用程序基本配置
+  application:
+    name: xueliantong-system
+
+  # 开发环境配置
+  profiles:
+    active: dev
+    include: fisco # 包含FISCO BCOS配置
+
+  # 数据源配置 - H2内存数据库
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:xueliantong;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    hikari:
+      pool-name: XueLianTongHikariPool
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  # JPA配置
+  jpa:
+    hibernate:
+      ddl-auto: create-drop # 开发环境自动创建表结构
+    show-sql: true
+    format-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+        use_sql_comments: true
+        generate_statistics: false
+
+  # H2控制台配置（开发环境）
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true
+
+  # Jackson JSON配置
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+      fail-on-empty-beans: false
+    deserialization:
+      fail-on-unknown-properties: false
+
+  # Web配置
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+  # Redis配置（用于区块链缓存）
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+    timeout: 3000ms
+    lettuce:
+      pool:
+        max-active: 20
+        max-idle: 10
+        min-idle: 5
+
+  # RabbitMQ配置（用于跨链消息队列）
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: admin123
+    virtual-host: /
+    connection-timeout: 15000
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    listener:
+      simple:
+        acknowledge-mode: manual
+        retry:
+          enabled: true
+          max-attempts: 3
+
+# 服务器配置
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+
+# 日志配置
+logging:
+  level:
+    com.xueliantong: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# 管理端点配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env,blockchain,node-permissions
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+    blockchain:
+      enabled: true
+    node-permissions:
+      enabled: true
+
+# 学链通系统配置
+xueliantong:
+  # 系统信息
+  system:
+    name: "学链通学历全流程管理系统"
+    version: "1.0.0-SNAPSHOT"
+    description: "基于区块链技术的学历认证管理平台"
+
+  # 区块链配置（开发环境使用Mock）
+  blockchain:
+    enabled: false # 开发阶段关闭真实区块链集成
+    mock-mode: true
+    webase:
+      gateway-url: "http://localhost:5002" # WeBase网关地址
+      contract-address: "" # 智能合约地址
+      timeout: 30000
+
+    # 节点权限管理
+    node-permission:
+      cache-timeout: 24h
+      max-history-records: 100
+      default-challenge-period: 1h
+
+    # 数字人民币状态通道
+    digital-currency:
+      min-lock-amount: 1000000000000000000 # 1 CNY in wei
+      default-timeout: 86400 # 24小时
+      challenge-period: 3600 # 1小时争议期
+      arbitrator-address: "0x8f7e6d5c4b3a2918e7d6c5b4a3928f7e6d5c4b3a"
+
+    # 密码学配置
+    crypto:
+      hash-algorithm: SHA256
+      signature-algorithm: ECDSA
+      curve: secp256k1
+      key-size: 256
+
+    # 区块结构配置
+    block:
+      header-size: 76 # 区块头大小（字节）
+      max-transactions: 1000 # 每个区块最大交易数
+      target-block-time: 3 # 目标出块时间（秒）
+
+  # 认证配置
+  certification:
+    auto-approval: false # 是否自动审批（开发测试可开启）
+    max-retry-times: 3 # 区块链交互最大重试次数
+    batch-size: 50 # 批处理大小
+
+  # 安全配置
+  security:
+    jwt:
+      secret: "xueliantong-jwt-secret-key-2024"
+      expiration: 86400000 # 24小时（毫秒）
+      header: "Authorization"
+      prefix: "Bearer "
+
+---
+# 开发环境配置
+spring:
+  profiles: dev
+
+logging:
+  level:
+    com.xueliantong: DEBUG
+    root: INFO
+
+xueliantong:
+  blockchain:
+    mock-mode: true
+  certification:
+    auto-approval: true # 开发环境自动审批
+
+---
+# 生产环境配置
+spring:
+  profiles: prod
+
+  datasource:
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: jdbc:sqlserver://localhost:1433;databaseName=xueliantong
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate # 生产环境不自动创建表
+    show-sql: false
+
+  h2:
+    console:
+      enabled: false # 生产环境关闭H2控制台
+
+logging:
+  level:
+    com.xueliantong: INFO
+    root: WARN
+
+server:
+  port: ${SERVER_PORT:8080}
+
+xueliantong:
+  blockchain:
+    enabled: true
+    mock-mode: false
+  certification:
+    auto-approval: false

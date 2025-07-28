@@ -1,0 +1,189 @@
+# FISCO BCOS 区块链配置
+fisco:
+  # 主链配置
+  main-chain:
+    group-id: 1
+    chain-id: 1
+    node-list:
+      - "127.0.0.1:20200"
+      - "127.0.0.1:20201"
+      - "127.0.0.1:20202"
+      - "127.0.0.1:20203"
+
+    # 证书配置
+    cert-path: "blockchain/fisco-config/certs"
+    ca-cert: "ca.crt"
+    sdk-cert: "sdk.crt"
+    sdk-key: "sdk.key"
+
+    # 连接配置
+    connect-timeout: 10000
+    socket-timeout: 10000
+    connection-pool-size: 10
+
+    # 智能合约配置
+    contracts:
+      student-profile:
+        address: "0x8f7e6d5c4b3a2918e7d6c5b4a3928f7e6d5c4b3a"
+        abi-path: "blockchain/contracts/abi/StudentProfileContract.abi"
+        bin-path: "blockchain/contracts/bin/StudentProfileContract.bin"
+
+      certification:
+        address: "0x2a9b8c7d6e5f4a3b9c8d7e6f5a4b3c9d8e7f6a5b"
+        abi-path: "blockchain/contracts/abi/CertificationContract.abi"
+        bin-path: "blockchain/contracts/bin/CertificationContract.bin"
+
+      merkle-sync:
+        address: "0x4c7b9e2d8f6a1c5b8e3d7f2a6c9b4e8d7f3a6c2b"
+        abi-path: "blockchain/contracts/abi/MerkleSyncContract.abi"
+        bin-path: "blockchain/contracts/bin/MerkleSyncContract.bin"
+
+  # 侧链配置
+  side-chains:
+    # 学历认证侧链
+    education-chain:
+      group-id: 2
+      chain-id: 2
+      node-list:
+        - "127.0.0.1:20300"
+        - "127.0.0.1:20301"
+      contracts:
+        education-records:
+          address: "0x9f3e7c2b6d8a4f1e7c3b9d6a2f8e5c1b4d7a9e3c"
+        degree-verification:
+          address: "0x6b8d4f2e9c7a3b6d8f1e4c7a9b2e5d8f1c4a7b9e"
+
+    # 就业认证侧链
+    employment-chain:
+      group-id: 3
+      chain-id: 3
+      node-list:
+        - "127.0.0.1:20400"
+        - "127.0.0.1:20401"
+      contracts:
+        employment-records:
+          address: "0x3d8f2c6b9e4a7d1f8c5b2e9a6d3f7c1b8e5a2d9f"
+        job-verification:
+          address: "0x7a4e9c2f6b8d1e5a3c7f2b9e6d4a8f1c5b9e2a7d"
+
+  # 跨链配置
+  cross-chain:
+    enabled: true
+    # 跨链路由合约
+    router-contract:
+      address: "0x5c8f3b7e2d9a6c4f8b1e7d3a9c6f2b8e5d1a7c4f"
+    # 跨链消息队列
+    message-queue:
+      max-size: 1000
+      batch-size: 10
+      timeout: 30000
+
+  # 状态通道配置
+  state-channels:
+    enabled: true
+    # 状态通道工厂合约
+    factory-contract:
+      address: "0x8e2d7f4c9b6a3e8d1f5c2b7e4a9d6f3c8b5e1a7d"
+    # 通道配置
+    channel-config:
+      default-timeout: 86400 # 24小时
+      max-participants: 10
+      min-deposit: 1000000000000000000 # 1 ETH in wei
+    # 争议解决
+    dispute-resolver:
+      address: "0x0123456789012345678901234567890123456789"
+      challenge-period: 3600 # 1小时
+
+  # 隐私保护配置
+  privacy:
+    # 零知识证明配置
+    zkp:
+      enabled: true
+      circuit-path: "blockchain/circuits"
+      proving-key-path: "blockchain/keys/proving.key"
+      verification-key-path: "blockchain/keys/verification.key"
+
+    # 同态加密配置
+    homomorphic:
+      enabled: true
+      key-size: 2048
+      security-level: 128
+
+  # 共识配置
+  consensus:
+    # PBFT配置
+    pbft:
+      view-timeout: 3000
+      request-timeout: 3000
+      block-generation-time: 1000
+
+    # VRF配置（如果启用）
+    vrf:
+      enabled: false
+      threshold: 0.5
+
+  # 监控配置
+  monitoring:
+    enabled: true
+    metrics:
+      - "transaction_count"
+      - "block_height"
+      - "tps"
+      - "gas_usage"
+    alert:
+      email: "admin@xueliantong.com"
+      webhook: "http://localhost:8080/api/blockchain/alerts"
+
+# Spring Boot集成配置
+spring:
+  profiles:
+    include: fisco
+
+  # 数据源配置（区块链数据缓存）
+  datasource:
+    blockchain-cache:
+      url: jdbc:h2:mem:blockchain_cache
+      username: sa
+      password:
+      driver-class-name: org.h2.Driver
+      hikari:
+        maximum-pool-size: 20
+        minimum-idle: 5
+
+  # Redis配置（状态通道缓存）
+  redis:
+    host: localhost
+    port: 6379
+    database: 1
+    timeout: 3000
+    lettuce:
+      pool:
+        max-active: 20
+        max-idle: 10
+        min-idle: 5
+
+# 日志配置
+logging:
+  level:
+    com.xueliantong.blockchain: DEBUG
+    org.fisco.bcos: INFO
+    org.springframework.web3j: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%logger{50}] - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%logger{50}] - %msg%n"
+  file:
+    name: logs/fisco-integration.log
+    max-size: 100MB
+    max-history: 30
+
+# 管理端点配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,blockchain
+  endpoint:
+    health:
+      show-details: always
+    blockchain:
+      enabled: true

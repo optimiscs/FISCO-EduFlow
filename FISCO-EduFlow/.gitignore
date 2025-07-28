@@ -1,0 +1,277 @@
+# 学链通区块链教育认证平台 - Git忽略文件
+
+# ========== Java相关 ==========
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Gradle
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# IDE
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+*.swp
+*.swo
+*~
+
+# Eclipse
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# ========== Go相关 ==========
+# Go build
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+
+# Go modules
+vendor/
+
+# Go coverage
+*.cover
+*.coverprofile
+
+# Go binaries
+bin/
+dist/
+
+# ========== Node.js相关 ==========
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+.env.test
+.env.production
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ========== 数据库相关 ==========
+*.db
+*.sqlite
+*.sqlite3
+
+# ========== 日志文件 ==========
+logs/
+*.log
+log/
+
+# ========== 配置文件 ==========
+# 敏感配置文件
+**/application-prod.yml
+**/application-production.yml
+config/secrets/
+secrets/
+
+# 本地配置文件
+**/application-local.yml
+**/config-local.yaml
+
+# ========== Docker相关 ==========
+# Docker volumes
+docker-volumes/
+
+# ========== 区块链相关 ==========
+# FISCO BCOS
+blockchain/fisco-config/nodes/
+blockchain/fisco-config/sdk/
+blockchain/fisco-config/accounts/
+*.pem
+*.crt
+*.key
+
+# 智能合约编译产物
+blockchain/contracts/build/
+blockchain/contracts/cache/
+blockchain/contracts/artifacts/
+
+# Truffle
+blockchain/contracts/.openzeppelin/
+
+# Hardhat
+blockchain/contracts/cache/
+blockchain/contracts/artifacts/
+
+# ========== 临时文件 ==========
+*.tmp
+*.temp
+*.bak
+*.backup
+*.orig
+
+# ========== 系统文件 ==========
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ========== 监控和分析 ==========
+# Prometheus
+prometheus_data/
+
+# Grafana
+grafana_data/
+
+# ========== 测试相关 ==========
+# JUnit
+TEST-*.xml
+
+# Coverage reports
+coverage/
+*.cover
+*.py,cover
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# ========== 部署相关 ==========
+# Kubernetes
+k8s-secrets/
+*.kubeconfig
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Ansible
+*.retry
+
+# ========== 其他 ==========
+# 压缩文件
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# 证书文件
+ssl/
+certs/
+*.p12
+*.jks
+
+# 备份文件
+backup/
+*.backup
+
+# 本地开发文件
+local/
+dev-data/

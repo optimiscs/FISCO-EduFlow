@@ -1,0 +1,30 @@
+{
+  "name": "blockchain-education-contracts",
+  "version": "1.0.0",
+  "description": "Smart contracts for blockchain education platform",
+  "main": "index.js",
+  "scripts": {
+    "compile": "solc --bin --abi --optimize --overwrite -o build/ contracts/*.sol",
+    "test": "truffle test",
+    "migrate": "truffle migrate",
+    "console": "truffle console",
+    "develop": "truffle develop"
+  },
+  "keywords": [
+    "blockchain",
+    "education",
+    "smart-contracts",
+    "solidity",
+    "fisco-bcos"
+  ],
+  "author": "Blockchain Education Platform Team",
+  "license": "MIT",
+  "devDependencies": {
+    "solc": "^0.8.19",
+    "truffle": "^5.9.1",
+    "@openzeppelin/contracts": "^4.9.0"
+  },
+  "dependencies": {
+    "web3": "^1.10.0"
+  }
+}

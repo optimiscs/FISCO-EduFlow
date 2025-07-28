@@ -1,0 +1,138 @@
+# 学链通密码学服务配置文件
+
+# 服务器配置
+server:
+  port: "8081"
+  mode: "release"  # debug, release
+  read_timeout: 30
+  write_timeout: 30
+
+# 日志配置
+log:
+  level: "info"    # debug, info, warn, error, fatal
+  format: "json"   # json, text
+  output: "stdout" # stdout, file
+
+# 密码学配置
+crypto:
+  curve: "secp256k1"
+  hash_algorithm: "SHA256"
+  key_size: 256
+  signature_algorithm: "ECDSA"
+
+# Redis配置
+redis:
+  host: "localhost"
+  port: 6379
+  password: ""
+  database: 0
+  pool_size: 10
+
+# 区块链配置
+blockchain:
+  # 区块头配置
+  block_header:
+    size: 76  # 区块头大小（字节）
+    prev_hash_size: 32
+    merkle_root_size: 32
+    timestamp_size: 4
+    difficulty_size: 4
+    nonce_size: 4
+  
+  # 交易配置
+  transaction:
+    max_size: 1024  # 最大交易大小（字节）
+    signature_size: 64
+    hash_size: 32
+  
+  # 学历数据配置
+  student_data:
+    max_name_length: 100
+    max_info_length: 1000
+    max_phone_length: 20
+    id_card_length: 18
+
+# 性能配置
+performance:
+  # 缓存配置
+  cache:
+    enabled: true
+    ttl: 3600  # 缓存过期时间（秒）
+    max_size: 10000
+  
+  # 并发配置
+  concurrency:
+    max_workers: 100
+    queue_size: 1000
+  
+  # 限流配置
+  rate_limit:
+    enabled: true
+    requests_per_second: 1000
+    burst_size: 100
+
+# 安全配置
+security:
+  # 密钥管理
+  key_management:
+    rotation_interval: 86400  # 密钥轮换间隔（秒）
+    backup_enabled: true
+    encryption_enabled: true
+  
+  # 访问控制
+  access_control:
+    enabled: true
+    whitelist: []
+    blacklist: []
+  
+  # 审计日志
+  audit:
+    enabled: true
+    log_level: "info"
+    retention_days: 30
+
+# 监控配置
+monitoring:
+  # 指标收集
+  metrics:
+    enabled: true
+    endpoint: "/metrics"
+    interval: 30
+  
+  # 健康检查
+  health:
+    enabled: true
+    endpoint: "/health"
+    timeout: 5
+  
+  # 链路追踪
+  tracing:
+    enabled: false
+    jaeger_endpoint: ""
+    sample_rate: 0.1
+
+# 开发配置
+development:
+  # 调试模式
+  debug:
+    enabled: false
+    profiling: false
+    verbose_logging: false
+  
+  # 测试配置
+  testing:
+    mock_enabled: false
+    test_data_path: "./testdata"
+    
+# 生产配置
+production:
+  # 优化配置
+  optimization:
+    gc_percent: 100
+    max_procs: 0  # 0表示使用所有CPU核心
+  
+  # 资源限制
+  limits:
+    max_memory: "1GB"
+    max_cpu: "2"
+    max_connections: 10000

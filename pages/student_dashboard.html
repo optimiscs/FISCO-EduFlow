@@ -1418,45 +1418,45 @@
         };
         
         return [
-            {
-                id: 1,
-                company: '腾讯科技',
-                type: '本科学历证书核验授权',
-                status: '已使用',
-                progress: 100,
+        {
+            id: 1,
+            company: '腾讯科技',
+            type: '本科学历证书核验授权',
+            status: '已使用',
+            progress: 100,
                 startDate: getDateOffset(-15), // 15天前开始
                 endDate: getDateOffset(15), // 15天后到期
-                purpose: '求职背景调查',
-                duration: 30,
+            purpose: '求职背景调查',
+            duration: 30,
                 usedDate: getDateOffset(-12), // 12天前使用
                 certificateNumber: generateCertificateNumber(),
-                issuingAuthority: '学链通大学'
-            },
-            {
-                id: 2,
-                company: '阿里巴巴集团',
-                type: '本科学历证书核验授权',
-                status: '有效',
-                progress: 60,
+            issuingAuthority: '学链通大学'
+        },
+        {
+            id: 2,
+            company: '阿里巴巴集团',
+            type: '本科学历证书核验授权',
+            status: '有效',
+            progress: 60,
                 startDate: getDateOffset(-10), // 10天前开始
                 endDate: getDateOffset(20), // 20天后到期
-                purpose: '入职资格确认',
-                duration: 30,
-                usedDate: null,
+            purpose: '入职资格确认',
+            duration: 30,
+            usedDate: null,
                 certificateNumber: generateCertificateNumber(),
-                issuingAuthority: '学链通大学'
-            },
-            {
-                id: 3,
-                company: '百度在线',
-                type: '硕士学历证书核验授权',
-                status: '未使用',
-                progress: 0,
+            issuingAuthority: '学链通大学'
+        },
+        {
+            id: 3,
+            company: '百度在线',
+            type: '硕士学历证书核验授权',
+            status: '未使用',
+            progress: 0,
                 startDate: getDateOffset(-5), // 5天前开始
                 endDate: getDateOffset(25), // 25天后到期
-                purpose: '面试资格验证',
-                duration: 30,
-                usedDate: null,
+            purpose: '面试资格验证',
+            duration: 30,
+            usedDate: null,
                 certificateNumber: generateCertificateNumber(),
                 issuingAuthority: '学链通大学'
             },
@@ -1472,9 +1472,9 @@
                 duration: 30,
                 usedDate: null,
                 certificateNumber: generateCertificateNumber(),
-                issuingAuthority: '学链通大学'
-            }
-        ];
+            issuingAuthority: '学链通大学'
+        }
+    ];
     }
 
     // 更新授权状态（基于真实时间）

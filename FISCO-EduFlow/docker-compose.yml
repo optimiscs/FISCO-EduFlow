@@ -1,0 +1,287 @@
+version: '3.8'
+
+services:
+  # 主应用服务
+  xuelian-main-app:
+    build:
+      context: ./backend/xuelian-main-app
+      dockerfile: Dockerfile
+    container_name: xuelian-main-app
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DB_HOST=sqlserver
+      - DB_PORT=1433
+      - DB_NAME=xueliantong
+      - DB_USERNAME=sa
+      - DB_PASSWORD=XueLianTong@2024
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - FISCO_NODE_URL=http://fisco-node:8545
+    depends_on:
+      - sqlserver
+      - redis
+      - rabbitmq
+      - crypto-service
+    networks:
+      - xuelian-network
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # 密码学服务
+  crypto-service:
+    build:
+      context: ./services/crypto
+      dockerfile: Dockerfile
+    container_name: crypto-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SERVER_PORT=8081
+      - SERVER_MODE=release
+      - LOG_LEVEL=info
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+    networks:
+      - xuelian-network
+    volumes:
+      - ./services/crypto/config.yaml:/app/config.yaml:ro
+      - ./logs/crypto:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Merkle Tree服务
+  merkle-service:
+    build:
+      context: ./services/merkle
+      dockerfile: Dockerfile
+    container_name: merkle-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SERVER_PORT=8082
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+      - crypto-service
+    networks:
+      - xuelian-network
+    volumes:
+      - ./logs/merkle:/app/logs
+    restart: unless-stopped
+
+  # 零知识证明服务
+  zkp-service:
+    build:
+      context: ./services/zkp
+      dockerfile: Dockerfile
+    container_name: zkp-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SERVER_PORT=8083
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+    networks:
+      - xuelian-network
+    volumes:
+      - ./logs/zkp:/app/logs
+    restart: unless-stopped
+
+  # API网关
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - SERVER_PORT=8000
+      - MAIN_APP_URL=http://xuelian-main-app:8080
+      - CRYPTO_SERVICE_URL=http://crypto-service:8081
+      - MERKLE_SERVICE_URL=http://merkle-service:8082
+      - ZKP_SERVICE_URL=http://zkp-service:8083
+    depends_on:
+      - xuelian-main-app
+      - crypto-service
+      - merkle-service
+      - zkp-service
+    networks:
+      - xuelian-network
+    restart: unless-stopped
+
+  # SQL Server数据库
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: xuelian-sqlserver
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=XueLianTong@2024
+      - MSSQL_PID=Express
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+      - ./scripts/sql:/docker-entrypoint-initdb.d
+    networks:
+      - xuelian-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P XueLianTong@2024 -Q 'SELECT 1'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Redis缓存
+  redis:
+    image: redis:7-alpine
+    container_name: xuelian-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass XueLianTong@2024
+    volumes:
+      - redis_data:/data
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    networks:
+      - xuelian-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # RabbitMQ消息队列
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: xuelian-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=XueLianTong@2024
+      - RABBITMQ_DEFAULT_VHOST=/
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - ./config/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+    networks:
+      - xuelian-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # FISCO BCOS节点
+  fisco-node:
+    image: fiscoorg/fiscobcos:v3.2.0
+    container_name: fisco-node
+    ports:
+      - "8545:8545"
+      - "30300:30300"
+    volumes:
+      - ./blockchain/fisco-config:/fisco
+      - fisco_data:/fisco/data
+    networks:
+      - xuelian-network
+    restart: unless-stopped
+    command: ["/fisco/fisco-bcos", "-c", "/fisco/config.ini"]
+
+  # Nginx反向代理
+  nginx:
+    image: nginx:alpine
+    container_name: xuelian-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - api-gateway
+    networks:
+      - xuelian-network
+    restart: unless-stopped
+
+  # Prometheus监控
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: xuelian-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - xuelian-network
+    restart: unless-stopped
+
+  # Grafana可视化
+  grafana:
+    image: grafana/grafana:latest
+    container_name: xuelian-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=XueLianTong@2024
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./config/grafana:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+    networks:
+      - xuelian-network
+    restart: unless-stopped
+
+# 网络配置
+networks:
+  xuelian-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# 数据卷配置
+volumes:
+  sqlserver_data:
+    driver: local
+  redis_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
+  fisco_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local

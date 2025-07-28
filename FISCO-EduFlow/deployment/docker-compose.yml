@@ -1,0 +1,205 @@
+version: '3.8'
+
+services:
+  # FISCO BCOS 主链节点
+  fisco-mainchain:
+    image: fiscoorg/fiscobcos:v2.9.1
+    container_name: fisco-mainchain
+    ports:
+      - "30300:30300"
+      - "20200:20200"
+      - "8545:8545"
+    volumes:
+      - ../blockchain/fisco-config/mainchain:/fisco
+      - fisco-mainchain-data:/fisco/data
+    networks:
+      - blockchain-network
+    environment:
+      - NODE_TYPE=mainchain
+    restart: unless-stopped
+
+  # FISCO BCOS 侧链节点
+  fisco-sidechain:
+    image: fiscoorg/fiscobcos:v2.9.1
+    container_name: fisco-sidechain
+    ports:
+      - "30301:30300"
+      - "20201:20200"
+      - "8546:8545"
+    volumes:
+      - ../blockchain/fisco-config/sidechain:/fisco
+      - fisco-sidechain-data:/fisco/data
+    networks:
+      - blockchain-network
+    environment:
+      - NODE_TYPE=sidechain
+    restart: unless-stopped
+
+  # 密码学服务
+  crypto-service:
+    build:
+      context: ../services/crypto
+      dockerfile: Dockerfile
+    container_name: crypto-service
+    ports:
+      - "8001:8080"
+    networks:
+      - blockchain-network
+    environment:
+      - SERVICE_NAME=crypto-service
+      - LOG_LEVEL=info
+    restart: unless-stopped
+    depends_on:
+      - redis
+
+  # Merkle Tree 服务
+  merkle-service:
+    build:
+      context: ../services/merkle
+      dockerfile: Dockerfile
+    container_name: merkle-service
+    ports:
+      - "8002:8080"
+    networks:
+      - blockchain-network
+    environment:
+      - SERVICE_NAME=merkle-service
+      - LOG_LEVEL=info
+      - REDIS_URL=redis:6379
+    restart: unless-stopped
+    depends_on:
+      - redis
+
+  # 零知识证明服务
+  zkp-service:
+    build:
+      context: ../services/zkp
+      dockerfile: Dockerfile
+    container_name: zkp-service
+    ports:
+      - "8003:8080"
+    networks:
+      - blockchain-network
+    environment:
+      - SERVICE_NAME=zkp-service
+      - LOG_LEVEL=info
+    restart: unless-stopped
+
+  # API 网关
+  api-gateway:
+    build:
+      context: ../services/api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    ports:
+      - "8000:8080"
+    networks:
+      - blockchain-network
+    environment:
+      - SERVICE_NAME=api-gateway
+      - LOG_LEVEL=info
+      - CRYPTO_SERVICE_URL=http://crypto-service:8080
+      - MERKLE_SERVICE_URL=http://merkle-service:8080
+      - ZKP_SERVICE_URL=http://zkp-service:8080
+      - FISCO_MAINCHAIN_URL=http://fisco-mainchain:8545
+      - FISCO_SIDECHAIN_URL=http://fisco-sidechain:8545
+    restart: unless-stopped
+    depends_on:
+      - crypto-service
+      - merkle-service
+      - zkp-service
+      - fisco-mainchain
+      - fisco-sidechain
+
+  # Spring Boot 后端
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - "8080:8080"
+    networks:
+      - blockchain-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DATABASE_URL=jdbc:sqlserver://sqlserver:1433;databaseName=education_platform
+      - DATABASE_USERNAME=sa
+      - DATABASE_PASSWORD=YourStrong@Passw0rd
+      - API_GATEWAY_URL=http://api-gateway:8080
+    restart: unless-stopped
+    depends_on:
+      - sqlserver
+      - api-gateway
+
+  # 前端应用
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:80"
+    networks:
+      - blockchain-network
+    environment:
+      - REACT_APP_API_URL=http://localhost:8080
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+  # SQL Server 数据库
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver
+    ports:
+      - "1433:1433"
+    networks:
+      - blockchain-network
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong@Passw0rd
+      - MSSQL_PID=Express
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    restart: unless-stopped
+
+  # Redis 缓存
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - blockchain-network
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+  # WeBase 区块链浏览器
+  webase-browser:
+    build:
+      context: ../testing/webase-browser
+      dockerfile: Dockerfile
+    container_name: webase-browser
+    ports:
+      - "5000:5000"
+    networks:
+      - blockchain-network
+    environment:
+      - FISCO_MAINCHAIN_URL=http://fisco-mainchain:8545
+      - FISCO_SIDECHAIN_URL=http://fisco-sidechain:8545
+    restart: unless-stopped
+    depends_on:
+      - fisco-mainchain
+      - fisco-sidechain
+
+networks:
+  blockchain-network:
+    driver: bridge
+
+volumes:
+  fisco-mainchain-data:
+  fisco-sidechain-data:
+  sqlserver-data:
+  redis-data:

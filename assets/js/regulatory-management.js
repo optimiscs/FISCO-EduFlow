@@ -59,12 +59,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const navLinks = document.querySelectorAll('.nav-link');
             navLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
-                    e.preventDefault();
                     const href = link.getAttribute('href');
                     if (href && href.startsWith('#')) {
+                        // 只对内部页面链接阻止默认行为
+                        e.preventDefault();
                         const pageId = href.substring(1);
                         this.navigateToPage(pageId);
                     }
+                    // 对于外部链接（如 blockchain_explorer.html），不阻止默认行为，让浏览器正常跳转
                 });
             });
         },
